@@ -22,14 +22,15 @@ public:
         size = 0;
     }
     
-    void ENQUEUE(int x) {
+    int ENQUEUE(int x) {
         if (size == capacity) {
             std::cerr << "Error: Queue overflow" << std::endl;
-            return;
+            return -1;
         }
         arr[tail] = x;
-        tail = (tail + 1) % capacity;
+		tail = (tail + 1) % capacity;
         size++;
+        return x;
     }
     
     int DEQUEUE() {
@@ -79,8 +80,10 @@ public:
 			if (std::isdigit(command[0]) || (command[0] == '-' && std::isdigit(command[1]))) {
 		        try {
 		            value = std::stoi(command);
-		            ENQUEUE(value);
-		            std::cout << "Enqueued " << value << std::endl;
+		            int enqueuedValue = ENQUEUE(value);
+					if (enqueuedValue != -1){
+						std::cout << "Enqueued " << value << std::endl;
+					}
 		        } catch (std::exception&) {
 		            std::cout << "Invalid number!" << std::endl;
 		    	}
