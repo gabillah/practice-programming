@@ -54,6 +54,7 @@ int main() {
     list.insert(10);
     list.insert(20);
     list.insert(30);
+    list.insert(12);
 
     std::cout << "List sebelum penghapusan: ";
     list.printList();

@@ -1,3 +1,6 @@
+// LIST-INSERT(x,y)
+// LIST-PREPEND(L.k)
+
 #include <iostream>
 
 struct Node {

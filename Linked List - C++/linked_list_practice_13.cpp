@@ -1,3 +1,10 @@
+// LIST-SEARCH(L.k)
+// sentinel
+// LIST-PREPEND(L.x)
+// LIST-DELETE'(x)
+
+
+
 #include <iostream>
 
 struct Node {
