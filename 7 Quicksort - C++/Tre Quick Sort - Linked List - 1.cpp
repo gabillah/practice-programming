@@ -86,72 +86,27 @@ public:
     }
 
 	Node* hoarePartition(Node* low, Node* high) {
-	    int pivot = low->data;
-	    Node* i = low->prev;
-	    Node* j = high->next;
-	
-	    while (true) {
-	        do {
-	            j = j->prev;
-	        } while (j->data > pivot);
-	
-	        do {
-	            i = i->next;
-	        } while (i->data < pivot);
-	
-	        if (i == j || i->prev == j || j->next == i) {
-	            return j; 
-	        } else{
-				std::swap(i->data, j->data);
-			}
-	    }
-	}
+        int pivot = low->data;
+        Node* i = low->prev;
+        Node* j = high->next;
+        while (true) {
+            do {
+                j--;
+            } while (j->data > pivot);
+            do {
+                i++;
+            } while (i->data < pivot);
+            if (i < j) {
+                std::swap(i->data, j->data);
+            } else {
+                return j;
+            }
+        }
+    }
 
-    // QuickSort implementation for linked list
-//    void quickSort(Node* low, Node* high) {
-//        if (high != nullptr && low != high && low != high->next) {
-//            Node* q = partition(low, high);
-//            quickSort(low, q->prev);
-//            quickSort(q->next, high);
-//        }
-//    }
+
     
-//    void randomizedQuickSort(Node* low, Node* high) {
-//        if (high != nullptr && low != high && low != high->next) {
-//            Node* p = partition(low, high);
-//            quickSort(low, p->prev);
-//            quickSort(p->next, high);
-//        }
-//    }
-    
-    void stoogeSort(Node* low, Node* high) {
-	    if (low->data > high->data) {
-	        std::swap(low->data, high->data);
-	    }
-	
-	    // Periksa jika ada lebih dari dua elemen di antara low dan high
-	    if (low != high && low != high->prev) {
-	        // Temukan sepertiga bagian dari linked list
-	        int n = 0;
-	        Node* temp = low;
-	        while (temp != high->next) {
-	            n++;
-	            temp = temp->next;
-	        }
-	
-	        int k = n / 3;
-	        // Maju ke k node dari low
-	        Node* mid = low;
-	        for (int i = 0; i < k; ++i) {
-	            mid = mid->next;
-	        }
-	
-	        // Panggil rekursif untuk masing-masing bagian
-	        stoogeSort(low, high->prev);  // StoogeSort untuk dua pertiga awal
-	        stoogeSort(mid, high);        // StoogeSort untuk dua pertiga akhir
-	        stoogeSort(low, high->prev);  // StoogeSort untuk dua pertiga awal lagi
-	    }
-	}	
+
     
     void treQuickSort(Node* low, Node* high) {
         while (high != nullptr && low != high && low != high->next) {
@@ -186,10 +141,10 @@ public:
 //		std::cout << "randomizedQuickSort list: ";
 //		printList();
 		
-		// Perform stoogeSort on the linked list
-		stoogeSort(nil->next, nil->prev);
-		std::cout << "stoogeSort list: ";
-		printList();
+//		// Perform stoogeSort on the linked list
+//		stoogeSort(nil->next, nil->prev);
+//		std::cout << "stoogeSort list: ";
+//		printList();
 		
 		// Perform treQuickSort on the linked list
 		treQuickSort(nil->next, nil->prev);

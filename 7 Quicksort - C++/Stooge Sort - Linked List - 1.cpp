@@ -62,69 +62,7 @@ public:
 			std::cout << "Key " << key << " not found in the list." << std::endl;
 	}
 
-	// Helper function to partition the list during quicksort
-    Node* partition(Node* low, Node* high) {
-        int pivot = high->data;
-        Node* i = low->prev;
-        
-        for (Node* j = low; j != high; j = j->next) {
-            if (j->data <= pivot) {
-                i = (i == nullptr) ? low : i->next;
-                std::swap(i->data, j->data);
-            }
-        }
-        i = (i == nullptr) ? low : i->next;
-        std::swap(i->data, high->data);
-        return i;
-    }
-    
-    Node* randomizedPartition(Node* low, Node* high) {
-        srand(time(0));
-        Node* i = low + rand() % (high - low->next);
-        std::swap(high->data, i->data);
-        return partition(low, high);
-    }
-
-	Node* hoarePartition(Node* low, Node* high) {
-	    int pivot = low->data;
-	    Node* i = low->prev;
-	    Node* j = high->next;
-	
-	    while (true) {
-	        do {
-	            j = j->prev;
-	        } while (j->data > pivot);
-	
-	        do {
-	            i = i->next;
-	        } while (i->data < pivot);
-	
-	        if (i == j || i->prev == j || j->next == i) {
-	            return j; 
-	        } else{
-				std::swap(i->data, j->data);
-			}
-	    }
-	}
-
-    // QuickSort implementation for linked list
-//    void quickSort(Node* low, Node* high) {
-//        if (high != nullptr && low != high && low != high->next) {
-//            Node* q = partition(low, high);
-//            quickSort(low, q->prev);
-//            quickSort(q->next, high);
-//        }
-//    }
-    
-//    void randomizedQuickSort(Node* low, Node* high) {
-//        if (high != nullptr && low != high && low != high->next) {
-//            Node* p = partition(low, high);
-//            quickSort(low, p->prev);
-//            quickSort(p->next, high);
-//        }
-//    }
-    
-    void stoogeSort(Node* low, Node* high) {
+	void stoogeSort(Node* low, Node* high) {
 	    if (low->data > high->data) {
 	        std::swap(low->data, high->data);
 	    }
@@ -151,16 +89,8 @@ public:
 	        stoogeSort(mid, high);        // StoogeSort untuk dua pertiga akhir
 	        stoogeSort(low, high->prev);  // StoogeSort untuk dua pertiga awal lagi
 	    }
-	}	
-    
-    void treQuickSort(Node* low, Node* high) {
-        while (high != nullptr && low != high && low != high->next) {
-            Node* q = partition(low, high);
-            treQuickSort(low, q->prev);
-            low = q->next;
-        }
-    }
-
+	}
+		
 	void run(){
 		prepend(60);
 		prepend(10);
@@ -176,24 +106,10 @@ public:
 		append(5);
 		std::cout << "Original list: ";
 		printList();
-//		// Perform quickSort on the linked list
-//        quickSort(nil->next, nil->prev);
-//		std::cout << "quickSort list: ";
-//		printList();
-		
-//		// Perform randomizedQuickSort on the linked list
-//		randomizedQuickSort(nil->next, nil->prev);
-//		std::cout << "randomizedQuickSort list: ";
-//		printList();
 		
 		// Perform stoogeSort on the linked list
 		stoogeSort(nil->next, nil->prev);
 		std::cout << "stoogeSort list: ";
-		printList();
-		
-		// Perform treQuickSort on the linked list
-		treQuickSort(nil->next, nil->prev);
-		std::cout << "treQuickSort list: ";
 		printList();
 		
 		searchAndPrint(20);

@@ -62,32 +62,36 @@ public:
 			std::cout << "Key " << key << " not found in the list." << std::endl;
 	}
 
-	// Helper function to partition the list during quicksort
-    Node* partition(Node* low, Node* high) {
-        int pivot = high->data;
-        Node* i = low->prev;
-        
-        for (Node* j = low; j != high; j = j->next) {
-            if (j->data <= pivot) {
-                i = (i == nullptr) ? low : i->next;
-                std::swap(i->data, j->data);
-            }
-        }
-        i = (i == nullptr) ? low : i->next;
-        std::swap(i->data, high->data);
-        return i;
-    }
-    
-    Node* randomizedPartition(Node* low, Node* high) {
-        srand(time(0));
-        Node* i = low + rand() % (high - low->next);
-        std::swap(high->data, i->data);
-        return partition(low, high);
-    }
-
-    
+	void stoogeSort(Node* low, Node* high) {
+	    if (low->data > high->data) {
+	        std::swap(low->data, high->data);
+	    }
 	
+	    // Periksa jika ada lebih dari dua elemen di antara low dan high
+	    if (low != high && low != high->prev) {
+	        // Temukan sepertiga bagian dari linked list
+	        int n = 0;
+	        Node* temp = low;
+	        while (temp != high->next) {
+	            n++;
+	            temp = temp->next;
+	        }
 	
+	        int k = n / 3;
+	        // Maju ke k node dari low
+	        Node* mid = low;
+	        Node* highMin = high;
+	        for (int i = 0; i < k; ++i) {
+	            mid = mid->next;
+	            highMin = highMin->prev;
+	        }
+	
+	        // Panggil rekursif untuk masing-masing bagian
+	        stoogeSort(low, highMin);  // StoogeSort untuk dua pertiga awal
+	        stoogeSort(mid, high);        // StoogeSort untuk dua pertiga akhir
+	        stoogeSort(low, highMin);  // StoogeSort untuk dua pertiga awal lagi
+	    }
+	}
 		
 	void run(){
 		prepend(60);
