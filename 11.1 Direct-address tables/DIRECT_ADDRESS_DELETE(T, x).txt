@@ -1,0 +1,3 @@
+DIRECT_ADDRESS_DELETE(T, x) {
+    T[x.key] = NIL
+}

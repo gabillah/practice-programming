@@ -34,9 +34,7 @@ public:
         Node* x = new Node(key);
         x->next = nil->next;
         x->prev = nil;
-        if (nil->next != nil){
-			nil->next->prev = x;
-		}
+		nil->next->prev = x;
 		nil->next = x;
     }
 
@@ -65,23 +63,25 @@ public:
 		else
 			std::cout << "Key " << key << " not found in the list." << std::endl;
 	}
+	
+//	void LIST_DELETE(int )
+	
 
 	void run(){
-		prepend(10);
-		prepend(20);
-		prepend(30);
-		append(1);
 		prepend(40);
-		append(2);
-		prepend(50);
-		append(3);
-		append(4);
-		append(5);
-		append(6);
+		prepend(20);
+		prepend(10);
 		prepend(60);
+		prepend(30);
+		prepend(50);
+		append(6);
+		append(3);
+		append(2);
+		append(5);
+		append(4);
+		append(1);
 		printList();
 		searchAndPrint(20);
-//		printList();
 		searchAndPrint(7);
 	}
 

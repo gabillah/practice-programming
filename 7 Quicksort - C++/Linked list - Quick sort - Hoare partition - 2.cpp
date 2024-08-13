@@ -4,8 +4,7 @@ struct Node {
     int data;
     Node* next;
     Node* prev;
-
-    Node(int key = -1) : data(key), next(nullptr), prev(nullptr) {}
+    Node(int key) : data(key), next(nullptr), prev(nullptr) {}
 };
 
 class LinkedList {
@@ -13,9 +12,10 @@ public:
     Node* nil;  // Sentinel node
 
     LinkedList() {
-        nil = new Node();  // Initialize sentinel with a dummy value
-        nil->next = nil;   // Sentinel's next points to itself
-        nil->prev = nil;   // Sentinel's prev points to itself
+        nil = new Node(-1);  // Initialize sentinel with a dummy value
+//        nil = new Node(NULL);
+        nil->next = nil;   //head
+        nil->prev = nil;   //tail
     }
     
     // Insert a new node at the end of the list
@@ -70,11 +70,11 @@ public:
         while (true) {
             do {
                 j = j->prev;
-            } while (j != low && j->data > pivot);
+            } while (/*j != low &&*/ j->data > pivot);
 
             do {
                 i = i->next;
-            } while (i != high && i->data < pivot);
+            } while (/*i != high &&*/ i->data < pivot);
 
             if (i == j || i == j->next) {
                 return j;
