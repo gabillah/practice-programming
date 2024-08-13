@@ -1,0 +1,14 @@
+3 singly linked list insertion:
+    1. Insertion as first node.
+    2. Insertion as last node.
+    3. Insertion at the specified position.
+
+insertAsFirstNode(L, value) {
+    call GETNODE(N) to allocate memory for N and return the points of N;
+    set pointer no head;
+    Loop to move to the end of the list and insert{
+        set pointer to LINK of pointer;
+    } end Loop
+    Set LINK of pointer to N;
+    Set data of pointer to ITEM;
+}
