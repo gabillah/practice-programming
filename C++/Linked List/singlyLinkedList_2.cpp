@@ -1,28 +1,39 @@
 #include <iostream>
 
-// Definition of the Node class representing each element in the linked list.
-class Node {
-public:
-    int data;      // Stores the data value of the node.
-    Node *next;    // Pointer to the next node in the linked list.
-    
-    // Default constructor initializes data to 0 and next to NULL.
-    Node() {
-        data = 0;
-        next = NULL;
-    }
-    
-    // Parameterized constructor initializes data with the provided value and next to NULL.
-    Node(int data) {
-        this->data = data;
-        this->next = NULL;
-    }
+//// Definition of the Node class representing each element in the linked list.
+//class Node {
+//public:
+//    int data;      // Stores the data value of the node.
+//    Node *next;    // Pointer to the next node in the linked list.
+//    
+//    // Default constructor initializes data to 0 and next to NULL.
+//    Node() {
+//        data = 0;
+//        next = NULL;
+//    }
+//    
+//    // Parameterized constructor initializes data with the provided value and next to NULL.
+//    Node(int data) {
+//        this->data = data;
+//        this->next = NULL;
+//    }
+//};
+
+struct Node{
+public:	
+	int data;
+	Node* next;
+	
+	Node(int data){
+		this->data = data;
+		this->next = NULL;
+	}
 };
 
 // Definition of the LinkedList class representing the linked list itself.
 class LinkedList {
 public:
-    Node *head;    // Pointer to the first node (head) of the linked list.
+    Node* head;    // Pointer to the first node (head) of the linked list.
     
     // Constructor initializes the linked list with an empty head.
     LinkedList() {

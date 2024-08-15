@@ -28,35 +28,20 @@ public:
 	void insertNode(int data) {
 	    Node* newNode = new Node(data);	    
 		
-//		Node* temp = head;
-//		
-////		head = head ? head : newNode;
-//		if(!head){
-//			head = newNode;
-//		}
-//		
-////		temp = temp ? temp : newNode;
-//		if(!temp){
-//			temp = newNode;
-//		}
-//		
-//		while(temp->next) {
-//			temp = temp->next;
-//		}
-//		
-////		temp->next = temp == newNode ? NULL : newNode;
-//		if(temp == newNode){
-//			temp->next = NULL;
-//		}else{
-//			temp->next = newNode;
-//		}
+		Node* temp = head;
 		
+		head = head ? head : newNode;
 		
+		temp = temp ? temp : newNode;
 		
+		while(temp->next) {
+			temp = temp->next;
+		}
 		
+		temp->next = temp == newNode ? NULL : newNode;
 		
-		newNode->next = head;
-	    head = newNode;
+//		newNode->next = head;
+//	    head = newNode;
 	    
 //	    if (head == NULL) {
 //	        // Jika list kosong, node baru menjadi head
@@ -109,7 +94,7 @@ public:
 	// search method
 	Node* searchNode(int value) {
 	    Node* x = head;
-	    while (x != head && x->data != value) {
+	    while (x != NULL && x->data != value) {
 			x = x->next;
 		}
 		return x;

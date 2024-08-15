@@ -53,15 +53,15 @@ public:
             std::cout << y->data << " ";
             y = y->next;
         }
-        std::cout << std::endl;
+        std::cout << std::std::endl;
     }
     
 	void searchAndPrint(int key){
 		Node* result = search(key);
 		if (result != nil)
-			std::cout << "Found key " << key << " in the list." << std::endl;
+			std::cout << "Found key " << key << " in the list." << std::std::endl;
 		else
-			std::cout << "Key " << key << " not found in the list." << std::endl;
+			std::cout << "Key " << key << " not found in the list." << std::std::endl;
 	}
 	
 //	void LIST_DELETE(int )

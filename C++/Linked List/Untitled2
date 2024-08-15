@@ -1,0 +1,220 @@
+#include<iostream>
+#include<conio.h>
+#include<stdlib.h>
+#include<alloc.h>
+
+template<class t>
+
+class llist{
+	struct node{
+		t data;
+		node*link;
+	}*next,*head,*temp,*temp1;
+
+public:
+	llist();
+	void insertf();
+	void inserte();
+	void inserta();
+	void deletef();
+	void deletee();
+	void deletea();
+	void display();
+};
+
+template<class t>
+llist<t>::llist(){
+	head->link=NULL;
+}
+
+template<class t>
+void llist<t>::insertf(){
+	t ele;
+	cout<<“enter the element\n”;
+	cin>>ele;
+	
+	temp=(struct node*)malloc(sizeof(struct node));
+	if(temp==NULL){
+		cout<<“memory allocation error\n”;
+		return;
+	}
+	
+	if(head->link==NULL){
+		temp->data=ele;
+		head->link=temp;
+		temp->link=NULL;
+	} else {
+		temp->link=head->link;
+		head->link=temp;
+		temp->data=ele;
+	}
+}
+
+template<class t>
+void llist<t>::inserte(){
+	t ele;
+	cout<<“enter the element\n”;
+	cin>>ele;
+	temp=(struct node*)malloc(sizeof(struct node));
+	if(temp==NULL){
+		cout<<“memory allocation error\n”;
+		return;
+	}
+	
+	if(head->link==NULL){
+		temp->data=ele;
+		head->link=temp;
+		temp->link=NULL;
+	}else{
+		for(temp1=head->link;temp1->link!=NULL;temp1=temp1->link){
+			
+		}
+		temp1->link=temp;
+		temp->data=ele;
+		temp->link=NULL;
+	}
+}
+
+template<class t>
+void llist<t>::inserta(){
+	t ele;
+	int pos,i;
+	cout<<“enter the element\n”;
+	cin>>ele;
+	cout<<“enter the position\n”;
+	cin>>pos;
+	
+	temp=(struct node*)malloc(sizeof(struct node));
+	if(temp==NULL) {
+		cout<<“memory allocation error\n”;
+		return;
+	}
+}
+
+if(head->link==NULL){
+	temp->data=ele;
+	head->link=temp;
+	temp->link=NULL;
+}else{
+	for(temp1=head,i=1;i<pos;i++){
+		temp1=temp1->link;
+	}
+	temp->link=temp1->link;
+	temp1->link=temp;
+	temp->data=ele;
+	}
+}
+template<class t>
+void llist<t>::deletef()
+{
+t ele;
+if(head->link==NULL)
+{
+cout<<“linked list is empty\n”;
+return;
+}
+temp=head->link;
+temp1=temp->link;
+head->link=temp1;
+ele=temp->data;
+free(temp);
+cout<<“the deleted element is”<<ele<<endl;
+}
+template<class t>
+void llist<t>::deletee()
+{
+t ele;
+if(head->link==NULL)
+{
+cout<<“linked list is empty\n”;
+return;
+}
+for(temp1=head;temp1->link!=NULL;temp1=temp1->link)
+temp=temp1;
+}
+temp->link=NULL;
+ele=temp1->data;
+free(temp1);
+cout<<“the deleted element is“<<ele<<endl;
+}
+template<class t>
+void llist<t>::deletea()
+{
+t ele;
+int pos,i;
+if(head->link==NULL)
+{
+cout<<“linked list is empty\n”;
+return;
+}
+cout<<“enter the position\n”;
+cin>>pos;
+for(temp1=head,i=0;i<pos;i++,temp1=temp1->link)
+{
+temp=temp1;
+}
+temp->link=temp1->link;
+ele=temp1->data;
+cout<<“the deleted element is”<<ele<<endl;
+free(temp1);
+}
+template<class t>
+void llist<t>::display()
+{
+if(head->link==NULL)
+{
+cout<<“linked list is empty\n”;
+return;
+}
+for(temp=head->link;temp!=NULL;temp=temp->link)
+{
+cout<<temp->data<<“ ”;
+}
+}
+void main()
+{
+int ch;
+llist <int> l;
+clrscr();
+while(1)
+
+cout<<“\nmenu\n”;
+cout<<“1.insertion at front\n”;
+cout<<“2.insertion at end\n”;
+cout<<“3.insertion at any position\n”;
+cout<<“4.deletion at front\n”;
+cout<<“5.deletion at end\n”;
+cout<<“6.deletion at any position\n”;
+cout<<“7.display\n”;
+cout<<“8.exit\n”;
+cout<<“enter your choice\n”;
+cin>>ch;
+switch(ch)
+{
+case 1:
+l.insertf();
+break;
+case 2:
+l.inserte();
+break;
+case 3:
+l.inserta();
+break;
+case 4:
+l.deletef();
+break;
+case 5:
+l.deletee();
+break;
+case 6:
+l.deletea();
+break;
+case 7:
+l.display();
+break;
+case 8:
+exit(0);
+break;
+}
+}
+}
