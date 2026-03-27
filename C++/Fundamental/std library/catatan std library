@@ -1,0 +1,13 @@
+
+
+
+// modifier
+push_back(value);
+pop_back();
+insert(iterator, new_value);
+erase(iterator);
+clear();
+
+// iterator
+begin();
+end();

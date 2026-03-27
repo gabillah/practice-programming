@@ -1,0 +1,210 @@
+================================================================
+PENJELASAN KODE FREECAD - FILE CMAKE (ConfigChecks.cmake)
+================================================================
+Sumber: https://github.com/FreeCAD/FreeCAD/blob/main/cMake/ConfigureChecks.cmake
+================================================================
+
+Kode ini adalah skrip CMake, yaitu sistem build (pembangunan proyek)
+yang digunakan FreeCAD untuk memeriksa kompatibilitas lingkungan
+kompilasi sebelum proses build dimulai.
+
+----------------------------------------------------------------
+BAGIAN 1 - MEMUAT MODUL CMAKE (include)
+----------------------------------------------------------------
+
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckSymbolExists)
+include(CheckFunctionExists)
+include(CheckLibraryExists)
+include(CheckTypeSize)
+include(CheckCSourceCompiles)
+include(CheckIncludeFileCXX)
+include(CheckCXXSourceCompiles)
+
+>> Penjelasan:
+Baris-baris ini memuat modul bawaan CMake yang menyediakan
+fungsi-fungsi pemeriksaan (check). Setiap modul memiliki tugas:
+
+- CheckIncludeFile       : memeriksa apakah file header C tersedia
+- CheckIncludeFiles      : memeriksa beberapa file header sekaligus
+- CheckSymbolExists      : memeriksa apakah simbol/konstanta tertentu ada
+- CheckFunctionExists    : memeriksa apakah fungsi tertentu tersedia
+- CheckLibraryExists     : memeriksa apakah library tertentu tersedia
+- CheckTypeSize          : memeriksa ukuran tipe data (misal: int = 4 byte)
+- CheckCSourceCompiles   : mencoba mengkompilasi kode C sederhana
+- CheckIncludeFileCXX    : memeriksa header C++ tersedia
+- CheckCXXSourceCompiles : mencoba mengkompilasi kode C++ sederhana
+
+----------------------------------------------------------------
+BAGIAN 2 - CEK HEADER OPENGL
+----------------------------------------------------------------
+
+check_include_file(GL/gl.h HAVE_GL_GL_H)
+
+>> Penjelasan:
+Memeriksa apakah file header OpenGL (GL/gl.h) tersedia di sistem.
+Jika tersedia, variabel HAVE_GL_GL_H akan bernilai TRUE (1).
+OpenGL digunakan FreeCAD untuk rendering tampilan 3D.
+
+----------------------------------------------------------------
+BAGIAN 3 - CEK HEADER I/O STREAM C++
+----------------------------------------------------------------
+
+check_include_file_cxx(istream  HAVE_ISTREAM)
+check_include_file_cxx(ostream  HAVE_OSTREAM)
+check_include_file_cxx(fstream  HAVE_FSTREAM)
+check_include_file_cxx(sstream  HAVE_SSTREAM)
+check_include_file_cxx(ios      HAVE_IOS)
+check_include_file_cxx(iostream HAVE_IOSTREAM)
+check_include_file_cxx(iomanip  HAVE_IOMANIP)
+
+>> Penjelasan:
+Memeriksa ketersediaan header-header standar C++ untuk input/output:
+
+- istream  : header untuk membaca data (input stream)
+- ostream  : header untuk menulis data (output stream)
+- fstream  : header untuk baca/tulis file
+- sstream  : header untuk baca/tulis string sebagai stream
+- ios      : header dasar untuk sistem stream
+- iostream : header utama I/O (cin, cout, dll)
+- iomanip  : header untuk manipulasi format output (setw, setprecision, dll)
+
+Hasil cek disimpan di variabel HAVE_* masing-masing.
+
+----------------------------------------------------------------
+BAGIAN 4 - CEK ANSI STREAM HEADERS
+----------------------------------------------------------------
+
+include(TestForANSIStreamHeaders)
+IF(NOT CMAKE_NO_ANSI_STREAM_HEADERS)
+    SET(HAVE_STD_IOSTREAM 1)
+    SET(USE_STD_IOSTREAM 1)
+ENDIF(NOT CMAKE_NO_ANSI_STREAM_HEADERS)
+
+>> Penjelasan:
+Menggunakan modul CMake TestForANSIStreamHeaders untuk memastikan
+kompiler mendukung header stream standar ANSI C++.
+
+- Jika kompiler MENDUKUNG (CMAKE_NO_ANSI_STREAM_HEADERS = FALSE):
+  * HAVE_STD_IOSTREAM = 1 (iostream tersedia)
+  * USE_STD_IOSTREAM  = 1 (gunakan iostream standar)
+
+Ini memastikan FreeCAD menggunakan iostream modern, bukan versi lama.
+
+----------------------------------------------------------------
+BAGIAN 5 - CEK NAMESPACE
+----------------------------------------------------------------
+
+include(TestForSTDNamespace)
+IF(NOT CMAKE_NO_ANSI_STRING_STREAM)
+    SET(HAVE_NAMESPACES 1)
+ENDIF(NOT CMAKE_NO_ANSI_STRING_STREAM)
+
+>> Penjelasan:
+Memeriksa apakah kompiler mendukung namespace standar C++ (std::).
+Jika mendukung, HAVE_NAMESPACES = 1.
+
+Ini penting agar kode seperti "std::cout" atau "std::string"
+dapat berjalan dengan benar.
+
+----------------------------------------------------------------
+BAGIAN 6 - SET FITUR QT (Qt OpenGL)
+----------------------------------------------------------------
+
+SET(HAVE_QGLFORMAT_EQ_OP 1)
+SET(HAVE_QGLFORMAT_SETOVERLAY 1)
+SET(HAVE_QGLWIDGET_SETAUTOBUFFERSWAP 1)
+SET(HAVE_QT_KEYPAD_DEFINE 1)
+SET(HAVE_QWIDGET_SHOWFULLSCREEN 1)
+
+>> Penjelasan:
+Baris-baris ini secara langsung menetapkan (hardcode) bahwa
+fitur-fitur Qt OpenGL berikut tersedia (bernilai 1 = TRUE):
+
+- HAVE_QGLFORMAT_EQ_OP          : operator == tersedia di QGLFormat
+- HAVE_QGLFORMAT_SETOVERLAY     : metode setOverlay() tersedia di QGLFormat
+- HAVE_QGLWIDGET_SETAUTOBUFFERSWAP : setAutoBufferSwap() tersedia di QGLWidget
+- HAVE_QT_KEYPAD_DEFINE         : definisi Qt::Keypad tersedia
+- HAVE_QWIDGET_SHOWFULLSCREEN   : metode showFullScreen() tersedia di QWidget
+
+Nilai ini diasumsikan TRUE karena FreeCAD menargetkan versi Qt
+modern yang sudah pasti mendukung fitur-fitur tersebut.
+
+----------------------------------------------------------------
+BAGIAN 7 - CEK FUNGSI BACKTRACE (Debug/Error Tracing)
+----------------------------------------------------------------
+
+file(WRITE ${CMAKE_BINARY_DIR}/backtrace.cpp
+     "#include <cstddef>\n"
+     "#include <execinfo.h>\n\n"
+     "int main() {\n"
+     "    void *callstack[128];\n"
+     "    size_t nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);\n"
+     "    size_t nFrames = backtrace(callstack, nMaxFrames);\n"
+     "    char **symbols = backtrace_symbols(callstack, nFrames);\n"
+     "    return 0;\n"
+     "}"
+)
+
+>> Penjelasan:
+CMake membuat file C++ sementara bernama "backtrace.cpp" di folder
+build. Isi file tersebut adalah program kecil yang:
+
+1. Menyertakan <cstddef> dan <execinfo.h>
+2. Membuat array pointer untuk menyimpan call stack (jejak pemanggilan fungsi)
+3. Memanggil backtrace() untuk mengisi array tersebut
+4. Memanggil backtrace_symbols() untuk mengubahnya jadi nama fungsi
+
+Tujuan: menguji apakah sistem operasi mendukung fungsi backtrace
+(fitur Linux/Unix untuk melacak error dan crash).
+
+----------------------------------------------------------------
+BAGIAN 8 - MENCOBA KOMPILASI BACKTRACE
+----------------------------------------------------------------
+
+try_compile(
+  RESULT_VAR
+    ${CMAKE_BINARY_DIR}
+  SOURCES
+    ${CMAKE_BINARY_DIR}/backtrace.cpp
+)
+SET(HAVE_BACKTRACE_SYMBOLS ${RESULT_VAR})
+
+>> Penjelasan:
+CMake mencoba mengkompilasi file backtrace.cpp yang baru dibuat.
+
+- Jika BERHASIL dikompilasi: RESULT_VAR = TRUE
+- Jika GAGAL dikompilasi  : RESULT_VAR = FALSE
+
+Hasilnya disimpan ke variabel HAVE_BACKTRACE_SYMBOLS.
+
+Ini berarti:
+- Jika HAVE_BACKTRACE_SYMBOLS = TRUE  → FreeCAD bisa menampilkan
+  stack trace saat terjadi crash (berguna untuk debugging)
+- Jika HAVE_BACKTRACE_SYMBOLS = FALSE → fitur ini tidak tersedia
+  (biasanya terjadi di Windows yang tidak punya execinfo.h)
+
+================================================================
+RINGKASAN KESELURUHAN
+================================================================
+
+Kode CMake ini adalah bagian dari "konfigurasi awal" FreeCAD
+sebelum dikompilasi. Tugasnya adalah:
+
+1. Memeriksa apakah semua library dan header yang dibutuhkan ada
+2. Menetapkan variabel TRUE/FALSE untuk setiap fitur
+3. Variabel-variabel ini nantinya digunakan oleh kode C++
+   FreeCAD (melalui #ifdef) untuk mengaktifkan/menonaktifkan
+   fitur tertentu sesuai kemampuan sistem
+
+Ini adalah praktik umum dalam proyek C++ lintas platform agar
+FreeCAD bisa dikompilasi di Linux, Windows, maupun macOS.
+
+================================================================
+CATATAN
+================================================================
+- File ini bukan kode yang "dijalankan" oleh FreeCAD
+- File ini dijalankan oleh CMake saat proses "cmake .." di terminal
+- Outputnya berupa konfigurasi yang dibaca saat kompilasi C++
+================================================================

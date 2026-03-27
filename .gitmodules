@@ -1,0 +1,6 @@
+[submodule "12 gabillah/Rangkuman Programming"]
+	path = 12 gabillah/Rangkuman Programming
+	url = https://github.com/gabillah/practice-programming.git
+[submodule "practice-programming"]
+	path = practice-programming
+	url = https://github.com/gabillah/practice-programming

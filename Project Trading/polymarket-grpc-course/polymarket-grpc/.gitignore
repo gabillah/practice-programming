@@ -1,0 +1,40 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Generated protobuf code
+proto/generated/
+
+# Environment files (contain secrets)
+.env
+*.env.local
+
+# Test output
+coverage.out
+coverage.html
+*.test
+
+# Build cache
+.cache/
+
+# TLS certificates
+certs/*.crt
+certs/*.key
+certs/*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/
+redis_data/

@@ -1,0 +1,170 @@
+2026-03-11 11:21:39  INFO      root                          Logging initialised — level=INFO  file=logs/broker.log  json=False
+2026-03-11 11:21:39  INFO      main                          ========================================================================
+2026-03-11 11:21:39  INFO      main                            Apex Forex Broker  v2.0  starting…
+2026-03-11 11:21:39  INFO      main                          ========================================================================
+2026-03-11 11:21:39  CRITICAL  main                          Unhandled exception:
+Traceback (most recent call last):
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\main.py", line 171, in main
+    bootstrap(args)
+    ~~~~~~~~~^^^^^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\main.py", line 110, in bootstrap
+    from trading.engine   import TradingEngine
+ImportError: cannot import name 'TradingEngine' from 'trading.engine' (D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\trading\engine.py)
+
+2026-03-11 11:25:35  INFO      root                          Logging initialised — level=INFO  file=logs/broker.log  json=False
+2026-03-11 11:25:35  INFO      main                          ========================================================================
+2026-03-11 11:25:35  INFO      main                            Apex Forex Broker  v2.0  starting…
+2026-03-11 11:25:35  INFO      main                          ========================================================================
+2026-03-11 11:25:35  DEBUG     core.config                   Config loaded from config.json
+2026-03-11 11:25:35  INFO      db.database                   Database ready → db\broker.db
+2026-03-11 11:25:35  INFO      auth.account                  AccountManager ready  leverage=1:100
+2026-03-11 11:25:35  DEBUG     data.bars                     BarAggregator ready for 6 timeframes
+2026-03-11 11:25:35  INFO      risk.manager                  RiskManager ready
+2026-03-11 11:25:35  INFO      signals.engine                SignalEngine ready
+2026-03-11 11:25:35  INFO      trading.engine                TradingEngine started
+2026-03-11 11:25:36  CRITICAL  main                          Unhandled exception:
+Traceback (most recent call last):
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\main.py", line 171, in main
+    bootstrap(args)
+    ~~~~~~~~~^^^^^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\main.py", line 149, in bootstrap
+    app = BrokerApp(
+        config   = config,
+    ...<7 lines>...
+        reporter = reporter,
+    )
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\app.py", line 51, in __init__
+    self._build_ui()
+    ~~~~~~~~~~~~~~^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\app.py", line 125, in _build_ui
+    self._build_trading_tab()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\app.py", line 237, in _build_trading_tab
+    self._trading_panel = TradingPanel(
+                          ~~~~~~~~~~~~^
+        frm, self.engine, self.account, self.config, self.db)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\trading_panel.py", line 18, in __init__
+    self._build()
+    ~~~~~~~~~~~^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\trading_panel.py", line 43, in _build
+    self._build_quick_actions(right)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\trading_panel.py", line 244, in _build_quick_actions
+    tk.Separator(parent, orient="horizontal").pack(fill="x", pady=8)
+    ^^^^^^^^^^^^
+AttributeError: module 'tkinter' has no attribute 'Separator'
+
+2026-03-11 12:05:39  INFO      root                          Logging initialised — level=INFO  file=logs/broker.log  json=False
+2026-03-11 12:05:39  INFO      main                          ========================================================================
+2026-03-11 12:05:39  INFO      main                            Apex Forex Broker  v2.0  starting…
+2026-03-11 12:05:39  INFO      main                          ========================================================================
+2026-03-11 12:05:39  DEBUG     core.config                   Config loaded from config.json
+2026-03-11 12:05:39  INFO      db.database                   Database ready → db\broker.db
+2026-03-11 12:05:39  INFO      auth.account                  AccountManager ready  leverage=1:100
+2026-03-11 12:05:39  DEBUG     data.bars                     BarAggregator ready for 6 timeframes
+2026-03-11 12:05:39  INFO      risk.manager                  RiskManager ready
+2026-03-11 12:05:39  INFO      signals.engine                SignalEngine ready
+2026-03-11 12:05:39  INFO      trading.engine                TradingEngine started
+2026-03-11 12:05:40  CRITICAL  main                          Unhandled exception:
+Traceback (most recent call last):
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\main.py", line 171, in main
+    bootstrap(args)
+    ~~~~~~~~~^^^^^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\main.py", line 149, in bootstrap
+    app = BrokerApp(
+        config   = config,
+    ...<7 lines>...
+        reporter = reporter,
+    )
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\app.py", line 51, in __init__
+    self._build_ui()
+    ~~~~~~~~~~~~~~^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\app.py", line 128, in _build_ui
+    self._build_signals_tab()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\15 Gabillah\12 gabillah\Rangkuman Programming\Project Trading Signal Forex\files (2)\ui\app.py", line 261, in _build_signals_tab
+    from ui.signals_panel import SignalsPanel
+ModuleNotFoundError: No module named 'ui.signals_panel'
+
+2026-03-11 12:11:58  INFO      root                          Logging initialised — level=INFO  file=logs/broker.log  json=False
+2026-03-11 12:11:58  INFO      main                          ========================================================================
+2026-03-11 12:11:58  INFO      main                            Apex Forex Broker  v2.0  starting…
+2026-03-11 12:11:58  INFO      main                          ========================================================================
+2026-03-11 12:11:58  DEBUG     core.config                   Config loaded from config.json
+2026-03-11 12:11:58  INFO      db.database                   Database ready → db\broker.db
+2026-03-11 12:11:58  INFO      auth.account                  AccountManager ready  leverage=1:100
+2026-03-11 12:11:58  DEBUG     data.bars                     BarAggregator ready for 6 timeframes
+2026-03-11 12:11:58  INFO      risk.manager                  RiskManager ready
+2026-03-11 12:11:58  INFO      signals.engine                SignalEngine ready
+2026-03-11 12:11:58  INFO      trading.engine                TradingEngine started
+2026-03-11 12:11:59  INFO      ui.app                        BrokerApp UI ready
+2026-03-11 12:11:59  INFO      data.feed                     Demo simulator started (12 pairs)
+2026-03-11 12:11:59  INFO      data.feed                     PriceFeed started [demo]
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:20:07  INFO      main                          Apex Forex Broker shutdown complete
+2026-03-11 12:27:02  INFO      root                          Logging initialised — level=INFO  file=logs/broker.log  json=False
+2026-03-11 12:27:02  INFO      main                          ========================================================================
+2026-03-11 12:27:02  INFO      main                            Apex Forex Broker  v2.0  starting…
+2026-03-11 12:27:02  INFO      main                          ========================================================================
+2026-03-11 12:27:02  DEBUG     core.config                   Config loaded from config.json
+2026-03-11 12:27:02  INFO      db.database                   Database ready → db\broker.db
+2026-03-11 12:27:02  INFO      auth.account                  AccountManager ready  leverage=1:100
+2026-03-11 12:27:02  DEBUG     data.bars                     BarAggregator ready for 6 timeframes
+2026-03-11 12:27:02  INFO      risk.manager                  RiskManager ready
+2026-03-11 12:27:02  INFO      signals.engine                SignalEngine ready
+2026-03-11 12:27:02  INFO      trading.engine                TradingEngine started
+2026-03-11 12:27:02  INFO      ui.app                        BrokerApp UI ready
+2026-03-11 12:27:02  INFO      data.feed                     Demo simulator started (12 pairs)
+2026-03-11 12:27:02  INFO      data.feed                     PriceFeed started [demo]
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 12:30:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:04:53  INFO      main                          Apex Forex Broker shutdown complete
+2026-03-11 13:08:25  INFO      root                          Logging initialised — level=INFO  file=logs/broker.log  json=False
+2026-03-11 13:08:25  INFO      main                          ========================================================================
+2026-03-11 13:08:25  INFO      main                            Apex Forex Broker  v2.0  starting…
+2026-03-11 13:08:25  INFO      main                          ========================================================================
+2026-03-11 13:08:25  DEBUG     core.config                   Config loaded from config.json
+2026-03-11 13:08:25  INFO      db.database                   Database ready → db\broker.db
+2026-03-11 13:08:25  INFO      auth.account                  AccountManager ready  leverage=1:100
+2026-03-11 13:08:25  DEBUG     data.bars                     BarAggregator ready for 6 timeframes
+2026-03-11 13:08:25  INFO      risk.manager                  RiskManager ready
+2026-03-11 13:08:25  INFO      signals.engine                SignalEngine ready
+2026-03-11 13:08:25  INFO      trading.engine                TradingEngine started
+2026-03-11 13:08:26  INFO      ui.app                        BrokerApp UI ready
+2026-03-11 13:08:26  INFO      data.feed                     Demo simulator started (12 pairs)
+2026-03-11 13:08:26  INFO      data.feed                     PriceFeed started [demo]
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:15:00  DEBUG     signals.engine                MLFilter ready (model=random_forest)
+2026-03-11 13:18:27  INFO      main                          Apex Forex Broker shutdown complete

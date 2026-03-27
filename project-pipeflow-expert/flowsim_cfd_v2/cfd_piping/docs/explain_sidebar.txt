@@ -1,0 +1,428 @@
+================================================================================
+ CODE EXPLANATION — Sidebar.tsx
+ FlowSim CFD Navigation Sidebar Component
+================================================================================
+
+This file creates the LEFT SIDEBAR of the FlowSim CFD web application.
+It contains the logo, navigation links, and a footer status bar.
+
+================================================================================
+ SECTION 1 — IMPORTS
+================================================================================
+
+CODE:
+  import { NavLink } from 'react-router-dom'
+
+EXPLANATION:
+  Imports NavLink from the React Router library.
+  NavLink is a special version of a clickable link (<a> tag) that knows
+  whether the current page URL matches the link's destination.
+  It automatically adds an "active" state when you are on that page.
+  This is how the sidebar knows to highlight the current page in blue.
+
+----
+
+CODE:
+  import {
+    LayoutDashboard, FolderOpen, Network, Play,
+    BarChart3, Waves, FlaskConical, Wrench, Droplets,
+    ChevronRight,
+  } from 'lucide-react'
+
+EXPLANATION:
+  Imports icon components from the Lucide React icon library.
+  Lucide is a library of clean, consistent SVG icons.
+  Each name (LayoutDashboard, FolderOpen, etc.) is one icon.
+  They are used as visual symbols next to each navigation label.
+
+  Icon          Used for
+  ------------- -----------------------
+  LayoutDashboard  Dashboard page
+  FolderOpen       Projects page
+  Play             Simulations page
+  BarChart3        Pipe Analysis page
+  Waves            Moody Chart page + Logo
+  Droplets         Fluid Library page
+  Wrench           Diagnostics page
+  ChevronRight     Arrow shown on active item (>)
+
+  Note: Network and FlaskConical are imported but not used in this file.
+  They were probably planned for future navigation items.
+
+----
+
+CODE:
+  import { clsx } from 'clsx'
+
+EXPLANATION:
+  Imports the clsx utility function.
+  clsx builds a CSS class string from multiple values conditionally.
+  Example:
+    clsx('base-class', isActive ? 'active-class' : 'inactive-class')
+    When isActive=true  → returns 'base-class active-class'
+    When isActive=false → returns 'base-class inactive-class'
+  This is used to change the link colors based on whether the page
+  is currently active or not.
+
+
+================================================================================
+ SECTION 2 — NAV_ITEMS ARRAY (the navigation menu data)
+================================================================================
+
+CODE:
+  const NAV_ITEMS = [
+    { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/projects',     icon: FolderOpen,       label: 'Projects' },
+    { to: '/simulations',  icon: Play,             label: 'Simulations' },
+    { to: '/analysis',     icon: BarChart3,        label: 'Pipe Analysis' },
+    { to: '/moody-chart',  icon: Waves,            label: 'Moody Chart' },
+    { to: '/fluids',       icon: Droplets,         label: 'Fluid Library' },
+    { to: '/diagnostics',  icon: Wrench,           label: 'Diagnostics' },
+  ]
+
+EXPLANATION:
+  This is a JavaScript array of objects. Each object represents one
+  navigation item in the sidebar menu.
+
+  Each object has 3 properties:
+
+  PROPERTY  TYPE              MEANING
+  --------- ----------------- ------------------------------------------
+  to        string            The URL path this link navigates to.
+                              Example: '/dashboard' goes to the Dashboard page.
+  icon      React component   The Lucide icon to show next to the label.
+                              Stored as a reference (not rendered yet).
+  label     string            The text displayed next to the icon.
+                              Example: 'Pipe Analysis'
+
+  WHY DO IT THIS WAY?
+  Instead of writing 7 separate <NavLink> elements by hand (which would
+  be repetitive), the data is stored in an array and then .map() is used
+  to generate all 7 links automatically. This is the DRY principle:
+  Don't Repeat Yourself. If you want to add a new page, just add one
+  object to NAV_ITEMS.
+
+
+================================================================================
+ SECTION 3 — SIDEBAR COMPONENT (the main function)
+================================================================================
+
+CODE:
+  export default function Sidebar() {
+    return (
+      <aside className="w-56 shrink-0 bg-white border-r border-slate-200 flex flex-col h-full shadow-sm">
+
+EXPLANATION:
+  export default function Sidebar()
+    → Defines a React component named Sidebar.
+    → "export default" means other files can import and use this component.
+
+  <aside>
+    → The HTML element for sidebar content (semantically correct).
+    → "aside" tells browsers and screen readers this is supplementary
+      navigation, not the main content.
+
+  Tailwind CSS classes applied to the aside:
+    w-56           → Width = 224px (14rem). Fixed sidebar width.
+    shrink-0       → Do NOT shrink when the window is small.
+                     Keeps sidebar at fixed width always.
+    bg-white       → White background color.
+    border-r       → 1px border on the RIGHT side only.
+    border-slate-200 → Border color: light gray.
+    flex flex-col  → Flexbox layout, stacking children VERTICALLY
+                     (logo on top, nav in middle, footer at bottom).
+    h-full         → Take up the FULL height of the parent element.
+    shadow-sm      → Small drop shadow on the right side.
+
+
+================================================================================
+ SECTION 4 — LOGO AREA
+================================================================================
+
+CODE:
+  <div className="h-14 flex items-center px-5 border-b border-slate-100 shrink-0">
+    <div className="flex items-center gap-2.5">
+      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-flow-500 to-teal-500 flex items-center justify-center shadow-sm">
+        <Waves size={16} className="text-white" />
+      </div>
+      <div>
+        <div className="text-sm font-bold text-slate-900 leading-tight">FlowSim</div>
+        <div className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">CFD</div>
+      </div>
+    </div>
+  </div>
+
+EXPLANATION:
+  This creates the logo area at the very TOP of the sidebar.
+
+  OUTER div (h-14 flex items-center px-5 border-b border-slate-100 shrink-0):
+    h-14           → Fixed height of 56px for the logo bar.
+    flex items-center → Centers content vertically.
+    px-5           → Horizontal padding of 20px (left and right).
+    border-b       → Border on the BOTTOM only (separator line).
+    border-slate-100 → Very light gray border color.
+    shrink-0       → Do not shrink the logo area.
+
+  ICON BOX div (w-8 h-8 rounded-lg bg-gradient-to-br from-flow-500 to-teal-500):
+    w-8 h-8        → 32x32 pixel square icon box.
+    rounded-lg     → Rounded corners (8px border radius).
+    bg-gradient-to-br → Background gradient going from top-left to bottom-right.
+    from-flow-500  → Start color: custom blue (#0e87ea defined in tailwind.config.js).
+    to-teal-500    → End color: teal (#14b8a6).
+    flex items-center justify-center → Centers the icon inside the box.
+    shadow-sm      → Small shadow beneath the icon box.
+
+  <Waves size={16} className="text-white" />
+    → Renders the Waves icon (looks like a wave symbol ~).
+    → size={16} = 16x16 pixels.
+    → text-white = white color (icons use text color for their SVG fill).
+
+  TEXT div:
+    "FlowSim" → Application name, 14px, bold, dark text.
+    "CFD"     → Subtitle, 10px, medium weight, gray, ALL CAPS, wide letter spacing.
+    leading-tight → Reduces line height so both text lines are close together.
+
+  RESULT:
+    [~wave icon~]  FlowSim
+                   CFD
+
+
+================================================================================
+ SECTION 5 — NAVIGATION LINKS
+================================================================================
+
+CODE:
+  <nav className="flex-1 overflow-y-auto py-3 px-2">
+    <div className="space-y-0.5">
+      {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+        <NavLink
+          key={to}
+          to={to}
+          className={({ isActive }) =>
+            clsx(
+              'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
+              isActive
+                ? 'bg-flow-50 text-flow-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+            )
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <Icon size={16} className={isActive ? 'text-flow-600' : 'text-slate-400'} />
+              <span className="flex-1">{label}</span>
+              {isActive && <ChevronRight size={12} className="text-flow-400" />}
+            </>
+          )}
+        </NavLink>
+      ))}
+    </div>
+  </nav>
+
+EXPLANATION:
+
+  <nav className="flex-1 overflow-y-auto py-3 px-2">
+    nav            → HTML5 semantic navigation element.
+    flex-1         → Takes all remaining space between logo and footer.
+    overflow-y-auto → If nav items overflow vertically, show a scrollbar.
+    py-3           → Vertical padding 12px top and bottom.
+    px-2           → Horizontal padding 8px left and right.
+
+  <div className="space-y-0.5">
+    space-y-0.5    → Adds 2px vertical gap between each nav item.
+
+  NAV_ITEMS.map(({ to, icon: Icon, label }) => (...))
+    → Loops through all 7 items in NAV_ITEMS array.
+    → For each item, it destructures the 3 properties:
+        to    → the URL path
+        icon  → renamed to "Icon" with capital I (React requires components
+                to start with uppercase)
+        label → the text label
+    → Renders one <NavLink> for each item.
+
+  key={to}
+    → React requires a unique "key" prop for each item in a list.
+    → Uses the URL path (like '/dashboard') as the unique key.
+
+  to={to}
+    → Tells NavLink which URL to navigate to when clicked.
+
+  className={({ isActive }) => clsx(...)}
+    → NavLink passes an object with "isActive" boolean to the className function.
+    → isActive is TRUE when the browser URL matches this link's "to" path.
+    → clsx combines CSS classes conditionally:
+
+    Always applied:
+      flex items-center    → Side-by-side icon and text.
+      gap-3                → 12px gap between icon and text.
+      px-3 py-2            → Padding: 12px horizontal, 8px vertical.
+      rounded-lg           → Rounded corners.
+      text-sm font-medium  → 14px medium weight text.
+      transition-all duration-150 → Smooth 150ms animation on hover.
+
+    When ACTIVE (current page):
+      bg-flow-50           → Very light blue background highlight.
+      text-flow-700        → Dark blue text color.
+
+    When NOT active (other pages):
+      text-slate-600       → Gray text.
+      hover:bg-slate-50    → Light gray background on mouse hover.
+      hover:text-slate-900 → Dark text on mouse hover.
+
+  {({ isActive }) => (...)}
+    → NavLink also passes isActive to its CHILDREN (the content inside).
+    → This is a "render prop" pattern: passing a function as children
+      so the children can access the isActive state.
+
+  <>...</>
+    → React Fragment. Groups multiple elements without adding a real DOM element.
+    → Needed because JSX must return a single root element.
+
+  <Icon size={16} className={isActive ? 'text-flow-600' : 'text-slate-400'} />
+    → Renders the icon for this nav item.
+    → Icon is the component (e.g., LayoutDashboard, FolderOpen).
+    → size={16} = 16x16 pixels.
+    → When active: blue icon (text-flow-600 = #0269c8).
+    → When inactive: gray icon (text-slate-400).
+
+  <span className="flex-1">{label}</span>
+    → Displays the text label (e.g., "Dashboard", "Projects").
+    → flex-1 makes this span take all available horizontal space,
+      pushing the ChevronRight arrow to the far right.
+
+  {isActive && <ChevronRight size={12} className="text-flow-400" />}
+    → Only renders the right-arrow icon (>) when this link IS active.
+    → "isActive && ..." is short-circuit evaluation:
+        If isActive = false: renders nothing.
+        If isActive = true: renders <ChevronRight />.
+    → This gives a visual indicator of the currently selected page.
+
+  VISUAL RESULT of one active nav item:
+    [icon]  Dashboard              >
+    (blue bg, blue text, blue arrow on right)
+
+  VISUAL RESULT of one inactive nav item:
+    [icon]  Projects
+    (white bg, gray text, no arrow)
+
+
+================================================================================
+ SECTION 6 — FOOTER STATUS BAR
+================================================================================
+
+CODE:
+  <div className="px-4 py-3 border-t border-slate-100 shrink-0">
+    <div className="text-[11px] text-slate-400">
+      <div className="font-semibold text-slate-500">FlowSim CFD v2.0</div>
+      <div>Hardy-Cross / Gradient Solver</div>
+      <div className="mt-1 flex gap-1">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-teal-400 mt-0.5"></span>
+        <span>API Connected</span>
+      </div>
+    </div>
+  </div>
+
+EXPLANATION:
+  This is the BOTTOM section of the sidebar — a small status footer.
+
+  px-4 py-3      → Padding: 16px horizontal, 12px vertical.
+  border-t       → Border line on TOP (separator from navigation).
+  border-slate-100 → Very light gray border.
+  shrink-0       → Do not shrink this footer area.
+
+  text-[11px]    → 11px font size (tiny, informational text).
+  text-slate-400 → Light gray text color.
+
+  "FlowSim CFD v2.0"
+    → App name and version. font-semibold and text-slate-500 (slightly
+      darker than the text below it).
+
+  "Hardy-Cross / Gradient Solver"
+    → Describes which math solvers are used (the CFD algorithms).
+
+  STATUS INDICATOR (the green dot):
+    mt-1 flex gap-1 → Small top margin, flex row, 4px gap.
+
+    <span className="inline-block w-1.5 h-1.5 rounded-full bg-teal-400 mt-0.5">
+      inline-block   → Allows width/height on a span.
+      w-1.5 h-1.5    → 6x6 pixel dot.
+      rounded-full   → Perfect circle (border-radius: 50%).
+      bg-teal-400    → Teal/green color (visually means "connected/ok").
+      mt-0.5         → 2px top margin to vertically align with text.
+
+    <span>API Connected</span>
+      → Status text showing the backend API is reachable.
+
+  VISUAL RESULT:
+    FlowSim CFD v2.0
+    Hardy-Cross / Gradient Solver
+    ● API Connected
+    (the ● is the small green dot)
+
+
+================================================================================
+ OVERALL COMPONENT STRUCTURE (visual diagram)
+================================================================================
+
+  +----------------------------------+
+  |  [~] FlowSim                     |  <- Logo area (h-14, fixed)
+  |       CFD                        |
+  +----------------------------------+
+  |  [icon] Dashboard             >  |  <- Active page (blue highlight)
+  |  [icon] Projects                 |  <- Inactive (gray)
+  |  [icon] Simulations              |
+  |  [icon] Pipe Analysis            |
+  |  [icon] Moody Chart              |  <- flex-1: takes remaining space
+  |  [icon] Fluid Library            |     overflow-y-auto if too many items
+  |  [icon] Diagnostics              |
+  |                                  |
+  +----------------------------------+
+  |  FlowSim CFD v2.0                |  <- Footer (fixed, shrink-0)
+  |  Hardy-Cross / Gradient Solver   |
+  |  ● API Connected                 |
+  +----------------------------------+
+
+  Total width: w-56 = 224px
+
+
+================================================================================
+ KEY CONCEPTS USED IN THIS FILE
+================================================================================
+
+CONCEPT              EXPLANATION
+-------------------- ----------------------------------------------------------
+NavLink              React Router link with built-in active state detection.
+                     Better than <Link> for navigation menus.
+
+isActive             Boolean automatically provided by NavLink.
+                     true = you are currently on this page.
+                     false = you are on a different page.
+
+Render Props         Passing a function as children to a component so the
+                     children can access the component's internal state.
+                     Used twice: once for className, once for children of NavLink.
+
+clsx()               Utility for conditional CSS class names.
+                     Cleaner than string template literals for multiple conditions.
+
+Array.map()          Transforms the NAV_ITEMS data array into JSX elements.
+                     Core React pattern: data → UI.
+
+Tailwind CSS         Utility-first CSS framework. Each class is one CSS property.
+                     No separate .css file needed.
+
+Destructuring        { to, icon: Icon, label } extracts values from each
+with rename          NAV_ITEMS object. "icon: Icon" renames "icon" to "Icon"
+                     (capital I) so React treats it as a component.
+
+Short-circuit (&&)   {isActive && <Component />} renders the component
+evaluation           only when isActive is true. Standard React pattern
+                     for conditional rendering.
+
+export default       Makes this function available for import in other files.
+                     Used in Layout.tsx as: import Sidebar from './Sidebar'
+
+
+================================================================================
+ END
+================================================================================

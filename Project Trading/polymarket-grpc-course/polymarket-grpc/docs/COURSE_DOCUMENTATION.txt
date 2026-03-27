@@ -1,0 +1,1664 @@
+================================================================================
+  POLYMARKET GRPC TRADING PLATFORM — COMPLETE COURSE & DOCUMENTATION
+  Based on "gRPC Microservices in Go" by Hüseyin Babal (Manning Publications)
+================================================================================
+
+  Author    : Course derived from Manning's gRPC Microservices in Go
+  Language  : Go 1.22
+  Protocol  : gRPC over HTTP/2 + REST HTTP/1.1 Gateway
+  Version   : 1.0.0
+  Last Updated: 2025
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+  PART 1 — FOUNDATIONS
+    1.1  What Is gRPC?
+    1.2  Why gRPC for a Trading Platform?
+    1.3  Protocol Buffers (Protobuf)
+    1.4  gRPC vs REST
+    1.5  HTTP/2 Under the Hood
+    1.6  Streaming Patterns
+
+  PART 2 — ARCHITECTURE
+    2.1  Microservices Overview
+    2.2  Hexagonal Architecture (Ports & Adapters)
+    2.3  Service Decomposition: Polymarket Services
+    2.4  Data Flow Diagrams
+    2.5  In-Memory vs PostgreSQL
+
+  PART 3 — PROJECT WALKTHROUGH
+    3.1  Directory Structure
+    3.2  proto/polymarket.proto — The Contract
+    3.3  config/config.go — Configuration
+    3.4  models/models.go — Domain Models
+    3.5  db/store.go — Data Stores
+    3.6  middleware/auth.go — JWT + Interceptors
+    3.7  services/user/server.go — User Service
+    3.8  services/market/server.go — Market Service
+    3.9  services/order/server.go — Order + Matching Engine
+    3.10 services/wallet/server.go — Wallet & Settlement
+    3.11 gateway/gateway.go — HTTP REST Gateway
+    3.12 client/client.go — Go Client Library
+    3.13 server/main.go — Entry Point & Wiring
+
+  PART 4 — GRPC DEEP DIVE
+    4.1  Unary RPCs
+    4.2  Server-Side Streaming
+    4.3  Client-Side Streaming
+    4.4  Bidirectional Streaming
+    4.5  Interceptors (Middleware)
+    4.6  Error Handling & Status Codes
+    4.7  gRPC Metadata (Headers)
+    4.8  Deadlines & Cancellation
+
+  PART 5 — TRADING ENGINE
+    5.1  Prediction Market Mechanics
+    5.2  CLOB (Central Limit Order Book)
+    5.3  Matching Algorithm (Continuous Double Auction)
+    5.4  Market Making & Liquidity
+    5.5  Settlement & Payouts
+    5.6  Fee Model
+
+  PART 6 — SECURITY
+    6.1  JWT Authentication
+    6.2  Role-Based Access Control (RBAC)
+    6.3  TLS/mTLS for gRPC
+    6.4  Rate Limiting
+    6.5  Input Validation
+
+  PART 7 — RESILIENCE
+    7.1  Retry Pattern
+    7.2  Circuit Breaker Pattern
+    7.3  Timeout Pattern
+    7.4  Deadline Propagation
+
+  PART 8 — TESTING
+    8.1  Unit Testing gRPC Servers
+    8.2  Integration Testing with bufconn
+    8.3  Table-Driven Tests
+    8.4  Mocking Dependencies
+
+  PART 9 — DEPLOYMENT
+    9.1  Docker Build & Runtime Image
+    9.2  Kubernetes Manifests
+    9.3  Health & Readiness Probes
+    9.4  Rolling Updates
+
+  PART 10 — OBSERVABILITY
+    10.1 Structured Logging (zap)
+    10.2 Metrics (Prometheus)
+    10.3 Distributed Tracing (OpenTelemetry)
+    10.4 Alerting Rules
+
+  PART 11 — TUTORIAL: RUNNING THE PROJECT
+    11.1 Prerequisites
+    11.2 Getting Started (No Docker)
+    11.3 Getting Started (Docker Compose)
+    11.4 Calling the REST API with curl
+    11.5 Calling the gRPC API with grpcurl
+    11.6 End-to-End Trading Workflow
+
+  PART 12 — EXTENDING THE PROJECT
+    12.1 Adding a New gRPC Method
+    12.2 Adding PostgreSQL with pgx
+    12.3 Adding WebSocket for Live Odds
+    12.4 Adding a Frontend (Next.js)
+
+================================================================================
+PART 1 — FOUNDATIONS
+================================================================================
+
+1.1 WHAT IS gRPC?
+-----------------
+gRPC (Google Remote Procedure Call) is an open-source, high-performance RPC
+framework released by Google in 2015. It uses Protocol Buffers (protobuf) as its
+Interface Definition Language (IDL) and serialisation format, and runs on top of
+HTTP/2.
+
+Key characteristics:
+  • Binary serialisation — 5-10x smaller payloads than JSON
+  • HTTP/2 — multiplexed streams, header compression, server push
+  • Strong typing — schema defined in .proto files; code generated automatically
+  • Polyglot — generate client & server stubs in Go, Python, Java, Node, etc.
+  • Streaming — four RPC patterns (unary, server-stream, client-stream, bidi)
+  • Deadlines — built-in timeout propagation across service boundaries
+  • Interceptors — middleware for auth, logging, tracing, rate limiting
+
+1.2 WHY gRPC FOR A TRADING PLATFORM?
+--------------------------------------
+Prediction markets require:
+  a) Low latency — odds update every millisecond; binary protobuf beats JSON
+  b) Real-time streaming — live odds feed, live order book, live positions
+  c) Strong contracts — trading systems cannot afford API ambiguity
+  d) Security — authentication on every call, encrypted transport
+  e) Observability — every RPC logged, traced, metered
+
+gRPC delivers all five. REST + JSON is adequate for CRUD-heavy backends but
+becomes a bottleneck when you need sub-millisecond inter-service communication.
+
+1.3 PROTOCOL BUFFERS (PROTOBUF)
+--------------------------------
+Protocol Buffers are Google's binary serialisation format. You define messages
+and services in a .proto file, then run protoc (the protobuf compiler) to
+generate language-specific code.
+
+Example message definition:
+  message Order {
+    string id        = 1;
+    string user_id   = 2;
+    string market_id = 3;
+    double amount    = 4;
+    double price     = 5;
+  }
+
+Field numbers (1, 2, 3…) are used in the binary encoding, NOT the field names.
+This means you can rename a field without breaking wire compatibility, as long as
+you keep the same field number and type.
+
+Rules for field numbers:
+  • 1–15: one byte overhead — use for the most frequent fields
+  • 16–2047: two bytes overhead
+  • 19000–19999: reserved by protobuf itself — do not use
+  • Never reuse a deleted field number — use 'reserved' keyword instead
+
+1.4 gRPC vs REST
+-----------------
+
+  Feature            | gRPC                        | REST/JSON
+  -------------------|-----------------------------|---------------------------
+  Protocol           | HTTP/2                      | HTTP/1.1 (usually)
+  Payload format     | Binary (protobuf)           | Text (JSON/XML)
+  Payload size       | Small (~3–10x smaller)      | Large
+  Speed              | Fast                        | Moderate
+  Streaming          | Native (4 patterns)         | SSE or WebSocket workaround
+  Code generation    | Yes (from .proto)           | Optional (OpenAPI)
+  Browser support    | Limited (grpc-web)          | Full
+  Schema             | Strict (.proto)             | Loose (JSON Schema optional)
+  Error model        | Rich status codes           | HTTP status codes only
+  Tooling            | Evans, grpcurl, Bloom RPC   | Postman, Insomnia, curl
+  Best for           | Internal microservices      | Public-facing APIs
+
+Recommendation: Use gRPC between internal services. Expose a REST/HTTP gateway
+for browsers and third-party integrations.
+
+1.5 HTTP/2 UNDER THE HOOD
+--------------------------
+HTTP/2 introduces several improvements over HTTP/1.1 that gRPC depends on:
+
+  Multiplexing: Multiple gRPC calls can share a single TCP connection
+  concurrently. With HTTP/1.1 each request blocks until the previous one
+  finishes (head-of-line blocking). HTTP/2 assigns each request a "stream ID"
+  and interleaves them on the wire.
+
+  Binary framing: HTTP/2 sends data in binary frames rather than text, which is
+  faster to parse and less error-prone.
+
+  Header compression (HPACK): Repeated headers (e.g., Authorization, Content-Type)
+  are compressed using a shared context between client and server.
+
+  Server push: The server can proactively send data the client hasn't requested
+  yet — gRPC uses this for server-streaming RPCs.
+
+  Flow control: Each stream has an independent flow-control window, preventing
+  a fast producer from overwhelming a slow consumer.
+
+1.6 STREAMING PATTERNS
+-----------------------
+gRPC offers four RPC communication patterns:
+
+  1. UNARY (request → response)
+     Most common. The client sends one message, the server processes it and
+     sends one message back. Equivalent to a normal function call.
+
+     Example:
+       rpc GetMarket(GetMarketRequest) returns (GetMarketResponse);
+
+  2. SERVER-SIDE STREAMING (request → stream of responses)
+     The client sends one message; the server responds with a stream of messages
+     and closes when done. Ideal for live data feeds.
+
+     Example:
+       rpc StreamMarketOdds(GetMarketRequest) returns (stream MarketOddsUpdate);
+
+  3. CLIENT-SIDE STREAMING (stream of requests → response)
+     The client sends a stream of messages; the server reads all of them and
+     then sends a single response. Useful for bulk inserts.
+
+     Example:
+       rpc BatchCreateOrders(stream PlaceOrderRequest) returns (BatchResult);
+
+  4. BIDIRECTIONAL STREAMING (stream ↔ stream)
+     Both sides send streams of messages simultaneously. The order of messages
+     in each stream is preserved. Useful for chat, real-time collaboration, and
+     market maker quote streams.
+
+     Example:
+       rpc MarketMakerStream(stream MarketOddsUpdate)
+           returns (stream MarketOddsUpdate);
+
+================================================================================
+PART 2 — ARCHITECTURE
+================================================================================
+
+2.1 MICROSERVICES OVERVIEW
+---------------------------
+The Polymarket platform is decomposed into four gRPC microservices:
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │                        API CLIENTS                              │
+  │              (Browser, Mobile, Trading Bot, CLI)                │
+  └──────────────────────────┬──────────────────────────────────────┘
+                             │ HTTP/REST
+                             ▼
+  ┌─────────────────────────────────────────────────────────────────┐
+  │                    HTTP GATEWAY (:8080)                         │
+  │         (Translates HTTP/JSON ↔ in-process gRPC calls)         │
+  └────┬──────────────┬───────────────┬──────────────┬─────────────┘
+       │ gRPC         │ gRPC          │ gRPC          │ gRPC
+       ▼              ▼               ▼               ▼
+  ┌─────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+  │  User   │   │  Market  │   │  Order   │   │  Wallet  │
+  │ Service │   │ Service  │   │ Service  │   │ Service  │
+  │  :50051 │   │  :50052  │   │  :50053  │   │  :50054  │
+  └────┬────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘
+       │              │               │               │
+       └──────────────┴───────────────┴───────────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │   Data Store    │
+                    │ (In-Memory/PG)  │
+                    └─────────────────┘
+
+Service responsibilities:
+  UserService   — Registration, authentication, JWT issuance, profile management
+  MarketService — Create/list/resolve prediction markets, stream live odds
+  OrderService  — Place/cancel limit and market orders, matching engine, order book
+  WalletService — Deposit/withdraw funds, transaction history, post-resolution settlement
+
+2.2 HEXAGONAL ARCHITECTURE (PORTS & ADAPTERS)
+-----------------------------------------------
+Each service follows the hexagonal (ports & adapters) pattern from chapter 4
+of the gRPC Microservices in Go book.
+
+  ┌────────────────────────────────────────────┐
+  │               SERVICE CORE                 │
+  │   (Business logic: matching, settlement)   │
+  │                                            │
+  │  ← Port (interface)  Adapter (impl) →      │
+  │   gRPC handler         PostgreSQL           │
+  │   HTTP handler         Redis                │
+  │   Test mock            In-memory store      │
+  └────────────────────────────────────────────┘
+
+The "port" is the Go interface (e.g., db.UserStore). The "adapters" are concrete
+implementations (in-memory map, PostgreSQL, etc.). Swapping adapters requires
+zero changes to the business logic.
+
+2.3 SERVICE DECOMPOSITION
+--------------------------
+When breaking a monolith into microservices, ask:
+  1. What changes independently? — market resolution is rare; order placement is frequent
+  2. What scales differently? — the order book needs more CPU; user auth is lightweight
+  3. What has clear ownership? — wallet belongs to finance team
+
+The Polymarket decomposition uses the "Bounded Context" pattern from DDD
+(Domain-Driven Design):
+  • User domain: identity, authentication, roles
+  • Market domain: prediction markets, odds, resolution
+  • Order domain: order book, matching engine
+  • Wallet domain: accounting, settlement, compliance
+
+2.4 DATA FLOW: PLACING AN ORDER
+---------------------------------
+1.  Client            → POST /api/v1/orders        (HTTP gateway)
+2.  Gateway           → auth middleware             (validate JWT)
+3.  Gateway           → orderSvc.PlaceOrder(ctx)   (in-process gRPC call)
+4.  OrderService      → validate request fields
+5.  OrderService      → marketStore.GetByID()       (check market is active)
+6.  OrderService      → walletStore.LockFunds()     (reserve capital)
+7.  OrderService      → orderStore.Create()         (persist pending order)
+8.  MatchingEngine    → find resting counter-orders
+9.  MatchingEngine    → walletStore.SettleOrder()   (move funds for each fill)
+10. MatchingEngine    → orderStore.Update()         (update resting order status)
+11. OrderService      → orderStore.Update()         (persist incoming order status)
+12. OrderService      → return PlaceOrderResponse
+13. Gateway           → 201 Created JSON response   (to client)
+
+2.5 IN-MEMORY vs POSTGRESQL
+-----------------------------
+The project ships with an in-memory store (db/store.go) so you can run it with
+zero dependencies. In production, replace each Store type with a PostgreSQL
+adapter using the pgx driver.
+
+PostgreSQL table equivalents:
+  UserStore      → users table
+  MarketStore    → markets table
+  OrderStore     → orders table
+  WalletStore    → wallets + transactions tables
+
+Key SQL schema hints:
+  CREATE TABLE orders (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID NOT NULL REFERENCES users(id),
+    market_id   UUID NOT NULL REFERENCES markets(id),
+    side        TEXT NOT NULL CHECK (side IN ('buy','sell')),
+    type        TEXT NOT NULL CHECK (type IN ('market','limit')),
+    status      TEXT NOT NULL,
+    amount      NUMERIC(20,8) NOT NULL,
+    price       NUMERIC(20,8) NOT NULL,
+    filled      NUMERIC(20,8) NOT NULL DEFAULT 0,
+    remaining   NUMERIC(20,8) NOT NULL,
+    outcome     TEXT NOT NULL CHECK (outcome IN ('yes','no')),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  );
+
+================================================================================
+PART 3 — PROJECT WALKTHROUGH
+================================================================================
+
+3.1 DIRECTORY STRUCTURE
+------------------------
+polymarket-grpc/
+├── proto/
+│   └── polymarket.proto       ← Single source of truth for all service contracts
+├── config/
+│   └── config.go              ← Environment-variable based configuration
+├── models/
+│   └── models.go              ← Pure domain types (no gRPC dependencies)
+├── db/
+│   ├── store.go               ← In-memory User, Market, Order, Wallet stores
+│   └── order_ext.go           ← Order.Update() method
+├── middleware/
+│   └── auth.go                ← JWT manager + gRPC unary/stream interceptors
+├── services/
+│   ├── user/server.go         ← UserService implementation
+│   ├── market/server.go       ← MarketService + live odds streaming
+│   ├── order/server.go        ← OrderService + continuous double-auction engine
+│   └── wallet/server.go       ← WalletService + settlement
+├── gateway/
+│   └── gateway.go             ← HTTP/REST → in-process gRPC bridge
+├── client/
+│   └── client.go              ← Typed Go client + E2E workflow demo
+├── server/
+│   └── main.go                ← Wire everything together and serve
+├── go.mod
+├── Makefile
+├── Dockerfile
+└── docker-compose.yml
+
+3.2 proto/polymarket.proto
+---------------------------
+This is the single source of truth for every service boundary. Changes to this
+file represent breaking contract changes that all consuming services must handle.
+
+Key design decisions:
+  • All timestamps use google.protobuf.Timestamp (not Unix int64) for clarity
+  • All IDs are strings (UUID-compatible) — this avoids database-coupling
+  • Enums use a UNSPECIFIED zero value — so proto3 default never maps to a valid state
+  • PaginationRequest / PaginationResponse are shared — DRY across list RPCs
+  • Streaming RPCs are separated from unary RPCs for clarity
+
+To generate Go code from the .proto file:
+  $ make install-tools   # install protoc-gen-go and protoc-gen-go-grpc
+  $ make proto           # runs protoc
+
+3.3 config/config.go
+----------------------
+Configuration is read from environment variables with sensible defaults. This
+pattern is compatible with 12-factor app methodology and Kubernetes ConfigMaps.
+
+Environment variables and defaults:
+  GRPC_PORT           50051
+  HTTP_PORT           8080
+  DB_HOST             localhost
+  DB_PORT             5432
+  DB_NAME             polymarket
+  DB_USER             postgres
+  DB_PASSWORD         postgres
+  JWT_SECRET          (must override in production!)
+  JWT_ACCESS_TTL      15m
+  JWT_REFRESH_TTL     168h (7 days)
+  LOG_LEVEL           info
+  TLS_ENABLED         false
+
+3.4 models/models.go
+----------------------
+Domain models are pure Go structs with no gRPC or database tags. They form the
+core language of the application. The mapping between models and protobuf
+messages is done in each service's server.go using helper functions.
+
+Why separate models from proto messages?
+  • Proto messages contain generated code that you should not modify
+  • Domain models can have methods, validation, business logic
+  • Database models might have different field sets
+  • Separation of concerns: domain logic is not coupled to transport layer
+
+3.5 db/store.go
+----------------
+Each store is a struct with a sync.RWMutex to make it safe for concurrent access
+from multiple goroutines. This mirrors how a real database driver handles
+connection pooling.
+
+Thread-safety rules used here:
+  • Read operations:  Lock s.mu.RLock() / s.mu.RUnlock()
+  • Write operations: Lock s.mu.Lock()  / s.mu.Unlock()
+
+In production (PostgreSQL), the mutex disappears — the DB handles concurrency.
+
+The stores are seeded with demo data on startup so you can immediately query
+markets and test the trading flow without any setup.
+
+3.6 middleware/auth.go
+-----------------------
+This file implements three things:
+  a) JWTManager  — generates and verifies HS256 JWT tokens
+  b) Interceptors — unary and stream server interceptors for auth, logging, recovery
+  c) Context helpers — GetUserIDFromCtx() / GetRoleFromCtx()
+
+Interceptor chain (order matters):
+  RecoveryInterceptor → catches panics, returns codes.Internal
+  LoggingInterceptor  → logs method, duration, user, error
+  AuthInterceptor     → validates JWT, rejects if invalid
+
+The auth interceptor checks a 'publicMethods' map to skip auth for:
+  /polymarket.UserService/CreateUser
+  /polymarket.UserService/Authenticate
+
+All other methods require a valid Bearer token in gRPC metadata.
+
+JWT claim structure:
+  {
+    "user_id": "uuid-here",
+    "email":   "user@example.com",
+    "role":    "trader",
+    "iss":     "polymarket-api",
+    "sub":     "uuid-here",
+    "iat":     1234567890,
+    "exp":     1234568790
+  }
+
+3.7 services/user/server.go
+-----------------------------
+Implements:
+  CreateUser(ctx, req)     — hash password, persist user, initialise wallet, return JWT
+  GetUser(ctx, req)        — fetch by ID
+  UpdateUser(ctx, req)     — update username/email/wallet address (only own profile)
+  DeleteUser(ctx, req)     — admin-only hard delete
+  Authenticate(ctx, req)   — bcrypt compare, return access + refresh tokens
+  ListUsers(ctx, req)      — admin-only paginated list
+  WatchUser(req, stream)   — server-stream: push profile updates every 5s
+
+Security:
+  • Passwords hashed with bcrypt (cost 10)
+  • Users can only update their own profile unless they are admin
+  • Only admins can delete users or list all users
+
+3.8 services/market/server.go
+-------------------------------
+Implements:
+  CreateMarket(ctx, req)        — create a new binary prediction market
+  GetMarket(ctx, req)           — get market by ID
+  ListMarkets(ctx, req)         — paginated list with category/status filter
+  ResolveMarket(ctx, req)       — admin-only: set YES/NO outcome and close market
+  StreamMarketOdds(req, stream) — server-stream: push simulated price tick every 1s
+
+The StreamMarketOdds RPC simulates a random walk on the YES probability:
+  delta = random(-0.01, +0.01)
+  yesProb = clamp(yesProb + delta, 0.01, 0.99)
+
+In a real system this would be driven by the matching engine: each time an order
+is filled, the implied probability changes based on the last traded price.
+
+3.9 services/order/server.go — MATCHING ENGINE
+------------------------------------------------
+The MatchingEngine implements a simplified continuous double-auction (CDA):
+
+  1. Incoming order arrives (PlaceOrder called)
+  2. Funds are locked in the wallet
+  3. Order is persisted with status=PENDING
+  4. Match() is called:
+     a. Fetch all OPEN resting orders on the opposite side, same outcome
+     b. Sort by price (best price first — buy: highest, sell: lowest)
+     c. For each resting order that satisfies the price condition:
+        - Calculate fill quantity = min(remaining_incoming, remaining_resting)
+        - Settle both sides' wallets (atomic fund transfer)
+        - Update resting order's filled/remaining/status
+        - Deduct fill quantity from incoming order's remaining
+  5. After matching, persist final state of incoming order
+  6. Status is FILLED if remaining ≈ 0, otherwise OPEN (resting in book)
+
+Order priority: price-time (FIFO at same price).
+
+For a production system you would replace this with a proper price-time priority
+queue (e.g., a balanced BST or a sorted skip list per price level per market).
+
+3.10 services/wallet/server.go
+--------------------------------
+Implements:
+  GetWallet(ctx, req)           — return balance + locked balance
+  Deposit(ctx, req)             — credit funds (simulates bank transfer / on-chain)
+  Withdraw(ctx, req)            — debit funds (simulates withdrawal to wallet address)
+  ListTransactions(ctx, req)    — paginated transaction history
+  SettleOrder(ctx, req)         — admin: distribute winnings after market resolution
+  StreamBalance(req, stream)    — server-stream: push wallet balance every 2s
+
+Settlement logic (SettleOrder):
+  For each FILLED order on the winning outcome:
+    payout = filled_quantity * 1.0  (i.e., 1 USD per winning share)
+    credit user wallet with payout
+    create PAYOUT transaction
+
+Losing positions receive nothing; their cost was already deducted when the
+BUY order was matched.
+
+3.11 gateway/gateway.go
+------------------------
+The HTTP gateway translates REST calls to in-process Go function calls on the
+service servers. This avoids network overhead while keeping a clean API for
+browser clients.
+
+REST endpoint mapping:
+  POST   /api/v1/users/register         → UserService.CreateUser
+  POST   /api/v1/users/login            → UserService.Authenticate
+  GET    /api/v1/users/:id              → UserService.GetUser
+  PUT    /api/v1/users/:id              → UserService.UpdateUser
+  DELETE /api/v1/users/:id              → UserService.DeleteUser
+
+  GET    /api/v1/markets                → MarketService.ListMarkets
+  POST   /api/v1/markets                → MarketService.CreateMarket
+  GET    /api/v1/markets/:id            → MarketService.GetMarket
+  POST   /api/v1/markets/:id/resolve    → MarketService.ResolveMarket
+
+  GET    /api/v1/orders                 → OrderService.ListOrders
+  POST   /api/v1/orders                 → OrderService.PlaceOrder
+  GET    /api/v1/orders/:id             → OrderService.GetOrder
+  DELETE /api/v1/orders/:id             → OrderService.CancelOrder
+  GET    /api/v1/orderbook/:market_id   → OrderService.GetOrderBook
+
+  GET    /api/v1/wallet                 → WalletService.GetWallet
+  POST   /api/v1/wallet/deposit         → WalletService.Deposit
+  POST   /api/v1/wallet/withdraw        → WalletService.Withdraw
+  GET    /api/v1/transactions           → WalletService.ListTransactions
+
+  GET    /health                        → 200 OK (liveness probe)
+  GET    /ready                         → 200 OK (readiness probe)
+
+CORS is enabled for all origins (restrict in production).
+
+3.12 client/client.go
+----------------------
+PolyClient is a convenience wrapper around all four service servers. It:
+  • Stores the JWT token and attaches it to every outgoing request context
+  • Provides typed methods: BuyYes(), BuyNo(), SellPosition(), etc.
+  • Includes RunE2EWorkflow() that demonstrates a full trading lifecycle
+
+NewGRPCConn() shows how to dial a real remote gRPC server with a 5-second
+connection timeout. This is the pattern you use in a real microservice that
+consumes another service.
+
+3.13 server/main.go
+--------------------
+The entry point wires all components together:
+  1. Load config from environment
+  2. Initialise zap logger
+  3. Create data stores
+  4. Create JWT manager
+  5. Create service servers
+  6. Create gRPC server with interceptor chain
+  7. Register service implementations with gRPC server
+  8. Register reflection (for grpcurl / Evans)
+  9. Create HTTP gateway
+  10. Start both servers in goroutines
+  11. Wait for SIGINT/SIGTERM
+  12. Graceful shutdown (drain in-flight RPCs, then stop)
+
+================================================================================
+PART 4 — gRPC DEEP DIVE
+================================================================================
+
+4.1 UNARY RPCs
+---------------
+Simplest pattern. One request, one response.
+
+Client code (using generated stub):
+  conn, _ := grpc.Dial("localhost:50051", grpc.WithInsecure())
+  client := pb.NewMarketServiceClient(conn)
+
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+
+  resp, err := client.GetMarket(ctx, &pb.GetMarketRequest{Id: "market-uuid"})
+  if err != nil {
+    st, _ := status.FromError(err)
+    log.Printf("error: code=%s msg=%s", st.Code(), st.Message())
+    return
+  }
+  fmt.Println(resp.Market.Title)
+
+Server implementation:
+  func (s *Server) GetMarket(ctx context.Context, req *pb.GetMarketRequest) (*pb.GetMarketResponse, error) {
+    if req.Id == "" {
+      return nil, status.Error(codes.InvalidArgument, "market id required")
+    }
+    m, err := s.store.GetByID(req.Id)
+    if err != nil {
+      return nil, status.Errorf(codes.NotFound, "market not found: %v", err)
+    }
+    return &pb.GetMarketResponse{Market: modelToProto(m)}, nil
+  }
+
+4.2 SERVER-SIDE STREAMING
+--------------------------
+Client sends one request; server streams many responses until it closes.
+
+Client code:
+  stream, err := client.StreamMarketOdds(ctx, &pb.GetMarketRequest{Id: marketID})
+  if err != nil { ... }
+
+  for {
+    update, err := stream.Recv()
+    if err == io.EOF {
+      break  // server closed stream normally
+    }
+    if err != nil {
+      log.Printf("stream error: %v", err)
+      break
+    }
+    fmt.Printf("YES: %.2f%%  NO: %.2f%%\n",
+      update.YesProbability*100, update.NoProbability*100)
+  }
+
+Server implementation:
+  func (s *Server) StreamMarketOdds(req *pb.GetMarketRequest,
+      stream pb.MarketService_StreamMarketOddsServer) error {
+
+    ticker := time.NewTicker(time.Second)
+    defer ticker.Stop()
+
+    for {
+      select {
+      case <-stream.Context().Done():
+        return nil  // client disconnected
+      case <-ticker.C:
+        if err := stream.Send(&pb.MarketOddsUpdate{...}); err != nil {
+          return err
+        }
+      }
+    }
+  }
+
+4.3 CLIENT-SIDE STREAMING
+--------------------------
+Client sends many messages; server replies once.
+
+Proto definition:
+  rpc BatchCreateOrders(stream PlaceOrderRequest) returns (BatchResult);
+
+Client code:
+  stream, err := client.BatchCreateOrders(ctx)
+  for _, order := range orders {
+    if err := stream.Send(order); err != nil { ... }
+  }
+  reply, err := stream.CloseAndRecv()
+
+Server implementation:
+  func (s *Server) BatchCreateOrders(stream pb.OrderService_BatchCreateOrdersServer) error {
+    var results []*pb.OrderResult
+    for {
+      req, err := stream.Recv()
+      if err == io.EOF {
+        return stream.SendAndClose(&pb.BatchResult{Results: results})
+      }
+      if err != nil { return err }
+      result := s.processOrder(req)
+      results = append(results, result)
+    }
+  }
+
+4.4 BIDIRECTIONAL STREAMING
+-----------------------------
+Both sides send and receive independently. Useful for market-maker quoting.
+
+Client code:
+  stream, err := client.MarketMakerStream(ctx)
+  go func() {
+    for _, quote := range quotes {
+      stream.Send(quote)
+    }
+    stream.CloseSend()
+  }()
+  for {
+    resp, err := stream.Recv()
+    if err == io.EOF { break }
+    fmt.Println("Received fill:", resp)
+  }
+
+4.5 INTERCEPTORS (MIDDLEWARE)
+------------------------------
+Interceptors are gRPC's middleware system. They wrap every RPC call.
+
+Unary interceptor signature:
+  type UnaryServerInterceptor func(
+    ctx     context.Context,
+    req     interface{},
+    info    *UnaryServerInfo,
+    handler UnaryHandler,
+  ) (interface{}, error)
+
+Chain multiple interceptors:
+  grpc.ChainUnaryInterceptor(
+    recoveryInterceptor,
+    loggingInterceptor,
+    authInterceptor,      // innermost — closest to handler
+  )
+
+Execution order: recovery → logging → auth → [handler] → auth → logging → recovery
+
+4.6 ERROR HANDLING & STATUS CODES
+-----------------------------------
+gRPC defines 16 status codes. Map application errors to them:
+
+  codes.OK                   — 0  — Success
+  codes.Cancelled            — 1  — Client cancelled the request
+  codes.Unknown              — 2  — Server error without more detail
+  codes.InvalidArgument      — 3  — Bad request parameters        → HTTP 400
+  codes.DeadlineExceeded     — 4  — Timeout                       → HTTP 504
+  codes.NotFound             — 5  — Resource not found            → HTTP 404
+  codes.AlreadyExists        — 6  — Duplicate resource            → HTTP 409
+  codes.PermissionDenied     — 7  — Authorisation failure         → HTTP 403
+  codes.ResourceExhausted    — 8  — Rate limit / quota exceeded   → HTTP 429
+  codes.FailedPrecondition   — 9  — Invalid state (e.g. market closed) → HTTP 422
+  codes.Aborted              — 10 — Concurrency conflict (retry)  → HTTP 409
+  codes.OutOfRange           — 11 — Value out of valid range      → HTTP 400
+  codes.Unimplemented        — 12 — Method not implemented        → HTTP 501
+  codes.Internal             — 13 — Server-side bug               → HTTP 500
+  codes.Unavailable          — 14 — Service temporarily down      → HTTP 503
+  codes.DataLoss             — 15 — Unrecoverable data loss
+  codes.Unauthenticated      — 16 — Missing or invalid credentials → HTTP 401
+
+Returning rich error details:
+  import "google.golang.org/grpc/status"
+  import "google.golang.org/genproto/googleapis/rpc/errdetails"
+
+  st, _ := status.New(codes.InvalidArgument, "validation failed").
+    WithDetails(&errdetails.BadRequest{
+      FieldViolations: []*errdetails.BadRequest_FieldViolation{
+        {Field: "price", Description: "must be between 0.01 and 0.99"},
+      },
+    })
+  return nil, st.Err()
+
+4.7 gRPC METADATA
+------------------
+Metadata is gRPC's equivalent of HTTP headers — key-value pairs sent with
+each RPC.
+
+Sending metadata from client:
+  md := metadata.Pairs("authorization", "Bearer "+token, "x-request-id", reqID)
+  ctx := metadata.NewOutgoingContext(context.Background(), md)
+  resp, err := client.PlaceOrder(ctx, req)
+
+Reading metadata on the server:
+  md, ok := metadata.FromIncomingContext(ctx)
+  if ok {
+    tokens := md.Get("authorization")
+    if len(tokens) > 0 {
+      token := strings.TrimPrefix(tokens[0], "Bearer ")
+    }
+  }
+
+4.8 DEADLINES & CANCELLATION
+------------------------------
+Always set a deadline on client calls to prevent goroutine leaks:
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  resp, err := client.PlaceOrder(ctx, req)
+  if status.Code(err) == codes.DeadlineExceeded {
+    log.Println("PlaceOrder timed out after 5s")
+  }
+
+Check for cancellation in your server:
+  for {
+    select {
+    case <-ctx.Done():
+      return status.FromContextError(ctx.Err()).Err()
+    case <-ticker.C:
+      // do work
+    }
+  }
+
+================================================================================
+PART 5 — TRADING ENGINE
+================================================================================
+
+5.1 PREDICTION MARKET MECHANICS
+---------------------------------
+A prediction market is a binary options contract:
+  • YES share pays $1 if the event occurs
+  • NO  share pays $1 if the event does NOT occur
+  • YES price + NO price ≈ $1.00 (minus fees)
+  • Price of a YES share ≈ implied probability of event occurring
+
+Example:
+  Bitcoin reaching $100K has 70% implied probability.
+  YES shares trade at $0.70
+  NO  shares trade at $0.30
+  If you buy 100 YES shares at $0.70, you pay $70.
+  If Bitcoin hits $100K, you receive $100. Profit: $30.
+  If it doesn't, you receive $0.    Loss:   $70.
+
+5.2 CLOB (CENTRAL LIMIT ORDER BOOK)
+--------------------------------------
+The Polymarket engine uses a CLOB — the same structure used by stock exchanges.
+There are two sides to the book for each outcome (YES / NO):
+
+  BID side (buyers)                  ASK side (sellers)
+  Price  | Quantity                  Price  | Quantity
+  -------|----------                 -------|----------
+  0.68   | 500                       0.70   | 300
+  0.67   | 1200                      0.71   | 800
+  0.65   | 900                       0.72   | 1500
+  0.63   | 2000                      0.75   | 2000
+
+  Best bid: $0.68    Best ask: $0.70    Spread: $0.02
+
+When a new BUY order comes in at $0.70 or above, it matches against the ask.
+When a new SELL order comes in at $0.68 or below, it matches against the bid.
+
+5.3 MATCHING ALGORITHM
+-----------------------
+The CDA (continuous double-auction) matching algorithm implemented in
+services/order/server.go → MatchingEngine.Match():
+
+  GIVEN: incoming order O (side, type, amount, price, outcome)
+  GET:   all resting orders with opposite side, same outcome, status=OPEN
+  SORT:  if O.Side == BUY  → sort resting by price DESC (highest ask first)
+         if O.Side == SELL → sort resting by price ASC  (lowest bid first)
+  FOR each resting order R:
+    IF O is a limit order AND price doesn't cross:
+      BREAK (no more matches possible)
+    fillQty  = min(O.remaining, R.remaining)
+    fillPrice = R.price  (maker price prevails)
+    TRANSFER: fillQty * fillPrice from taker wallet to maker wallet (or vice versa)
+    UPDATE R: filled += fillQty, remaining -= fillQty
+    IF R.remaining ≈ 0: R.status = FILLED
+    UPDATE O: remaining -= fillQty
+  ENDFOR
+  IF O.remaining ≈ 0: O.status = FILLED
+  ELSE: O.status = OPEN (rests in the book)
+
+5.4 MARKET MAKING & LIQUIDITY
+-------------------------------
+Market makers post simultaneous bids and asks to provide liquidity.
+They profit from the spread but take on inventory risk.
+
+In our system, market makers use the MarketMakerStream bidirectional RPC:
+  1. MM sends quote: bid=$0.68, ask=$0.71, size=1000
+  2. Server processes quotes as resting orders on both sides
+  3. Server sends back execution reports as fills occur
+  4. MM adjusts quotes based on fills and market conditions
+
+Initial liquidity is set when creating a market (InitialLiquidity field).
+The engine can use AMM (Automated Market Maker) pricing for thin books:
+  price(y) = 1 / (1 + exp(-k * (y - 0.5)))   [logistic curve]
+  where k is a liquidity parameter.
+
+5.5 SETTLEMENT & PAYOUTS
+--------------------------
+After a market resolves:
+  1. Admin calls ResolveMarket(marketID, outcome=YES|NO)
+  2. Market status changes to RESOLVED
+  3. Admin calls WalletService.SettleOrder(marketID, winningOutcome)
+  4. Engine iterates all FILLED orders on the winning outcome
+  5. For each winning position: credit userWallet with filled_qty * $1.00
+  6. Create PAYOUT transaction records for audit trail
+  7. Losing positions: no action (funds already spent at trade time)
+
+5.6 FEE MODEL
+--------------
+A typical prediction market charges 1-2% of winnings.
+To add fees:
+
+  // In wallet/server.go SettleOrder:
+  const feeRate = 0.01  // 1%
+  grossPayout := filled * 1.0
+  fee := grossPayout * feeRate
+  netPayout := grossPayout - fee
+
+  // Credit user net payout
+  store.SettleOrder(userID, netPayout, ...)
+  // Accrue fee to platform wallet
+  store.SettleOrder("platform", fee, ...)
+
+================================================================================
+PART 6 — SECURITY
+================================================================================
+
+6.1 JWT AUTHENTICATION
+------------------------
+JSON Web Tokens (RFC 7519) are used for stateless authentication.
+
+Token lifecycle:
+  1. Client calls Authenticate(email, password)
+  2. Server verifies credentials against bcrypt hash
+  3. Server issues access_token (15 min TTL) + refresh_token (7 day TTL)
+  4. Client attaches access_token in Authorization header:
+       Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  5. Auth interceptor verifies signature and expiry on every gRPC call
+  6. When access_token expires, client uses refresh_token to get a new one
+
+IMPORTANT: In production, use RS256 (asymmetric) instead of HS256 (symmetric):
+  • HS256 requires sharing the secret key with every service
+  • RS256: only the auth service holds the private key; all others use public key
+
+6.2 ROLE-BASED ACCESS CONTROL (RBAC)
+--------------------------------------
+Three roles are defined (models/models.go):
+  trader       — can trade, view own orders/wallet
+  market_maker — can trade + create markets
+  admin        — full access, including resolve markets, list users, settle orders
+
+RBAC enforcement pattern in service methods:
+  role, _ := middleware.GetRoleFromCtx(ctx)
+  if role != string(models.UserRoleAdmin) {
+    return nil, status.Error(codes.PermissionDenied, "admin required")
+  }
+
+6.3 TLS / mTLS
+---------------
+Enable TLS in production by setting TLS_ENABLED=true and providing cert/key:
+
+  creds, err := credentials.NewServerTLSFromFile("certs/server.crt", "certs/server.key")
+  grpcServer := grpc.NewServer(grpc.Creds(creds), ...)
+
+For mutual TLS (mTLS) between services:
+  // Server:
+  tlsCfg := &tls.Config{
+    ClientAuth: tls.RequireAndVerifyClientCert,
+    ClientCAs:  caCertPool,
+  }
+
+  // Client:
+  creds, _ := credentials.NewClientTLSFromFile("certs/ca.crt", "")
+  conn, _ := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
+
+Generate self-signed certs for local testing:
+  $ openssl req -x509 -newkey rsa:4096 -keyout server.key \
+    -out server.crt -days 365 -nodes \
+    -subj "/CN=localhost"
+
+================================================================================
+PART 7 — RESILIENCE
+================================================================================
+
+7.1 RETRY PATTERN
+------------------
+Automatically retry on transient failures (UNAVAILABLE, INTERNAL):
+
+  retryPolicy := `{
+    "methodConfig": [{
+      "name": [{"service": "polymarket.OrderService"}],
+      "retryPolicy": {
+        "maxAttempts": 4,
+        "initialBackoff": "0.1s",
+        "maxBackoff": "1s",
+        "backoffMultiplier": 2,
+        "retryableStatusCodes": ["UNAVAILABLE", "INTERNAL"]
+      }
+    }]
+  }`
+  conn, _ := grpc.Dial(addr,
+    grpc.WithDefaultServiceConfig(retryPolicy),
+    grpc.WithTransportCredentials(insecure.NewCredentials()),
+  )
+
+7.2 CIRCUIT BREAKER PATTERN
+-----------------------------
+Prevent cascading failures by opening the circuit when errors spike:
+
+  import "github.com/sony/gobreaker"
+
+  cb := gobreaker.NewCircuitBreaker(gobreaker.Settings{
+    Name:        "OrderService",
+    MaxRequests: 5,
+    Interval:    10 * time.Second,
+    Timeout:     30 * time.Second,
+    ReadyToTrip: func(counts gobreaker.Counts) bool {
+      return counts.ConsecutiveFailures > 5
+    },
+  })
+
+  resp, err := cb.Execute(func() (interface{}, error) {
+    return client.PlaceOrder(ctx, req)
+  })
+
+States: CLOSED (normal) → OPEN (failing, reject fast) → HALF-OPEN (test)
+
+7.3 TIMEOUT PATTERN
+--------------------
+Always apply timeouts at every service boundary:
+  // Short timeout for reads (fast queries)
+  ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+
+  // Longer timeout for writes (may involve DB + matching + settlement)
+  ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+
+  // Inherit parent deadline (don't extend beyond upstream deadline)
+  if deadline, ok := ctx.Deadline(); ok {
+    fmt.Printf("inherited deadline: %v\n", deadline)
+  }
+
+7.4 DEADLINE PROPAGATION
+--------------------------
+gRPC automatically propagates deadlines across service calls. If the HTTP
+gateway gives the client a 30-second deadline, and the order service calls the
+wallet service, the remaining time is automatically passed downstream. This
+prevents a slow downstream service from exceeding the upstream SLA.
+
+================================================================================
+PART 8 — TESTING
+================================================================================
+
+8.1 UNIT TESTING gRPC SERVERS
+-------------------------------
+Test service methods by calling them directly — no network required:
+
+  func TestPlaceOrder(t *testing.T) {
+    // Setup
+    logger, _ := zap.NewDevelopment()
+    orderStore := db.NewOrderStore()
+    walletStore := db.NewWalletStore()
+    marketStore := db.NewMarketStore()
+    s := order.NewServer(orderStore, walletStore, marketStore, logger)
+
+    // Create test context with user claims
+    ctx := contextWithUser("user-123", "trader")
+
+    // Exercise
+    resp, err := s.PlaceOrder(ctx, &order.PlaceOrderRequest{
+      MarketID: "market-xyz",
+      Side:     models.OrderSideBuy,
+      Type:     models.OrderTypeLimit,
+      Amount:   50.0,
+      Price:    0.65,
+      Outcome:  models.MarketOutcomeYes,
+    })
+
+    // Assert
+    require.NoError(t, err)
+    assert.Equal(t, "market-xyz", resp.Order.MarketID)
+    assert.Equal(t, 50.0, resp.Order.Amount)
+  }
+
+8.2 INTEGRATION TESTING WITH bufconn
+--------------------------------------
+bufconn runs a real gRPC server in-process using a pipe (no TCP):
+
+  import "google.golang.org/grpc/test/bufconn"
+
+  const bufSize = 1024 * 1024
+
+  func startTestServer(t *testing.T) *grpc.ClientConn {
+    lis := bufconn.Listen(bufSize)
+    s := grpc.NewServer()
+    pb.RegisterMarketServiceServer(s, newTestMarketServer())
+    go s.Serve(lis)
+    t.Cleanup(func() { s.Stop() })
+
+    conn, _ := grpc.DialContext(ctx, "bufnet",
+      grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
+        return lis.Dial()
+      }),
+      grpc.WithTransportCredentials(insecure.NewCredentials()),
+    )
+    return conn
+  }
+
+  func TestListMarkets_Integration(t *testing.T) {
+    conn := startTestServer(t)
+    client := pb.NewMarketServiceClient(conn)
+    resp, err := client.ListMarkets(context.Background(), &pb.ListMarketsRequest{})
+    require.NoError(t, err)
+    assert.GreaterOrEqual(t, len(resp.Markets), 1)
+  }
+
+8.3 TABLE-DRIVEN TESTS
+------------------------
+  tests := []struct {
+    name    string
+    req     *order.PlaceOrderRequest
+    wantErr bool
+    wantCode codes.Code
+  }{
+    {
+      name:    "valid buy yes",
+      req:     &order.PlaceOrderRequest{MarketID: validID, Amount: 10, Price: 0.5, Outcome: "yes", Side: "buy", Type: "limit"},
+      wantErr: false,
+    },
+    {
+      name:     "missing market id",
+      req:      &order.PlaceOrderRequest{Amount: 10, Price: 0.5},
+      wantErr:  true,
+      wantCode: codes.InvalidArgument,
+    },
+    {
+      name:     "negative amount",
+      req:      &order.PlaceOrderRequest{MarketID: validID, Amount: -1, Price: 0.5},
+      wantErr:  true,
+      wantCode: codes.InvalidArgument,
+    },
+  }
+  for _, tt := range tests {
+    t.Run(tt.name, func(t *testing.T) {
+      resp, err := s.PlaceOrder(ctx, tt.req)
+      if tt.wantErr {
+        require.Error(t, err)
+        assert.Equal(t, tt.wantCode, status.Code(err))
+      } else {
+        require.NoError(t, err)
+        assert.NotEmpty(t, resp.Order.Id)
+      }
+    })
+  }
+
+================================================================================
+PART 9 — DEPLOYMENT
+================================================================================
+
+9.1 DOCKER BUILD & RUNTIME
+----------------------------
+The Dockerfile uses a multi-stage build:
+  Stage 1 (builder): golang:1.22-alpine — compile the binary
+  Stage 2 (runtime): scratch — zero-dependency minimal image
+
+Build:
+  $ docker build -t polymarket-grpc:latest .
+
+Run:
+  $ docker run -p 8080:8080 -p 50051:50051 \
+    -e JWT_SECRET=my-secret \
+    polymarket-grpc:latest
+
+9.2 KUBERNETES MANIFESTS
+--------------------------
+Deployment:
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: polymarket-server
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: polymarket-server
+    template:
+      metadata:
+        labels:
+          app: polymarket-server
+      spec:
+        containers:
+        - name: polymarket-server
+          image: polymarket-grpc:latest
+          ports:
+          - containerPort: 50051
+            name: grpc
+          - containerPort: 8080
+            name: http
+          env:
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: polymarket-secrets
+                key: jwt-secret
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+Service:
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: polymarket-server
+  spec:
+    selector:
+      app: polymarket-server
+    ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+
+================================================================================
+PART 10 — OBSERVABILITY
+================================================================================
+
+10.1 STRUCTURED LOGGING (ZAP)
+-------------------------------
+Zap is a fast, structured logger from Uber. It outputs JSON in production:
+  {"level":"info","ts":1710000000.123,"msg":"order placed",
+   "id":"uuid","user":"uid","market":"mid","side":"buy","amount":100}
+
+Usage in service:
+  logger.Info("deposit processed",
+    zap.String("user", userID),
+    zap.Float64("amount", req.Amount),
+    zap.String("tx_id", tx.ID),
+  )
+
+Log levels: Debug < Info < Warn < Error < Fatal
+
+10.2 PROMETHEUS METRICS
+------------------------
+Add metrics with the prometheus/client_golang library:
+
+  import "github.com/prometheus/client_golang/prometheus"
+
+  var ordersTotal = prometheus.NewCounterVec(
+    prometheus.CounterOpts{
+      Name: "polymarket_orders_total",
+      Help: "Total number of orders placed",
+    },
+    []string{"side", "outcome", "status"},
+  )
+  func init() { prometheus.MustRegister(ordersTotal) }
+
+  // In PlaceOrder:
+  ordersTotal.WithLabelValues(
+    string(req.Side),
+    string(req.Outcome),
+    string(created.Status),
+  ).Inc()
+
+Expose metrics endpoint:
+  import "github.com/prometheus/client_golang/prometheus/promhttp"
+  http.Handle("/metrics", promhttp.Handler())
+
+10.3 DISTRIBUTED TRACING (OPENTELEMETRY)
+-----------------------------------------
+Add OpenTelemetry tracing to gRPC interceptors:
+  import "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+
+  grpcServer := grpc.NewServer(
+    grpc.StatsHandler(otelgrpc.NewServerHandler()),
+  )
+
+Every gRPC call automatically gets a trace span. Cross-service trace context is
+propagated via gRPC metadata.
+
+================================================================================
+PART 11 — TUTORIAL: RUNNING THE PROJECT
+================================================================================
+
+11.1 PREREQUISITES
+-------------------
+  • Go 1.22 or later    (https://go.dev/dl/)
+  • protoc 3.21+         (https://github.com/protocolbuffers/protobuf/releases)
+  • protoc-gen-go        (go install google.golang.org/protobuf/cmd/protoc-gen-go@latest)
+  • protoc-gen-go-grpc   (go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest)
+  • Docker (optional)    (https://docker.com)
+  • grpcurl (optional)   (https://github.com/fullstorydev/grpcurl)
+  • Evans CLI (optional) (https://github.com/ktr0731/evans)
+
+11.2 GETTING STARTED (NO DOCKER)
+----------------------------------
+  # 1. Clone / create the project
+  mkdir polymarket-grpc && cd polymarket-grpc
+  # (copy all files as generated by this course)
+
+  # 2. Download dependencies
+  go mod tidy
+
+  # 3. Run the server
+  go run ./server/main.go
+
+  # Expected output:
+  # {"level":"info","msg":"starting Polymarket gRPC server","grpc_port":"50051","http_port":"8080"}
+  # {"level":"info","msg":"gRPC server listening","addr":"[::]:50051"}
+  # {"level":"info","msg":"HTTP gateway listening","addr":"0.0.0.0:8080"}
+
+11.3 GETTING STARTED (DOCKER COMPOSE)
+---------------------------------------
+  $ docker-compose up --build
+
+  This starts:
+    - polymarket server  (ports 50051, 8080)
+    - PostgreSQL         (port 5432)
+    - Redis              (port 6379)
+    - Prometheus         (port 9090)
+    - Grafana            (port 3000, admin/admin)
+
+11.4 CALLING THE REST API WITH CURL
+-------------------------------------
+  # Register a new user
+  curl -X POST http://localhost:8080/api/v1/users/register \
+    -H "Content-Type: application/json" \
+    -d '{"username":"alice","email":"alice@example.com","password":"Password123!","wallet_address":"0xALICE"}'
+
+  # Login
+  TOKEN=$(curl -s -X POST http://localhost:8080/api/v1/users/login \
+    -H "Content-Type: application/json" \
+    -d '{"email":"alice@example.com","password":"Password123!"}' \
+    | jq -r '.Token')
+
+  echo "Token: $TOKEN"
+
+  # List markets
+  curl -H "Authorization: Bearer $TOKEN" \
+    http://localhost:8080/api/v1/markets
+
+  # Get a specific market (replace MARKET_ID)
+  curl -H "Authorization: Bearer $TOKEN" \
+    http://localhost:8080/api/v1/markets/MARKET_ID
+
+  # Deposit funds
+  curl -X POST -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"Amount":2000,"Reference":"bank-transfer-001"}' \
+    http://localhost:8080/api/v1/wallet/deposit
+
+  # Check wallet balance
+  curl -H "Authorization: Bearer $TOKEN" \
+    http://localhost:8080/api/v1/wallet
+
+  # Place a BUY YES order (replace MARKET_ID)
+  curl -X POST -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "MarketID":"MARKET_ID",
+      "Side":"buy",
+      "Type":"limit",
+      "Amount":100.0,
+      "Price":0.65,
+      "Outcome":"yes"
+    }' \
+    http://localhost:8080/api/v1/orders
+
+  # View order book for a market
+  curl -H "Authorization: Bearer $TOKEN" \
+    http://localhost:8080/api/v1/orderbook/MARKET_ID
+
+  # List your orders
+  curl -H "Authorization: Bearer $TOKEN" \
+    http://localhost:8080/api/v1/orders
+
+  # View transaction history
+  curl -H "Authorization: Bearer $TOKEN" \
+    http://localhost:8080/api/v1/transactions
+
+  # Health check
+  curl http://localhost:8080/health
+
+11.5 CALLING THE gRPC API WITH GRPCURL
+----------------------------------------
+  # List all services (requires server reflection to be registered)
+  grpcurl -plaintext localhost:50051 list
+
+  # Describe the MarketService
+  grpcurl -plaintext localhost:50051 describe polymarket.MarketService
+
+  # List markets (unauthenticated — this will fail, but shows the pattern)
+  grpcurl -plaintext -d '{"pagination":{"page":1,"per_page":10}}' \
+    localhost:50051 polymarket.MarketService/ListMarkets
+
+  # Authenticate
+  grpcurl -plaintext \
+    -d '{"email":"alice@example.com","password":"Password123!"}' \
+    localhost:50051 polymarket.UserService/Authenticate
+
+  # Place order with token
+  grpcurl -plaintext \
+    -H "authorization: Bearer YOUR_TOKEN_HERE" \
+    -d '{"market_id":"MARKET_ID","side":1,"type":1,"amount":100,"price":0.65,"outcome":1}' \
+    localhost:50051 polymarket.OrderService/PlaceOrder
+
+  # Stream live odds (Ctrl+C to stop)
+  grpcurl -plaintext \
+    -H "authorization: Bearer YOUR_TOKEN_HERE" \
+    -d '{"id":"MARKET_ID"}' \
+    localhost:50051 polymarket.MarketService/StreamMarketOdds
+
+11.6 END-TO-END TRADING WORKFLOW
+----------------------------------
+Complete trading lifecycle using the REST API:
+
+  Step 1: Register two accounts (alice = buyer, bob = seller)
+    curl -X POST .../users/register -d '{"username":"alice",...}'
+    curl -X POST .../users/register -d '{"username":"bob",...}'
+
+  Step 2: Both log in and get tokens
+    ALICE_TOKEN = ...
+    BOB_TOKEN   = ...
+
+  Step 3: Both deposit funds ($2000 each)
+    # Alice
+    curl -X POST -H "Authorization: Bearer $ALICE_TOKEN" .../wallet/deposit \
+      -d '{"Amount":2000}'
+    # Bob
+    curl -X POST -H "Authorization: Bearer $BOB_TOKEN" .../wallet/deposit \
+      -d '{"Amount":2000}'
+
+  Step 4: Bob posts a SELL YES order (taking NO position, betting against the event)
+    curl -X POST -H "Authorization: Bearer $BOB_TOKEN" .../orders \
+      -d '{"MarketID":"MARKET_ID","Side":"sell","Type":"limit","Amount":100,"Price":0.65,"Outcome":"yes"}'
+
+  Step 5: Alice posts a BUY YES order at the same or higher price
+    curl -X POST -H "Authorization: Bearer $ALICE_TOKEN" .../orders \
+      -d '{"MarketID":"MARKET_ID","Side":"buy","Type":"limit","Amount":100,"Price":0.65,"Outcome":"yes"}'
+    # These two orders MATCH. Alice buys 100 YES shares at $0.65.
+    # Alice pays $65. Bob receives $65. Both orders are FILLED.
+
+  Step 6: Check wallets post-trade
+    # Alice: started $2000, spent $65 → $1935 + 100 YES shares
+    # Bob:   started $2000, received $65 → $2065
+
+  Step 7: Admin logs in and resolves the market
+    # Login as admin (email: admin@polymarket.io, password: admin123)
+    ADMIN_TOKEN = ...
+    MARKET_ID = first market ID from ListMarkets
+
+    curl -X POST -H "Authorization: Bearer $ADMIN_TOKEN" \
+      .../markets/MARKET_ID/resolve \
+      -d '{"Outcome":"yes","ResolverID":"admin"}'
+
+  Step 8: Admin triggers settlement (distribute winnings)
+    curl -X POST -H "Authorization: Bearer $ADMIN_TOKEN" \
+      .../wallet/settle  # (implement this endpoint as an exercise)
+    # Alice had 100 YES shares → receives $100 payout → net profit: +$35
+    # Bob had no winning positions → receives $0
+
+================================================================================
+PART 12 — EXTENDING THE PROJECT
+================================================================================
+
+12.1 ADDING A NEW gRPC METHOD
+-------------------------------
+Example: Add GetMarketStats to MarketService
+
+  Step 1: Add to proto/polymarket.proto
+    message MarketStats {
+      string market_id = 1;
+      int64  total_orders = 2;
+      double avg_price = 3;
+      double high_24h = 4;
+      double low_24h = 5;
+    }
+    message GetMarketStatsRequest { string id = 1; }
+    // Add to MarketService:
+    rpc GetMarketStats(GetMarketStatsRequest) returns (MarketStats);
+
+  Step 2: Run protoc
+    make proto
+
+  Step 3: Implement in services/market/server.go
+    func (s *Server) GetMarketStats(ctx context.Context,
+        req *pb.GetMarketStatsRequest) (*pb.MarketStats, error) {
+      // fetch orders, compute stats
+      return &pb.MarketStats{...}, nil
+    }
+
+  Step 4: Register in server/main.go (auto-done when embedding UnimplementedXxx)
+
+  Step 5: Add REST route in gateway/gateway.go
+    g.mux.HandleFunc("/api/v1/markets/stats/",
+      g.auth(g.handleMarketStats))
+
+  Step 6: Write tests (table-driven + bufconn integration test)
+
+12.2 ADDING POSTGRESQL WITH PGX
+---------------------------------
+  # Add dependency
+  go get github.com/jackc/pgx/v5
+
+  # Create a PostgreSQL adapter that implements the same interface:
+  type PostgresUserStore struct {
+    pool *pgxpool.Pool
+  }
+
+  func (s *PostgresUserStore) Create(u *models.User) (*models.User, error) {
+    query := `INSERT INTO users (id, username, email, password_hash, role, created_at)
+              VALUES ($1, $2, $3, $4, $5, now()) RETURNING *`
+    row := s.pool.QueryRow(ctx, query, uuid.New(), u.Username, u.Email, u.PasswordHash, u.Role)
+    // scan into *models.User
+  }
+
+  # Wire it in main.go:
+  pool, _ := pgxpool.New(ctx, cfg.Database.DSN())
+  userStore := db.NewPostgresUserStore(pool)
+
+12.3 ADDING WEBSOCKET FOR LIVE ODDS
+-------------------------------------
+  import "github.com/gorilla/websocket"
+
+  func (g *Gateway) handleWebSocketOdds(w http.ResponseWriter, r *http.Request) {
+    marketID := r.URL.Query().Get("market_id")
+    upgrader := websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
+    conn, _ := upgrader.Upgrade(w, r, nil)
+    defer conn.Close()
+
+    // Call the streaming gRPC method
+    // (Requires connecting to gRPC server — use in-process or via bufconn)
+    ticker := time.NewTicker(time.Second)
+    defer ticker.Stop()
+    for range ticker.C {
+      m, _ := g.marketSvc.GetMarket(r.Context(), &market.GetMarketRequest{ID: marketID})
+      conn.WriteJSON(m.Market)
+    }
+  }
+
+12.4 ADDING A FRONTEND (NEXT.JS)
+----------------------------------
+Create a Next.js app that consumes the REST gateway:
+  npx create-next-app@latest polymarket-ui --typescript
+  cd polymarket-ui
+
+  # pages/index.tsx — list markets:
+  const { data: markets } = await fetch("/api/v1/markets",
+    { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
+
+  # pages/market/[id].tsx — live odds chart using recharts:
+  import { LineChart, Line, XAxis, YAxis } from 'recharts'
+  const [odds, setOdds] = useState([])
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const m = await fetch(`/api/v1/markets/${id}`, { headers: authHeader })
+        .then(r => r.json())
+      setOdds(prev => [...prev.slice(-50),
+        { t: Date.now(), yes: m.Market.YesProbability }])
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [id])
+
+================================================================================
+COMMON ERRORS & TROUBLESHOOTING
+================================================================================
+
+  ERROR: "transport: Error while dialing: connection refused"
+  FIX: Server is not running. Start it with: go run ./server/main.go
+
+  ERROR: "rpc error: code = Unauthenticated"
+  FIX: Add Authorization header: -H "authorization: Bearer YOUR_TOKEN"
+
+  ERROR: "rpc error: code = PermissionDenied"
+  FIX: You need admin role. Login as admin@polymarket.io / admin123
+
+  ERROR: "rpc error: code = FailedPrecondition: market is not active"
+  FIX: The market has been resolved or cancelled. Use a different market.
+
+  ERROR: "rpc error: code = FailedPrecondition: insufficient funds"
+  FIX: Deposit more funds: POST /api/v1/wallet/deposit
+
+  ERROR: "grpcurl: Failed to dial target host: connection refused"
+  FIX: Ensure server is running on port 50051
+
+  ERROR: "go: module ... not found"
+  FIX: Run: go mod tidy
+
+  ERROR: "panic: runtime error: invalid memory address"
+  FIX: Check for nil pointer dereferences. The RecoveryInterceptor catches
+       panics in production but you should still fix the root cause.
+
+================================================================================
+GLOSSARY
+================================================================================
+
+  AMM            Automated Market Maker — algorithm-based liquidity provisioning
+  Bid/Ask        Highest buy price / Lowest sell price on the order book
+  CLOB           Central Limit Order Book — exchange-style order matching
+  CDA            Continuous Double Auction — ongoing matching of bids and asks
+  gRPC           Google Remote Procedure Call — high-performance RPC framework
+  Hexagonal      Architecture pattern with business logic at centre, adapters outside
+  HTTP/2         Binary, multiplexed successor to HTTP/1.1
+  IDL            Interface Definition Language — proto files are an IDL
+  Interceptor    gRPC middleware — wraps RPC calls (auth, logging, tracing)
+  JWT            JSON Web Token — compact, signed token for stateless auth
+  mTLS           Mutual TLS — both client and server authenticate each other
+  Prediction Mkt Binary options contract on real-world event outcomes
+  Protobuf       Protocol Buffers — Google's binary serialisation format
+  Reflection     gRPC feature letting clients discover service schemas at runtime
+  Settlement     Post-resolution distribution of winnings to position holders
+  Spread         Difference between best ask and best bid price
+  Stub           Auto-generated client code for calling a gRPC service
+  TLS            Transport Layer Security — encrypted communication channel
+  Unary RPC      Single request / single response gRPC call
+
+================================================================================
+REFERENCES
+================================================================================
+
+  [1] gRPC official docs              https://grpc.io/docs/
+  [2] Protocol Buffers docs           https://protobuf.dev/
+  [3] gRPC Microservices in Go        Hüseyin Babal, Manning Publications, 2024
+  [4] grpc-go GitHub repository       https://github.com/grpc/grpc-go
+  [5] Zap logger                      https://github.com/uber-go/zap
+  [6] JWT specification               https://www.rfc-editor.org/rfc/rfc7519
+  [7] Polymarket documentation        https://docs.polymarket.com
+  [8] OpenTelemetry Go SDK            https://opentelemetry.io/docs/languages/go/
+  [9] golangci-lint                   https://golangci-lint.run/
+  [10] grpcurl CLI tool               https://github.com/fullstorydev/grpcurl
+  [11] Evans gRPC client              https://github.com/ktr0731/evans
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================

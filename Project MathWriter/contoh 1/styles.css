@@ -1,0 +1,6941 @@
+/* Collection default theme */
+/* Grid default theme */
+/* Table default theme */
+.ReactVirtualized__Table__headerRow {
+  font-weight: 700;
+  text-transform: uppercase;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -moz-box-orient: horizontal;
+  -moz-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.ReactVirtualized__Table__row {
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -moz-box-orient: horizontal;
+  -moz-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.ReactVirtualized__Table__headerTruncatedText {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.ReactVirtualized__Table__headerColumn,
+.ReactVirtualized__Table__rowColumn {
+  margin-right: 10px;
+  min-width: 0px;
+}
+.ReactVirtualized__Table__rowColumn {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ReactVirtualized__Table__headerColumn:first-of-type,
+.ReactVirtualized__Table__rowColumn:first-of-type {
+  margin-left: 10px;
+}
+.ReactVirtualized__Table__sortableHeaderColumn {
+  cursor: pointer;
+}
+.ReactVirtualized__Table__sortableHeaderIconContainer {
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.ReactVirtualized__Table__sortableHeaderIcon {
+  -webkit-flex: 0 0 24px;
+  -moz-box-flex: 0;
+  -ms-flex: 0 0 24px;
+  flex: 0 0 24px;
+  height: 1em;
+  width: 1em;
+  fill: currentColor;
+}
+/* List default theme */
+/* z-index region*/
+.common-square-icon {
+  width: 4px;
+  height: 4px;
+  min-height: 4px;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+  border-color: #b3b0b0;
+  background-color: lightgray;
+  /* border-style: dotted; */
+}
+.common-square-icon-expand {
+  background-color: white;
+}
+.common-big-square-icon {
+  width: 6px;
+  height: 6px;
+  min-height: 6px;
+  border: 1px solid gray;
+  background-color: white;
+  margin: auto;
+}
+.auto-complete-container {
+  width: 282px;
+  outline: none;
+  font-size: 12px;
+  position: absolute;
+  background: transparent;
+  z-index: 11970;
+  cursor: default;
+}
+.auto-complete-container.mobile-tablet {
+  position: fixed;
+  top: 35px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin-left: -15px;
+  z-index: 99999999999;
+}
+.auto-complete-container.mobile-tablet.is-android {
+  top: unset;
+  bottom: 10px;
+}
+.auto-complete-container .auto-complete-content {
+  margin: 7px;
+}
+.auto-complete-container .drawing-container {
+  position: relative;
+  background-color: white;
+  border: 1px solid lightgray;
+  height: 130px;
+  width: 250px;
+  margin: auto;
+}
+.auto-complete-container .drawing-container > clear-button {
+  position: absolute;
+  right: 1px;
+  display: block;
+  bottom: -1px;
+  font-size: 14px;
+  /* border: 1px solid lightgray; */
+  padding: 6px;
+  cursor: pointer;
+  color: gray;
+}
+.auto-complete-container .drawing-container > clear-button:hover {
+  color: green;
+}
+.auto-complete-container .drawing-container > back-button {
+  position: absolute;
+  left: 3px;
+  display: block;
+  top: 1px;
+  font-size: 12px;
+  /* border: 1px solid lightgray; */
+  padding: 3px;
+  cursor: pointer;
+  color: gray;
+}
+.auto-complete-container .drawing-container > back-button:hover {
+  color: green;
+}
+.auto-complete-container .drawing-container > span {
+  position: absolute;
+  left: 50%;
+  font-size: 10px;
+  color: #afafaf;
+  margin-left: -69px;
+  display: block;
+}
+.auto-complete-container .drawing-container > canvas {
+  position: relative;
+  margin-top: 10px;
+  height: 120px;
+  width: 250px;
+  cursor: crosshair;
+}
+.auto-complete-container input-wrapper.auto-complete-input {
+  width: 100%;
+  height: 22px;
+  margin-bottom: 10px;
+}
+.auto-complete-container input-wrapper.auto-complete-input.ios {
+  border: 1px solid lightgray;
+}
+.auto-complete-container input-wrapper.auto-complete-input.ios input:not([type]) {
+  border: none;
+}
+.auto-complete-container input-wrapper.auto-complete-input > input:not([type]) {
+  border: 1px solid lightgray;
+}
+.auto-complete-container .math-symbol-container {
+  max-height: 400px;
+  font-family: 'Asana';
+}
+.auto-complete-container .expand-rectangles-message {
+  padding-top: 2px;
+}
+.categories-container {
+  position: absolute;
+  top: 0;
+  left: 282px;
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  background-color: #f7f7f7;
+  border: 1px lightgray solid;
+  font-size: 12px;
+  width: 42px;
+  height: 273px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.categories-container.mobile-tablet {
+  height: 277px;
+}
+.categories-container .item {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  border: 1px solid lightgray;
+  width: 32px;
+  border-top: none;
+  cursor: pointer;
+}
+.categories-container .item:hover,
+.categories-container .item.selected {
+  background-color: #bfe4bd;
+}
+.categories-container .item .symbol {
+  display: flex;
+  margin: auto;
+}
+.categories-container .item .align-summation-symbol {
+  margin-right: -8px;
+}
+.categories-container .item .align-over-brace-symbol {
+  margin-right: -5px;
+}
+.icon-arrow-symbol {
+  margin: auto;
+}
+.icon-arrow-symbol .square {
+  margin: 2px auto 2px auto;
+}
+.icon-arrow-symbol .square-expand {
+  background-color: #f7f7f7;
+}
+.icon-arrow-symbol .align-center {
+  height: 5px;
+  line-height: 4px;
+  margin: auto;
+  text-align: center;
+}
+.matrix-icon {
+  display: flex;
+}
+.matrix-icon .square {
+  margin-top: 2px;
+}
+.matrix-icon .display-flex {
+  display: flex;
+}
+.matrix-icon .brace {
+  font-size: 18px;
+  line-height: 18px;
+}
+.frac-icon {
+  margin: auto;
+}
+.frac-icon .line {
+  width: 15px;
+  height: 1px;
+  margin: 1px auto 1px auto;
+  background: black;
+}
+.auto-complete-category {
+  display: flex;
+  border-top: 1px solid rgba(175, 175, 175, 0.2);
+  margin-top: 3px;
+  padding-top: 4px;
+  padding-bottom: 2px;
+  font-size: 10px;
+}
+.auto-complete-category .category {
+  padding: 3px 7px;
+  cursor: pointer;
+}
+.auto-complete-category .category.mobile-tablet {
+  padding: 5px 7px;
+}
+.auto-complete-category .category:hover {
+  border-bottom: 2px solid rgba(174, 180, 173, 0.56);
+  cursor: pointer;
+}
+.auto-complete-category .selected {
+  border-bottom: 2px solid rgba(174, 180, 173, 0.56);
+}
+compositeblock {
+  display: inline-flex;
+  position: relative;
+  text-align: left;
+}
+compositeblock.middle {
+  vertical-align: middle;
+}
+latex-symbol-icon {
+  display: inline-block;
+  padding: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+latex-symbol-icon:hover,
+latex-symbol-icon.selected {
+  background: white;
+  border: 1px solid lightgray;
+}
+block {
+  /*display: inline-block;*/
+}
+inline {
+  display: inline-block;
+}
+base-line-indicator {
+  display: inline-block;
+  overflow: hidden;
+  width: 0px;
+  height: inherit;
+}
+math-type {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-text-stroke: 1px transparent;
+}
+math-type mathcha-text svg {
+  margin-bottom: -0.23em;
+  margin-left: -0.03em;
+}
+vcomposed-symbol {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  font-family: Asana-Math, Asana;
+}
+vcomposed-symbol > start {
+  display: block;
+  float: left;
+  overflow: hidden;
+  margin-bottom: -0.1px;
+}
+vcomposed-symbol > middle-center {
+  overflow: hidden;
+  margin-top: -0.1px;
+  margin-bottom: -0.1px;
+}
+vcomposed-symbol > middle {
+  display: block;
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+  margin-top: -0.1px;
+  margin-bottom: -0.1px;
+}
+vcomposed-symbol > middle > fixed {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+vcomposed-symbol > middle > fixed > inside {
+  display: block;
+  overflow: hidden;
+}
+vcomposed-symbol > end {
+  margin-top: -0.1px;
+  display: block;
+  overflow: hidden;
+}
+svg-composed-symbol {
+  display: block;
+}
+svg-composed-symbol > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.open-brace,
+.close-brace {
+  padding: 0 0.1em;
+  width: 0.5em;
+  min-width: 0.5em;
+}
+.open-brace > start,
+.close-brace > start {
+  min-height: 0.75em;
+  height: 0.75em;
+}
+.open-brace > middle-center,
+.close-brace > middle-center {
+  min-height: 0.6em;
+  height: 0.6em;
+}
+.open-brace > end,
+.close-brace > end {
+  min-height: 0.75em;
+  height: 0.75em;
+}
+.open-bracket,
+.close-bracket {
+  width: 0.43em;
+  min-width: 0.43em;
+}
+.open-bracket > start,
+.close-bracket > start {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-bracket > end,
+.close-bracket > end {
+  height: 0.7em;
+  min-height: 0.7em;
+}
+.open-parenthesis,
+.close-parenthesis {
+  width: 0.45em;
+  min-width: 0.45em;
+}
+.open-parenthesis > start,
+.close-parenthesis > start {
+  min-height: 0.8em;
+  height: 0.8em;
+}
+.open-parenthesis > end,
+.close-parenthesis > end {
+  min-height: 0.8em;
+  height: 0.8em;
+}
+.open-floor,
+.close-floor {
+  width: 0.45em;
+  min-width: 0.45em;
+}
+.open-floor > end,
+.close-floor > end {
+  height: 0.35em;
+  min-height: 0.35em;
+}
+.open-ceil,
+.close-ceil {
+  width: 0.45em;
+  min-width: 0.45em;
+}
+.open-ceil > start,
+.close-ceil > start {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-vert,
+.close-vert {
+  width: 0.3em;
+  min-width: 0.3em;
+}
+.open-Vert,
+.close-Vert {
+  width: 0.5em;
+  min-width: 0.5em;
+}
+.open-uparrow,
+.close-uparrow {
+  width: 0.45em;
+  min-width: 0.45em;
+}
+.open-uparrow > start,
+.close-uparrow > start {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-downarrow,
+.close-downarrow {
+  width: 0.45em;
+  min-width: 0.45em;
+}
+.open-downarrow > end,
+.close-downarrow > end {
+  height: 0.4em;
+  min-height: 0.4em;
+}
+.open-updownarrow,
+.close-updownarrow {
+  width: 0.45em;
+  min-width: 0.45em;
+}
+.open-updownarrow > start,
+.close-updownarrow > start {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-updownarrow > end,
+.close-updownarrow > end {
+  height: 0.4em;
+  min-height: 0.4em;
+}
+.open-Uparrow,
+.close-Uparrow {
+  width: 0.7em;
+  min-width: 0.7em;
+}
+.open-Uparrow > start,
+.close-Uparrow > start {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-Downarrow,
+.close-Downarrow {
+  width: 0.7em;
+  min-width: 0.7em;
+}
+.open-Downarrow > end,
+.close-Downarrow > end {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-Updownarrow,
+.close-Updownarrow {
+  width: 0.7em;
+  min-width: 0.7em;
+}
+.open-Updownarrow > start,
+.close-Updownarrow > start {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+.open-Updownarrow > end,
+.close-Updownarrow > end {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+/* z-index region*/
+opensymbolblock,
+closesymbolblock {
+  display: inline-flex;
+  align-items: center;
+  font-family: Asana;
+  position: relative;
+  text-align: left;
+}
+opensymbolblock > hidden-span,
+closesymbolblock > hidden-span {
+  visibility: hidden;
+  width: 0px;
+}
+opensymbolblock[type='brace'],
+closesymbolblock[type='brace'] {
+  margin-left: 0.05em;
+  margin-right: 0.05em;
+}
+opensymbolblock[type='angle'] svg-composed-symbol,
+closesymbolblock[type='angle'] svg-composed-symbol {
+  width: 0.7em;
+  height: 100%;
+}
+opensymbolblock[type='slash'] svg-composed-symbol,
+closesymbolblock[type='slash'] svg-composed-symbol {
+  width: 0.7em;
+  height: 100%;
+}
+opensymbolblock > bracket-span,
+closesymbolblock > bracket-span {
+  display: block;
+}
+opensymbolblock > vcomposed-symbol,
+closesymbolblock > vcomposed-symbol,
+opensymbolblock > bracket-span,
+closesymbolblock > bracket-span {
+  height: 100%;
+  width: 100%;
+}
+opensymbolblock > brace-span,
+closesymbolblock > brace-span {
+  visibility: hidden;
+  display: inline-block;
+  padding: 0 0.1em;
+}
+opensymbolblock[type='vert'] {
+  margin-left: 0.05em;
+  margin-right: 0.05em;
+}
+closesymbolblock[type='vert'] {
+  margin-left: 0.05em;
+  margin-right: 0.05em;
+}
+.empty-left-icon .rectangle {
+  width: 23px;
+  height: 12px;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+  border-color: gray;
+  font-family: fantasy;
+  color: black;
+  padding-top: 1px;
+  font-size: 9px;
+  line-height: 14px;
+  vertical-align: middle;
+  margin: auto;
+  border-left: 4px solid gray;
+}
+opensymbolblock[type=empty] > empty,
+closesymbolblock[type=empty] > empty {
+  width: 2px;
+  height: 100%;
+  display: block;
+}
+opensymbolblock[type=empty] > empty.normal-size,
+closesymbolblock[type=empty] > empty.normal-size {
+  height: 1em;
+}
+opensymbolblock[type=empty] > empty.line-selected,
+closesymbolblock[type=empty] > empty.line-selected {
+  background-color: lightgray;
+}
+.empty-right-icon .rectangle {
+  width: 23px;
+  height: 12px;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+  border-color: gray;
+  font-family: fantasy;
+  color: black;
+  padding-top: 1px;
+  font-size: 9px;
+  line-height: 14px;
+  vertical-align: middle;
+  margin: auto;
+  border-right: 4px solid gray;
+}
+/* z-index region*/
+preserve-width-text-svg {
+  position: relative;
+}
+preserve-width-text-svg > span {
+  visibility: hidden;
+}
+preserve-width-text-svg > svg {
+  font-size: 10px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+}
+hidden-input-wrapper {
+  overflow: hidden;
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  top: 0px;
+  left: 0px;
+  display: block;
+  transform: scale(0);
+  -webkit-user-select: none;
+  /* disable selection/Copy of UIWebView */
+  -webkit-touch-callout: none;
+  /* disable the IOS popup when long-press on a link */
+  user-select: none;
+}
+hidden-input-wrapper > textarea {
+  position: absolute;
+  width: 1000px;
+  height: 1em;
+  font-size: 30px;
+}
+/* z-index region*/
+math-type ref-tag {
+  font-size: 0.8em;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-family: sans-serif;
+  z-index: 11800;
+  cursor: pointer;
+}
+math-type ref-tag > label {
+  cursor: pointer;
+}
+math-type ref-tag:hover {
+  text-decoration: underline;
+}
+math-type ref-tag main-setting.setting-group-options {
+  display: flex;
+}
+math-type ref-tag main-setting.setting-group-options input-wrapper {
+  height: 19px;
+}
+math-type ref-tag.line-tag {
+  transition: background 0.4s;
+}
+math-type ref-tag.empty-line-tag {
+  display: none;
+  opacity: 0.5;
+}
+math-type .composite-multiline:hover ref-tag.empty-line-tag {
+  display: block;
+}
+math-type tr.math-row ref-tag {
+  right: -50px;
+}
+math-type tr.math-row:hover ref-tag.empty-line-tag {
+  display: block;
+}
+math-type line.taggable:hover ref-tag.empty-line-tag {
+  display: block;
+}
+math-type.read-only .composite-multiline:hover ref-tag.empty-line-tag,
+math-type.select-only .composite-multiline:hover ref-tag.empty-line-tag {
+  display: none;
+}
+math-type.read-only tr.math-row:hover ref-tag.empty-line-tag,
+math-type.select-only tr.math-row:hover ref-tag.empty-line-tag {
+  display: none;
+}
+math-type.read-only line.taggable:hover ref-tag.empty-line-tag,
+math-type.select-only line.taggable:hover ref-tag.empty-line-tag {
+  display: none;
+}
+/* z-index region*/
+math-type editarea.no-area-container,
+math-type area-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+math-type editarea.no-area-container > line,
+math-type area-container > line {
+  min-width: 0.3em;
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+  align-items: baseline;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+  justify-content: center;
+  text-align: left;
+  line-height: normal;
+}
+math-type editarea.no-area-container > line *,
+math-type area-container > line * {
+  text-align: left;
+}
+math-type editarea.no-area-container > line block,
+math-type area-container > line block {
+  white-space: pre;
+}
+math-type editarea.no-area-container > line.single-block > blocks > baselineblock,
+math-type area-container > line.single-block > blocks > baselineblock {
+  display: none;
+}
+math-type editarea.no-area-container > line.root,
+math-type area-container > line.root {
+  font-size: 15px;
+  display: block;
+  font-style: normal;
+}
+math-type editarea.no-area-container > line.root > prefix,
+math-type area-container > line.root > prefix {
+  white-space: pre;
+  display: inline-block;
+}
+math-type editarea.no-area-container > line.root > blocks,
+math-type area-container > line.root > blocks {
+  align-items: baseline;
+  box-sizing: border-box;
+}
+math-type editarea.no-area-container > line.root > blocks > block,
+math-type area-container > line.root > blocks > block {
+  white-space: pre-wrap;
+}
+math-type editarea.no-area-container > line.root.full-line-block-inside > prefix,
+math-type area-container > line.root.full-line-block-inside > prefix {
+  float: left;
+}
+math-type editarea.no-area-container > line.root.full-line-block-inside > blocks,
+math-type area-container > line.root.full-line-block-inside > blocks {
+  display: block;
+  width: 100%;
+}
+math-type editarea.no-area-container > line.root.full-line-block-inside > blocks > baselineblock,
+math-type area-container > line.root.full-line-block-inside > blocks > baselineblock {
+  float: left;
+}
+math-type editarea.no-area-container > line.root.section,
+math-type area-container > line.root.section {
+  font-weight: bold;
+  padding-top: 1.0em;
+}
+math-type editarea.no-area-container > line.root.section > prefix,
+math-type area-container > line.root.section > prefix {
+  text-align: left;
+  min-width: 40px;
+}
+math-type editarea.no-area-container > line.root.sindent-0,
+math-type area-container > line.root.sindent-0 {
+  font-size: 1.2em;
+  padding-bottom: 0.8em;
+}
+math-type editarea.no-area-container > line.root.sindent-1,
+math-type area-container > line.root.sindent-1 {
+  font-size: 1.1em;
+  padding-bottom: 0.6em;
+}
+math-type editarea.no-area-container > line.root.sindent-2,
+math-type area-container > line.root.sindent-2 {
+  font-size: 1.0em;
+  padding-bottom: 0.4em;
+}
+math-type editarea.no-area-container > line > prefix,
+math-type area-container > line > prefix {
+  text-align: right;
+}
+math-type editarea.no-area-container > line.indent-0 > prefix,
+math-type area-container > line.indent-0 > prefix {
+  min-width: 40px;
+}
+math-type editarea.no-area-container > line.indent-1 > prefix,
+math-type area-container > line.indent-1 > prefix {
+  min-width: 80px;
+}
+math-type editarea.no-area-container > line.indent-2 > prefix,
+math-type area-container > line.indent-2 > prefix {
+  min-width: 120px;
+}
+math-type editarea.no-area-container > line.indent-3 > prefix,
+math-type area-container > line.indent-3 > prefix {
+  min-width: 160px;
+}
+math-type editarea.no-area-container > line.indent-4 > prefix,
+math-type area-container > line.indent-4 > prefix {
+  min-width: 200px;
+}
+math-type editarea.no-area-container > line.math-container-selected,
+math-type area-container > line.math-container-selected {
+  outline: 1px solid rgba(115, 113, 113, 0.3);
+}
+math-type editarea.no-area-container > line.math-container,
+math-type area-container > line.math-container {
+  font-family: 'Asana';
+  justify-content: center;
+  text-align: center;
+  display: flex;
+}
+math-type editarea.no-area-container > line.math-container block,
+math-type area-container > line.math-container block {
+  white-space: pre;
+}
+math-type editarea.no-area-container > line.align-center,
+math-type area-container > line.align-center {
+  text-align: center;
+}
+math-type editarea.no-area-container > line.align-center > blocks,
+math-type area-container > line.align-center > blocks {
+  text-align: center;
+}
+math-type editarea.no-area-container > line.align-justify,
+math-type area-container > line.align-justify {
+  text-align: justify;
+}
+math-type editarea.no-area-container > line.align-justify > blocks,
+math-type area-container > line.align-justify > blocks {
+  text-align: justify;
+}
+math-type editarea.no-area-container > line.align-left,
+math-type area-container > line.align-left {
+  text-align: left;
+}
+math-type editarea.no-area-container > line.align-left > blocks,
+math-type area-container > line.align-left > blocks {
+  text-align: left;
+}
+math-type editarea.no-area-container > line.align-right,
+math-type area-container > line.align-right {
+  text-align: right;
+}
+math-type editarea.no-area-container > line.align-right > blocks,
+math-type area-container > line.align-right > blocks {
+  text-align: right;
+}
+math-type editarea.no-area-container > line > blocks > block,
+math-type area-container > line > blocks > block {
+  display: inline;
+}
+math-type editarea.text-mode {
+  flex-direction: column;
+}
+math-type editarea.text-mode > line.text-mode {
+  font-size: 15px;
+  display: block;
+  font-style: normal;
+  width: 100%;
+}
+math-type editarea.text-mode > line.text-mode > block {
+  white-space: pre-wrap;
+}
+math-type editarea.text-mode > line.text-mode.full-line-block-inside {
+  display: block;
+  width: 100%;
+}
+math-type editarea.text-mode > line.text-mode.full-line-block-inside > baselineblock {
+  margin-top: 1em;
+  float: left;
+}
+math-type editarea.text-mode > line.text-mode.align-center {
+  text-align: center;
+}
+math-type editarea.text-mode > line.text-mode.align-center > blocks {
+  text-align: center;
+}
+math-type editarea.text-mode > line.text-mode.align-justify {
+  text-align: justify;
+}
+math-type editarea.text-mode > line.text-mode.align-justify > blocks {
+  text-align: justify;
+}
+math-type editarea.text-mode > line.text-mode.align-left {
+  text-align: left;
+}
+math-type editarea.text-mode > line.text-mode.align-left > blocks {
+  text-align: left;
+}
+math-type editarea.text-mode > line.text-mode.align-right {
+  text-align: right;
+}
+math-type editarea.text-mode > line.text-mode.align-right > blocks {
+  text-align: right;
+}
+math-type editarea.no-area-container,
+math-type area-container {
+  align-items: initial;
+}
+math-type editarea.root-editor {
+  align-items: initial;
+  display: block;
+}
+math-type editarea.root-editor > area-container {
+  display: block;
+}
+math-type area-container {
+  width: 100%;
+}
+math-type editarea {
+  fill: black;
+  stroke: black;
+  border-collapse: black;
+  box-sizing: border-box;
+  display: flex;
+  overflow-x: visible;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+math-type editarea line.root > blocks > block,
+math-type editarea line.root > blocks > emptyblock {
+  line-height: 1.4;
+}
+math-type editarea block {
+  line-height: 1.2em;
+  cursor: text;
+}
+math-type editarea.high-order {
+  position: relative;
+  z-index: 10;
+}
+math-type editarea.selected {
+  outline: 1px solid rgba(115, 113, 113, 0.3);
+}
+math-type editarea.center > area-container > line,
+math-type editarea.center > line {
+  justify-content: center;
+}
+math-type editarea.left > area-container > line,
+math-type editarea.left > line {
+  justify-content: flex-start;
+}
+math-type editarea.right > area-container > line,
+math-type editarea.right > line {
+  justify-content: flex-end;
+}
+math-type editarea > area-baseline {
+  width: 0;
+  overflow: hidden;
+  display: inline-block;
+  float: left;
+}
+math-type setting.mt-common-dialog.line-tag-setting {
+  transform: translate(0, -100%);
+  position: absolute;
+  font-family: serif;
+  font-size: 11px;
+  top: -4px;
+  right: 0;
+  outline: none;
+}
+math-type setting.mt-common-dialog.line-tag-setting i {
+  font-style: normal;
+  padding: 1px 3px;
+}
+math-type setting.mt-common-dialog.line-tag-setting input-wrapper {
+  width: 70px;
+  margin-left: 1px;
+}
+baselineblock {
+  height: 0px;
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+}
+emptyblock {
+  white-space: pre;
+}
+composite {
+  display: block;
+}
+block.Binary {
+  padding: 0 0.2em;
+}
+block.Relation {
+  padding: 0 0.3em;
+}
+block.Punctuation {
+  padding-right: 0.2em;
+}
+cancel-symbol > editarea {
+  display: inline-flex;
+}
+cancel-symbol > svg-composed-symbol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+.icon-cancel .square {
+  margin-top: -19px;
+  margin-left: 6.5px;
+}
+.icon-bcancel .square {
+  margin-top: -19px;
+  margin-left: 6.5px;
+}
+.icon-xcancel .square {
+  margin-top: -19px;
+  margin-left: 6.5px;
+}
+/* z-index region*/
+bulb {
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  display: block;
+  position: absolute;
+  left: -17px;
+  top: -23px;
+  cursor: pointer;
+  color: gray;
+  font-size: 16px;
+  opacity: 0.7;
+  line-height: normal;
+  height: 16px;
+  z-index: 11599;
+}
+bulb.mobile-tablet {
+  transform: scale(1.3);
+  transform-origin: bottom right;
+}
+bulb > i.fa {
+  display: block;
+  height: 0.8em;
+  padding: 0 0.15em;
+  width: 0.8em;
+}
+bulb:hover {
+  border: 1px solid gray;
+  opacity: 1;
+}
+bulb:hover > .fa-caret-right {
+  display: block;
+}
+bulb > .fa-caret-right {
+  display: none;
+  position: absolute;
+  left: 13px;
+  top: 3px;
+}
+bulb > .fa-lightbulb-o {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+bulb > svg {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 3px;
+  left: 2px;
+}
+bulb > svg > circle {
+  fill: #f7f7a8;
+}
+/* z-index region*/
+container-like-setting {
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  background-color: #f7f7f7;
+  border: 1px lightgray solid;
+  z-index: 11950;
+  padding: 6px;
+  cursor: default;
+  display: flex;
+  position: absolute;
+  top: -30px;
+  left: 0;
+  flex-direction: row;
+}
+/* z-index region*/
+.fraction-symbol {
+  margin-left: 0.1em;
+  margin-right: 0.1em;
+  display: block;
+}
+.fraction-symbol.frac-inline {
+  font-size: 0.75em;
+}
+.fraction-symbol > .enumerator {
+  float: left;
+  width: 100%;
+  clear: both;
+}
+.fraction-symbol > .denominator {
+  margin-top: -5px;
+}
+.fraction-symbol > .frac-line {
+  clear: both;
+}
+.fraction-symbol > .frac-line > inline {
+  display: inline-block;
+  width: 100%;
+  vertical-align: 0.28em;
+  border-bottom: solid 0.0788em;
+}
+.fraction-symbol > editarea {
+  border: 0px;
+  min-width: 0.6em;
+}
+.fraction-symbol > editarea > area-container > line,
+.fraction-symbol > editarea > line {
+  justify-content: center;
+  text-align: center;
+}
+.stackrel-icon {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.stackrel-icon .square {
+  width: 6px;
+  height: 6px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: gray;
+}
+.stackrel-icon .distance {
+  margin-top: 3px;
+}
+/* z-index region*/
+math-type .stackrel-symbol.selected {
+  outline: 1px solid rgba(115, 113, 113, 0.3);
+}
+math-type .stackrel-symbol {
+  display: block;
+}
+math-type .stackrel-symbol > .cur-value {
+  clear: both;
+  display: inline-flex;
+  width: 100%;
+}
+math-type .stackrel-symbol > .top {
+  float: left;
+  clear: both;
+  width: 100%;
+  font-size: 0.7em;
+}
+/* z-index region*/
+math-type .underset-symbol.selected {
+  outline: 1px solid rgba(115, 113, 113, 0.3);
+}
+math-type .underset-symbol {
+  display: block;
+}
+math-type .underset-symbol > .center {
+  display: inline-flex;
+  width: 100%;
+}
+math-type .underset-symbol > .bottom {
+  display: block;
+  width: 100%;
+  font-size: 0.7em;
+}
+.stackrel-icon {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.stackrel-icon .square {
+  width: 6px;
+  height: 6px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: gray;
+}
+.stackrel-icon .distance {
+  margin-top: 3px;
+}
+/* z-index region*/
+math-type .over-under-set-symbol.selected {
+  outline: 1px solid rgba(115, 113, 113, 0.3);
+}
+math-type .over-under-set-symbol {
+  display: block;
+}
+math-type .over-under-set-symbol > .top {
+  display: block;
+  float: left;
+  clear: both;
+  width: 100%;
+}
+math-type .over-under-set-symbol > .top > line {
+  font-size: 0.7em;
+}
+math-type .over-under-set-symbol > .middle {
+  display: inline-flex;
+  width: 100%;
+  clear: both;
+}
+math-type .over-under-set-symbol > .middle.select {
+  border-bottom: none;
+}
+math-type .over-under-set-symbol > .bottom {
+  display: block;
+  width: 100%;
+}
+math-type .over-under-set-symbol > .bottom > line {
+  font-size: 0.7em;
+}
+/* z-index region*/
+.math-container-symbol {
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
+  font-size: 17px;
+  display: inline-flex;
+}
+.math-container-symbol.inline {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.math-container-symbol.selected {
+  background-color: rgba(0, 128, 0, 0.05);
+  outline: 1px solid #c1d4c1;
+}
+.math-container-symbol.display {
+  display: block;
+}
+.math-container-symbol.display.selected {
+  background-color: rgba(0, 128, 0, 0.05);
+  outline: none;
+}
+.math-container-symbol.display > editarea {
+  width: 100%;
+  flex-grow: 1;
+  display: block;
+}
+.math-container-symbol.display > editarea > area-container > line,
+.math-container-symbol.display > editarea > line {
+  justify-content: center;
+  text-align: center;
+}
+.math-container-symbol.display > editarea > area-container > line {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.multiline-icon {
+  display: flex;
+  flex-direction: column;
+  width: 32px;
+  border: 1px solid gray;
+  padding: 2px 2px;
+}
+.multiline-icon .align-start {
+  border: 1px solid gray;
+  width: 20px;
+}
+.multiline-icon .align-middle {
+  height: 2px;
+}
+.multiline-icon .align-end {
+  margin-left: 9px;
+  border: 1px solid gray;
+  width: 20px;
+}
+/* z-index region*/
+.math-container-symbol > editarea.multiline {
+  display: block;
+  flex-grow: 1;
+}
+.math-container-symbol > editarea.multiline > area-container > line,
+.math-container-symbol > editarea.multiline > line {
+  justify-content: center;
+  text-align: center;
+}
+.math-container-symbol > editarea.multiline > line:last-child {
+  justify-content: flex-end;
+  padding-bottom: 8px;
+}
+.math-container-symbol > editarea.multiline > line:first-child {
+  justify-content: flex-start;
+  padding-top: 8px;
+}
+/* z-index region*/
+math-type .sqrt-symbol {
+  white-space: nowrap;
+  display: block;
+  align-items: stretch;
+  position: relative;
+}
+math-type .sqrt-symbol > add {
+  opacity: 0.5;
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  display: block;
+  position: absolute;
+  font-size: 0.6em;
+  cursor: pointer;
+  margin-left: -0.4em;
+  z-index: 999;
+  opacity: 0.7;
+  left: 50%;
+  top: -0.5em;
+  left: 0.5em;
+}
+math-type .sqrt-symbol > add:hover {
+  border-color: gray;
+  opacity: 1;
+}
+math-type .sqrt-symbol > add > i {
+  display: block;
+  height: 1em;
+  padding: 0.1em 0.15em;
+  width: 0.8em;
+}
+math-type .sqrt-symbol text {
+  fill: black;
+}
+math-type .sqrt-symbol > sqrt-edit {
+  position: relative;
+  order: 3;
+  display: inline-flex;
+  align-self: flex-end;
+  align-items: stretch;
+}
+math-type .sqrt-symbol > sqrt-edit > sqrt-symbol-line {
+  overflow: visible;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+math-type .sqrt-symbol > sqrt-edit > sqrt-symbol-line > svg {
+  overflow: visible;
+  width: 100%;
+  height: 1em;
+}
+math-type .sqrt-symbol > sqrt-edit > area-container > line {
+  width: 1em;
+  position: relative;
+}
+math-type .sqrt-symbol > sqrt-edit > editarea {
+  z-index: 2;
+  display: inline-flex;
+  min-width: 0.5em;
+  margin-left: 1em;
+}
+math-type .sqrt-symbol > sqrt-top {
+  position: relative;
+  z-index: 2;
+  vertical-align: bottom;
+  padding-bottom: 0.9em;
+  align-self: flex-end;
+  display: inline-block;
+}
+math-type .sqrt-symbol > sqrt-top.selected {
+  outline: 1px solid rgba(115, 113, 113, 0.3);
+}
+math-type .sqrt-symbol > sqrt-top > editarea {
+  font-size: 0.7em;
+  border: none 0px;
+  min-width: 0.5em;
+  display: flex;
+  float: right;
+}
+math-type .sqrt-symbol > sqrt-top > editarea > line {
+  justify-content: center;
+}
+math-type .icon-sqrt {
+  display: flex;
+  margin: auto;
+  font-size: 12px;
+}
+math-type .icon-sqrt .square {
+  margin-top: 3px;
+  margin-right: -6px;
+}
+math-type .icon-sqrt .square-expand {
+  background-color: #f7f7f7;
+}
+math-type .icon-sqrt .align-end {
+  margin-top: 8px;
+}
+math-type .icon-sqrt .line {
+  width: 10px;
+  border-top: solid 1px black;
+  margin-top: 6px;
+}
+math-type .icon-sqrt .big-square {
+  margin-top: 11px;
+  margin-left: -8px;
+}
+/* z-index region*/
+image-viewer {
+  width: 100%;
+}
+image-viewer.inline {
+  width: auto;
+}
+image-viewer .image-content {
+  cursor: pointer;
+  text-align: left;
+}
+image-viewer .resize-box {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-width: 1px;
+  border-color: gray;
+  border-style: solid;
+  background-color: white;
+  z-index: 999;
+}
+image-viewer .resize-box.mobile-tablet {
+  width: 16px;
+  height: 16px;
+}
+image-viewer .resize-box.hide {
+  display: none;
+}
+image-viewer topleft {
+  top: 0;
+  left: 0;
+  margin-left: -5px;
+  margin-top: -5px;
+  cursor: nwse-resize;
+}
+image-viewer topleft.mobile-tablet {
+  margin-left: -8px;
+  margin-top: -8px;
+}
+image-viewer topright {
+  top: 0;
+  right: 0;
+  margin-right: -5px;
+  margin-top: -5px;
+  cursor: nesw-resize;
+}
+image-viewer topright.mobile-tablet {
+  margin-right: -8px;
+  margin-top: -8px;
+}
+image-viewer topmiddle {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  margin-top: -5px;
+  cursor: ns-resize;
+}
+image-viewer topmiddle.mobile-tablet {
+  margin-left: -8px;
+  margin-top: -8px;
+}
+image-viewer leftmiddle {
+  top: 50%;
+  left: 0;
+  margin-left: -5px;
+  margin-top: -5px;
+  cursor: ew-resize;
+}
+image-viewer leftmiddle.mobile-tablet {
+  margin-left: -8px;
+  margin-top: -8px;
+}
+image-viewer rightmiddle {
+  top: 50%;
+  right: 0;
+  margin-right: -5px;
+  margin-top: -5px;
+  cursor: ew-resize;
+}
+image-viewer rightmiddle.mobile-tablet {
+  margin-right: -8px;
+  margin-top: -8px;
+}
+image-viewer bottomleft {
+  bottom: 0;
+  left: 0;
+  margin-left: -5px;
+  margin-bottom: -5px;
+  cursor: nesw-resize;
+}
+image-viewer bottomleft.mobile-tablet {
+  margin-left: -8px;
+  margin-bottom: -8px;
+}
+image-viewer bottomright {
+  bottom: 0;
+  right: 0;
+  margin-right: -5px;
+  margin-bottom: -5px;
+  cursor: nwse-resize;
+}
+image-viewer bottomright.mobile-tablet {
+  margin-right: -8px;
+  margin-bottom: -8px;
+}
+image-viewer bottommiddle {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  margin-bottom: -5px;
+  cursor: ns-resize;
+}
+image-viewer bottommiddle.mobile-tablet {
+  margin-left: -8px;
+  margin-bottom: -8px;
+}
+image-viewer .box-container {
+  display: flex;
+  align-items: center;
+}
+image-viewer .box-container .size-number {
+  font: 10px serif;
+  color: gray;
+}
+image-viewer .box-container .number-bottom {
+  margin-top: 18px;
+}
+image-viewer .box-container .number-right {
+  margin-left: 3px;
+}
+image-viewer .box-container .box {
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border: 1px solid gray;
+}
+image-viewer .box-container .box.hide {
+  visibility: hidden;
+}
+image-viewer .box-container .box.show {
+  visibility: visible;
+}
+image-viewer .box-container .center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+image-viewer .ghost-viewer {
+  border: 1px dotted gray;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+image-viewer detail {
+  display: flex;
+  flex-direction: column;
+  top: -70px;
+  left: 0;
+  width: 220px;
+  font-size: 10px;
+  color: gray;
+  text-align: center;
+  line-height: 18px;
+  position: absolute;
+}
+image-viewer detail list-items-options {
+  display: flex;
+  padding-left: 3px;
+}
+image-viewer detail list-items-options div {
+  border: 1px solid transparent;
+  cursor: pointer;
+  margin-left: 3px;
+  padding: 0 2px 0 2px;
+}
+image-viewer detail list-items-options div:hover {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+image-viewer detail list-items-options div.selected {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+image-viewer detail url-input {
+  margin-top: 3px;
+  margin-left: 3px;
+  display: flex;
+}
+image-viewer detail url-input input-wrapper {
+  width: 154px;
+}
+image-viewer detail url-input div.button {
+  border: 1px solid lightgray;
+  cursor: pointer;
+  margin-left: 3px;
+  padding: 0 2px 0 2px;
+}
+image-viewer detail url-input div:hover {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+image-viewer image-container {
+  display: flex;
+  flex-direction: column;
+}
+image-viewer image-container img {
+  position: absolute;
+}
+image-viewer image-container.center {
+  align-items: center;
+}
+image-viewer image-container.left {
+  align-items: flex-start;
+}
+image-viewer image-container.right {
+  align-items: flex-end;
+}
+image-viewer .sk-cube-grid {
+  width: 40px;
+  height: 40px;
+}
+image-viewer .sk-cube-grid .sk-cube {
+  width: 33%;
+  height: 33%;
+  background-color: white;
+  float: left;
+  -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+  animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+}
+image-viewer .sk-cube-grid .sk-cube1 {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+image-viewer .sk-cube-grid .sk-cube2 {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
+}
+image-viewer .sk-cube-grid .sk-cube3 {
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s;
+}
+image-viewer .sk-cube-grid .sk-cube4 {
+  -webkit-animation-delay: 0.1s;
+  animation-delay: 0.1s;
+}
+image-viewer .sk-cube-grid .sk-cube5 {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+image-viewer .sk-cube-grid .sk-cube6 {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
+}
+image-viewer .sk-cube-grid .sk-cube7 {
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+image-viewer .sk-cube-grid .sk-cube8 {
+  -webkit-animation-delay: 0.1s;
+  animation-delay: 0.1s;
+}
+image-viewer .sk-cube-grid .sk-cube9 {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+@-webkit-keyframes sk-cubeGridScaleDelay {
+  0%,
+  70%,
+  100% {
+    -webkit-transform: scale3D(1, 1, 1);
+    transform: scale3D(1, 1, 1);
+  }
+  35% {
+    -webkit-transform: scale3D(0, 0, 1);
+    transform: scale3D(0, 0, 1);
+  }
+}
+@keyframes sk-cubeGridScaleDelay {
+  0%,
+  70%,
+  100% {
+    -webkit-transform: scale3D(1, 1, 1);
+    transform: scale3D(1, 1, 1);
+  }
+  35% {
+    -webkit-transform: scale3D(0, 0, 1);
+    transform: scale3D(0, 0, 1);
+  }
+}
+compositeblock.image-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+compositeblock.image-container > image-viewer {
+  display: block;
+}
+compositeblock.image-container.inline {
+  width: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/* z-index region*/
+math-type .power-index-symbol-container {
+  display: block;
+}
+math-type .power-index-symbol-container > .power-value {
+  /*margin-bottom: -2px;*/
+  float: left;
+  clear: both;
+}
+math-type .power-index-symbol-container > .power-value.small > line {
+  margin-bottom: -0.35em;
+}
+math-type .power-index-symbol-container > .power-value > line {
+  font-size: 0.7em;
+}
+math-type .power-index-symbol-container > .power-value > area-container > line,
+math-type .power-index-symbol-container > .power-value > line {
+  justify-content: flex-start;
+  text-align: left;
+}
+math-type .power-index-symbol-container > middle-base {
+  display: block;
+  clear: both;
+  height: 1em;
+}
+math-type .power-index-symbol-container > middle-base > inline {
+  display: inline-block;
+}
+math-type .power-index-symbol-container > .index-value > line {
+  font-size: 0.7em;
+}
+math-type .power-index-symbol-container > .index-value > area-container > line,
+math-type .power-index-symbol-container > .index-value > line {
+  justify-content: flex-start;
+  text-align: left;
+}
+.icon-power-index-symbol {
+  display: flex;
+  margin: auto;
+  width: 20px;
+  padding-bottom: 6px;
+}
+.icon-power-index-symbol .square-up {
+  margin-top: 4px;
+}
+.icon-power-index-symbol .square-down {
+  margin-top: 14px;
+  margin-left: -6px;
+}
+.icon-power-index-symbol .align-end {
+  margin-top: 4px;
+}
+.icon-power-symbol {
+  display: flex;
+  margin: auto;
+  width: 20px;
+  padding-bottom: 6px;
+}
+.icon-power-symbol .square {
+  margin-top: 4px;
+}
+.icon-power-symbol .align-end {
+  margin-top: 4px;
+}
+.icon-index-symbol {
+  display: flex;
+  margin: auto;
+  width: 20px;
+  padding-bottom: 6px;
+}
+.icon-index-symbol .square {
+  margin-top: 14px;
+  margin-left: 0px;
+}
+.icon-index-symbol .align-end {
+  margin-top: 4px;
+}
+/* z-index region*/
+.select-box-container {
+  font-size: 11px;
+  position: relative;
+  font-family: Arial, sans-serif;
+  outline: none;
+  color: #757575;
+}
+.select-box-container .input-container {
+  background-color: white;
+  border: 1px solid lightgray;
+  height: 12px;
+  padding: 2px;
+}
+.select-box-container .input-container input-like {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-width: 0;
+  outline: none;
+  height: 100%;
+  display: block;
+  font-family: Arial, sans-serif;
+  color: #757575;
+}
+.select-box-container .input-container:hover {
+  border: 1px solid darkgray;
+}
+.select-box-container .input-container .arrow-down-icon {
+  position: absolute;
+  top: 3px;
+  color: lightgray;
+}
+.select-box-container .input-container .arrow-down-icon:hover {
+  color: black;
+}
+.select-box-container .input-container .arrow-down-icon.selected {
+  color: black;
+}
+.select-box-container .items {
+  border: 1px solid lightgray;
+  background-color: white;
+  position: absolute;
+  outline: none;
+  z-index: 13000;
+}
+.select-box-container .items .item {
+  display: flex;
+  flex-direction: row;
+  min-height: 25px;
+  padding-left: 4px;
+  padding-right: 4px;
+  align-items: center;
+  cursor: pointer;
+}
+.select-box-container .items .item.selected {
+  background-color: #bfe4bd;
+}
+.select-box-container .hide {
+  display: none;
+}
+/* z-index region*/
+.matrix-symbol.matrix-like > matrix > table > tbody > tr > td {
+  padding-bottom: 0.1em;
+  padding-top: 0.1em;
+}
+.matrix-symbol.matrix-like > matrix > table > tbody > tr.selected {
+  border-top: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol.matrix-like > matrix > table > tbody > tr:last-child.selected {
+  border-bottom: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol.matrix-like > matrix > table > tbody > tr:last-child {
+  border-bottom: 1px solid transparent;
+}
+.matrix-symbol.matrix-like > matrix > table > tbody > tr.hline {
+  border-top: 1px solid black;
+}
+.matrix-symbol.matrix-like > matrix > table > tbody > tr:last-child.last-hline {
+  border-bottom: 1px solid black;
+}
+.matrix-symbol {
+  /* must be flex to have vertical center align , unless figure out another way */
+  display: flex;
+  align-items: center;
+}
+.matrix-symbol > base-line-indicator {
+  height: inherit;
+}
+.matrix-symbol matrixclosesymbol,
+.matrix-symbol matrixopensymbol {
+  font-style: normal;
+  color: black;
+  position: relative;
+}
+.matrix-symbol matrixclosesymbol > span,
+.matrix-symbol matrixopensymbol > span {
+  visibility: hidden;
+  display: inline-block;
+}
+.matrix-symbol matrixclosesymbol > svg,
+.matrix-symbol matrixopensymbol > svg {
+  overflow: visible;
+  font-size: 15px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.matrix-symbol matrixclosesymbol > svg text,
+.matrix-symbol matrixopensymbol > svg text {
+  fill: black;
+}
+.matrix-symbol > matrix.matrix > table > tbody > tr > td {
+  padding: 0 0.3em;
+}
+.matrix-symbol > matrix {
+  display: flex;
+  position: relative;
+  float: left;
+  align-items: stretch;
+  break-inside: avoid;
+}
+.matrix-symbol > matrix > vcomposed-symbol {
+  height: inherit;
+}
+.matrix-symbol > matrix > table {
+  border: 1px solid transparent;
+  border-collapse: collapse;
+}
+.matrix-symbol > matrix > table > tbody > tr {
+  box-sizing: border-box;
+  border-top: 1px solid transparent;
+}
+.matrix-symbol > matrix > table > tbody > tr.smaller {
+  font-size: 0.75em;
+}
+.matrix-symbol > matrix > table > tbody > tr > td {
+  box-sizing: border-box;
+  padding: 0 0.3em;
+  border-left: 1px solid transparent;
+  vertical-align: baseline;
+}
+.matrix-symbol > matrix > table > tbody > tr > td > editarea {
+  display: inline-flex;
+  width: 100%;
+}
+.matrix-symbol > matrix > table > tbody > tr > td:last-child {
+  border-right: 1px solid transparent;
+}
+.matrix-symbol > matrix > table > tbody > tr > td.selected {
+  border-left: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol > matrix > table > tbody > tr > td:last-child.selected {
+  border-right: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol > matrix > table > tbody > tr > td.vline {
+  border-left: 1px solid black;
+}
+.matrix-symbol > matrix > table > tbody > tr > td:last-child.last-vline {
+  border-right: 1px solid black;
+}
+.matrix-symbol > matrix > table > tbody > tr > td > .matrix-item {
+  min-width: 0.5;
+}
+.matrix-symbol > matrix > table > tbody > tr > td > .matrix-item > area-container > line,
+.matrix-symbol > matrix > table > tbody > tr > td > .matrix-item > line {
+  justify-content: center;
+  text-align: center;
+}
+.matrix-symbol > matrix.matrix > table {
+  margin-left: -0.2em;
+  margin-right: -0.2em;
+}
+.matrix-symbol > matrix.matrix > table > tbody > tr > td > editarea > area-container > line,
+.matrix-symbol > matrix.matrix > table > tbody > tr > td > editarea > line {
+  justify-content: center;
+  text-align: center;
+}
+.matrix-symbol > matrix.array > table > tbody > tr > td > editarea.left > area-container > line,
+.matrix-symbol > matrix.array > table > tbody > tr > td > editarea.left > line {
+  justify-content: flex-start;
+  text-align: left;
+}
+.matrix-symbol > matrix.array > table > tbody > tr > td > editarea.center > area-container > line,
+.matrix-symbol > matrix.array > table > tbody > tr > td > editarea.center > line {
+  justify-content: center;
+  text-align: center;
+}
+.matrix-symbol > matrix.array > table > tbody > tr > td > editarea.right > area-container > line,
+.matrix-symbol > matrix.array > table > tbody > tr > td > editarea.right > line {
+  justify-content: flex-end;
+  text-align: right;
+}
+.matrix-symbol > matrix.gathered > table > tbody > tr > td:nth-child(2n+3) {
+  padding-left: 1em;
+}
+.matrix-symbol > matrix.aligned > table > tbody > tr > td {
+  padding: 0;
+}
+.matrix-symbol > matrix.aligned > table > tbody > tr > td:nth-child(2n+3) {
+  padding-left: 1em;
+}
+.matrix-symbol > matrix.aligned > table > tbody > tr > td:nth-child(2n+1) > editarea > area-container > line,
+.matrix-symbol > matrix.aligned > table > tbody > tr > td:nth-child(2n+1) > editarea > line {
+  justify-content: flex-end;
+  text-align: right;
+}
+.matrix-symbol > matrix.aligned > table > tbody > tr > td:nth-child(2n) > editarea > area-container > line,
+.matrix-symbol > matrix.aligned > table > tbody > tr > td:nth-child(2n) > editarea > line {
+  justify-content: flex-start;
+  text-align: left;
+}
+.matrix-symbol > matrix > border-design {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+}
+.matrix-symbol > matrix > border-design > border-line {
+  cursor: pointer;
+  position: absolute;
+  /*border:1px solid gray;*/
+}
+.matrix-symbol > matrix > border-design > border-line > horizontal-line {
+  border-top: 1px solid #eceaea;
+  display: block;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  margin-top: 0;
+  left: 0;
+}
+.matrix-symbol > matrix > border-design > border-line > vertical-line {
+  border-left: 1px solid #eceaea;
+  display: block;
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  top: 0;
+}
+.matrix-symbol > matrix > border-design > border-line > vertical-line.enabled {
+  border-top: 1px solid black;
+}
+.matrix-symbol > matrix > border-design > border-line:hover > horizontal-line {
+  border-top: 1px solid gray;
+}
+.matrix-symbol > matrix > border-design > border-line:hover > vertical-line {
+  border-left: 1px solid gray;
+}
+.matrix-symbol > matrix > border-design > border-line.enabled > horizontal-line {
+  border-top: 1px solid black;
+}
+.matrix-symbol > matrix > border-design > border-line.enabled > vertical-line {
+  border-left: 1px solid black;
+}
+.matrix-symbol > matrix > setting {
+  padding: 7px;
+  position: absolute;
+  top: -6px;
+  font-family: Arial, sans-serif;
+  transform: translate(0, -100%);
+  left: 0;
+}
+.matrix-symbol > matrix > setting > main-setting {
+  display: flex;
+  flex-direction: row;
+}
+.matrix-symbol > matrix > setting > main-setting styled-select {
+  /*width: 60px;*/
+  display: block;
+  background-color: white;
+}
+.matrix-symbol > matrix > setting > main-setting > layout-type {
+  display: block;
+  float: left;
+}
+.matrix-symbol > matrix > setting > main-setting > layout-type > styled-select > select {
+  width: 80px;
+}
+.matrix-symbol > matrix > setting > column-setting {
+  display: block;
+}
+.matrix-symbol > matrix > setting > column-setting > align-options {
+  margin-left: 0px;
+}
+.matrix-symbol > matrix > setting label {
+  margin-left: 6px;
+  margin-right: 3px;
+  font-size: 11px;
+  display: inline-block;
+  height: 12px;
+  color: gray;
+}
+.matrix-symbol > matrix > setting input-wrapper {
+  width: 17px;
+  color: #757575;
+  margin-left: -1px;
+  display: block;
+  float: left;
+}
+.matrix-symbol > matrix > setting input-wrapper.first-one {
+  margin-left: 0px;
+}
+.matrix-symbol > matrix > setting input-wrapper:hover {
+  border-color: darkgray;
+}
+matrix-layout-detail {
+  display: flex;
+  flex-direction: row;
+  float: left;
+  align-items: center;
+}
+matrix-layout-detail label {
+  margin-left: 6px;
+  margin-right: 3px;
+  font-size: 11px;
+  display: inline-block;
+  height: 12px;
+  color: gray;
+}
+matrix-layout-detail input-wrapper {
+  width: 20px;
+}
+matrix-layout-detail > .fa-table {
+  background: white;
+  border: 1px solid lightgray;
+  padding: 2px 2px;
+  font-size: 12px;
+  color: gray;
+  cursor: pointer;
+  /*margin-left: 5px;*/
+}
+matrix-layout-detail > .fa-table:hover {
+  color: black;
+}
+.matrix-icon {
+  display: flex;
+}
+.matrix-icon .square {
+  margin-top: 2px;
+}
+.matrix-icon .display-flex {
+  display: flex;
+}
+/* z-index region*/
+.matrix-symbol.case-symbol > matrix > table > tbody > tr > td {
+  padding: 0 0.2em;
+}
+.matrix-symbol.case-symbol > matrix > table > tbody > tr > td.selected {
+  border: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol.case-symbol > matrix > table > tbody > tr > td.non-select {
+  user-select: none;
+  width: 0.2em;
+  padding: 0;
+}
+.matrix-symbol.case-symbol > matrix > table > tbody > tr > td > editarea > area-container > line,
+.matrix-symbol.case-symbol > matrix > table > tbody > tr > td > editarea > line {
+  justify-content: flex-start;
+  text-align: left;
+}
+.case-icon {
+  display: flex;
+  font-size: 18px;
+  line-height: 18px;
+}
+.case-icon .square {
+  margin-top: 2px;
+}
+.case-icon .display-flex {
+  display: flex;
+}
+.array-icon .square {
+  margin-top: 2px;
+}
+.array-icon .display-flex {
+  display: flex;
+}
+.gathered-icon {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid gray;
+}
+.gathered-icon .start {
+  margin: 1px auto;
+  border: 1px solid gray;
+  width: 14px;
+  height: 0px;
+}
+.gathered-icon .middle {
+  margin: 1px auto;
+  border: 1px solid gray;
+  width: 10px;
+  height: 0px;
+}
+.gathered-icon .end {
+  margin: 1px auto;
+  border: 1px solid gray;
+  width: 6px;
+  height: 0px;
+}
+.align-icon {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid gray;
+}
+.align-icon .row {
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  padding: 3px 2px 0px 2px;
+}
+.align-icon .row .start {
+  border: 1px solid gray;
+  width: 8px;
+  height: 0px;
+  margin-top: 1px;
+}
+.align-icon .row .middle {
+  width: 12px;
+  margin-top: -6px;
+}
+.align-icon .row .end {
+  border: 1px solid gray;
+  width: 8px;
+  height: 0px;
+  margin-top: 1px;
+}
+.matrix-like.binom > .binom > table > tbody > tr > td {
+  padding: 0;
+}
+.binom-icon {
+  display: flex;
+  font-size: 18px;
+  line-height: 14px;
+}
+.binom-icon .square {
+  margin-top: 1px;
+}
+.binom-icon .display-flex {
+  display: flex;
+}
+/* z-index region*/
+.align-symbol {
+  font-size: 17px;
+}
+.matrix-symbol.align-symbol {
+  display: inline-flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.matrix-symbol.align-symbol.selected {
+  background-color: rgba(0, 128, 0, 0.05);
+}
+.matrix-symbol.align-symbol > matrix > setting > main-setting {
+  margin-bottom: 0px;
+}
+.matrix-symbol.align-symbol > matrix > bulb {
+  left: 50%;
+}
+.matrix-symbol.align-symbol > matrix > setting {
+  margin-left: 20px;
+}
+.matrix-symbol.align-symbol > matrix.align {
+  width: 100%;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td {
+  padding: 0;
+  font-family: Asana-Math, Asana;
+  vertical-align: baseline;
+  border: 1px solid transparent;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td > editarea > area-container > line,
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td > editarea > line {
+  justify-content: flex-start;
+  text-align: left;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td.align-right > editarea > area-container > line,
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td.align-right > editarea > line {
+  justify-content: flex-end;
+  text-align: right;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td.non-select {
+  border: none;
+  user-select: none;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td.expand {
+  width: 100%;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td.selected {
+  border: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td > editarea {
+  min-width: 1.5em;
+}
+.matrix-symbol.align-symbol > matrix > table > tbody > tr > td > tupple {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.gather-icon {
+  display: flex;
+  flex-direction: row;
+}
+.gather-icon .column {
+  display: flex;
+  flex-direction: column;
+  margin: auto 1px;
+  padding: 1px 2px;
+  border: 1px solid gray;
+}
+.gather-icon .column .slide {
+  border: 1px solid gray;
+  width: 8px;
+  height: 0px;
+  margin: 1px;
+}
+/* z-index region*/
+.gather-symbol {
+  font-size: 17px;
+}
+.matrix-symbol.gather-symbol {
+  display: inline-flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.matrix-symbol.gather-symbol.selected {
+  background-color: rgba(0, 128, 0, 0.05);
+}
+.matrix-symbol.gather-symbol > matrix.gather {
+  width: 100%;
+}
+.matrix-symbol.gather-symbol > matrix > setting > main-setting {
+  margin-bottom: 0px;
+}
+.matrix-symbol.gather-symbol > matrix > bulb {
+  left: -1em;
+}
+.matrix-symbol.gather-symbol > matrix > setting {
+  margin-left: 20px;
+}
+.matrix-symbol.gather-symbol > matrix > table > tbody > tr > td {
+  padding: 0;
+  font-family: Asana-Math, Asana;
+  vertical-align: baseline;
+  border: 1px solid transparent;
+}
+.matrix-symbol.gather-symbol > matrix > table > tbody > tr > td.non-select {
+  user-select: none;
+  width: 1.5em;
+  border: none;
+}
+.matrix-symbol.gather-symbol > matrix > table > tbody > tr > td.expand {
+  width: 100%;
+}
+.matrix-symbol.gather-symbol > matrix > table > tbody > tr > td.selected {
+  border: 1px solid rgba(115, 113, 113, 0.3);
+}
+.matrix-symbol.gather-symbol > matrix > table > tbody > tr > td > editarea {
+  min-width: 1.5em;
+}
+.matrix-symbol.gather-symbol > matrix > table > tbody > tr > td > tupple {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+math-type matrix.table {
+  width: 100%;
+}
+math-type matrix.table > table {
+  table-layout: fixed;
+  width: 100%;
+}
+math-type matrix.table > table > tbody > tr > td {
+  vertical-align: top;
+}
+math-type compositeblock.table-of-content {
+  width: 100%;
+}
+math-type compositeblock.table-of-content > toc-wrapper {
+  position: relative;
+  width: 100%;
+  cursor: default;
+}
+math-type compositeblock.table-of-content > toc-wrapper:hover toc-refresh {
+  display: block;
+}
+math-type compositeblock.table-of-content > toc-wrapper > editarea {
+  width: 100%;
+  cursor: default;
+  display: block;
+}
+math-type compositeblock.table-of-content > toc-wrapper > editarea > line {
+  display: block;
+  float: left;
+  clear: left;
+  width: auto;
+  padding-left: 1em;
+  cursor: pointer;
+}
+math-type compositeblock.table-of-content > toc-wrapper > editarea > line:hover > compositeblock:nth-child(2) {
+  text-decoration: underline;
+}
+math-type compositeblock.table-of-content > toc-wrapper > editarea > line block {
+  cursor: pointer;
+  white-space: pre-wrap;
+}
+math-type compositeblock.table-of-content > toc-wrapper toc-refresh {
+  display: none;
+  position: absolute;
+  left: -10px;
+  top: 0px;
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  font-size: 0.8em;
+  cursor: pointer;
+  /* width: 1em; */
+  z-index: 999;
+  height: 1em;
+  padding: 0.2em;
+  padding-top: 0.1em;
+}
+math-type compositeblock.table-of-content > toc-wrapper toc-refresh:hover {
+  border: 1px solid gray;
+}
+.icon-integral-symbol {
+  margin: auto 4px auto auto;
+  display: flex;
+  flex-direction: row-reverse;
+  font-size: 12px;
+}
+.icon-integral-symbol .square-up {
+  border-width: 1px;
+  margin-top: 0px;
+}
+.icon-integral-symbol .square-down {
+  border-width: 1px;
+  margin-top: 21px;
+  margin-left: -10px;
+}
+.icon-integral-symbol .align-end {
+  margin-top: 6px;
+}
+/* z-index region*/
+math-type .limit-type {
+  display: block;
+  position: relative;
+}
+math-type .limit-type > add {
+  opacity: 0.5;
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  display: block;
+  position: absolute;
+  font-size: 0.6em;
+  cursor: pointer;
+  margin-left: -0.4em;
+  z-index: 999;
+  opacity: 0.7;
+  top: -0.5em;
+  left: 50%;
+  top: -1.4em;
+  left: 0.6em;
+  align-items: flex-start;
+}
+math-type .limit-type > add:hover {
+  border-color: gray;
+  opacity: 1;
+}
+math-type .limit-type > add > i {
+  display: block;
+  height: 1em;
+  padding: 0.1em 0.15em;
+  width: 0.8em;
+}
+math-type .limit-type > .to,
+math-type .limit-type > .from {
+  float: left;
+  clear: both;
+}
+math-type .limit-type > .to > line,
+math-type .limit-type > .from > line,
+math-type .limit-type > .to > editarea > line,
+math-type .limit-type > .from > editarea > line {
+  font-size: 0.7em;
+}
+math-type .limit-type > symbol {
+  font-family: Asana;
+  display: block;
+  clear: both;
+}
+math-type .limit-type > symbol > span {
+  white-space: nowrap;
+}
+math-type .limit-type > setting {
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  opacity: 0.5;
+  opacity: 1;
+  position: absolute;
+  left: 50%;
+  top: -2em;
+  font-size: 0.6em;
+  margin-left: -0.6em;
+  padding: 0 0.2em;
+  cursor: pointer;
+}
+math-type .limit-type > setting:hover {
+  border-color: gray;
+  opacity: 1;
+}
+math-type .limit-type > setting:hover {
+  border: 1px solid gray;
+}
+math-type .limit-type > setting > i {
+  transform: rotate(-60deg);
+}
+math-type .limit-type.limit-kind > setting > i {
+  transform: rotate(45deg);
+}
+math-type .limit-type.limit-kind > symbol {
+  text-align: center;
+}
+math-type .limit-type.limit-kind > .from,
+math-type .limit-type.limit-kind > .to {
+  width: 100%;
+}
+math-type .limit-type.limit-kind > .from > line,
+math-type .limit-type.limit-kind > .to > line {
+  justify-content: center;
+}
+math-type .limit-type.limit-kind > empty.from {
+  height: 0;
+}
+math-type .limit-type.limit-kind > empty.from > editarea {
+  margin-top: -0.6em;
+}
+math-type .limit-type.limit-kind > empty.from > editarea.selected {
+  background-color: white;
+}
+math-type .limit-type.limit-kind > empty.to {
+  height: 0;
+}
+math-type .limit-type.limit-kind > empty.to > editarea.selected {
+  background-color: white;
+}
+math-type .integral-like-symbol.inline > symbol {
+  font-size: 1em;
+}
+math-type .integral-like-symbol.inline.limit-kind > .from {
+  margin-left: 0.2em;
+}
+math-type .integral-like-symbol.inline.limit-kind > .to {
+  margin-left: -0.2em;
+  margin-right: 0.2em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .from.from-int {
+  margin-left: 0.8em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .to.to-int {
+  margin-left: 0.5em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .from.from-iint {
+  margin-left: 1.15em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .to.to-iint {
+  margin-left: 0.85em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .from.from-iiint {
+  margin-left: 1.5em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .to.to-iiint {
+  margin-left: 1.2em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .from.from-oint {
+  margin-left: 0.8em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .to.to-oint {
+  margin-left: 0.5em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .from.from-oiint {
+  margin-left: 1.15em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .to.to-oiint {
+  margin-left: 0.85em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .from.from-oiiint {
+  margin-left: 1.5em;
+}
+math-type .integral-like-symbol.inline.non-limit-kind > .to.to-oiiint {
+  margin-left: 1.2em;
+}
+math-type .integral-like-symbol > symbol {
+  font-size: 1.5em;
+}
+math-type .integral-like-symbol > symbol > span {
+  line-height: 1.4em;
+}
+math-type .integral-like-symbol.limit-kind > .from {
+  margin-left: 0.2em;
+}
+math-type .integral-like-symbol.limit-kind > .to {
+  margin-left: -0.2em;
+  margin-right: 0.2em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from.from-int {
+  margin-left: 1.2em;
+}
+math-type .integral-like-symbol.non-limit-kind > .to.to-int {
+  margin-left: 0.75em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from.from-iint {
+  margin-left: 1.725em;
+}
+math-type .integral-like-symbol.non-limit-kind > .to.to-iint {
+  margin-left: 1.275em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from.from-iiint {
+  margin-left: 2.25em;
+}
+math-type .integral-like-symbol.non-limit-kind > .to.to-iiint {
+  margin-left: 1.8em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from.from-oint {
+  margin-left: 1.2em;
+}
+math-type .integral-like-symbol.non-limit-kind > .to.to-oint {
+  margin-left: 0.75em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from.from-oiint {
+  margin-left: 1.725em;
+}
+math-type .integral-like-symbol.non-limit-kind > .to.to-oiint {
+  margin-left: 1.275em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from.from-oiiint {
+  margin-left: 2.25em;
+}
+math-type .integral-like-symbol.non-limit-kind > .to.to-oiiint {
+  margin-left: 1.8em;
+}
+math-type .integral-like-symbol.non-limit-kind > .from {
+  justify-content: flex-start;
+}
+math-type .integral-like-symbol.non-limit-kind > .to {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+/* z-index region*/
+math-type .limit-type.lim-like-symbol {
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+}
+math-type .limit-type.lim-like-symbol.close-left {
+  margin-left: 0;
+}
+math-type .limit-type.lim-like-symbol.close-right {
+  margin-right: 0;
+}
+math-type .limit-type.lim-like-symbol.limit-kind > empty.from > editarea {
+  margin-top: -0.4em;
+}
+math-type .lim-like-symbol > add {
+  left: 50%;
+  top: -1em;
+}
+math-type .lim-like-symbol > symbol.inf {
+  text-decoration: underline;
+}
+math-type .lim-like-symbol > symbol.sup {
+  text-decoration: overline;
+}
+math-type .lim-like-symbol.non-limit-kind > .from,
+math-type .lim-like-symbol.non-limit-kind > .to {
+  margin-left: 1.4em;
+}
+math-type .lim-like-symbol.non-limit-kind > .from.from-lim,
+math-type .lim-like-symbol.non-limit-kind > .to.to-lim {
+  margin-left: 1.47em;
+}
+math-type .lim-like-symbol.non-limit-kind > .from.from-liminf,
+math-type .lim-like-symbol.non-limit-kind > .to.to-liminf {
+  margin-left: 3.0em;
+}
+math-type .lim-like-symbol.non-limit-kind > .from.from-limsup,
+math-type .lim-like-symbol.non-limit-kind > .to.to-limsup {
+  margin-left: 3.36em;
+}
+math-type .lim-like-symbol.non-limit-kind > .from.from-sup,
+math-type .lim-like-symbol.non-limit-kind > .to.to-sup {
+  margin-left: 1.61em;
+}
+math-type .lim-like-symbol.non-limit-kind > .from.from-varlimsup,
+math-type .lim-like-symbol.non-limit-kind > .to.to-varlimsup {
+  margin-left: 1.47em;
+}
+.icon-lim {
+  margin: auto 4px auto auto;
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+.icon-lim .square-up {
+  border-width: 1px;
+  margin: auto;
+}
+.icon-lim .square-down {
+  border-width: 1px;
+  margin: auto;
+}
+.icon-lim .align-center {
+  margin: auto;
+}
+.icon-lim .align-center.border-top {
+  border-top: 1px solid black;
+  margin-top: 2px;
+}
+.icon-lim .align-center.border-bottom {
+  border-bottom: 1px solid black;
+  margin-bottom: 2px;
+}
+.icon-summation-symbol {
+  margin: auto;
+  font-size: 12px;
+}
+.icon-summation-symbol .square-up {
+  margin: auto auto 1px auto;
+}
+.icon-summation-symbol .square-down {
+  margin: 1px auto;
+}
+.icon-summation-symbol .align-center {
+  margin: auto;
+  height: 15px;
+  line-height: 12px;
+}
+.icon-summation-symbol .align-center.isSmall {
+  line-height: 12px;
+}
+/* z-index region*/
+math-type .limit-type.summation-like-symbol.limit-kind > empty.from > editarea {
+  margin-top: -0.2em;
+}
+math-type .summation-like-symbol.inline > add {
+  top: -1.1em;
+}
+math-type .summation-like-symbol.inline > symbol {
+  font-size: 1em;
+}
+math-type .summation-like-symbol.inline > symbol > span {
+  vertical-align: 0.15em;
+}
+math-type .summation-like-symbol.inline.non-limit-kind > .from,
+math-type .summation-like-symbol.inline.non-limit-kind > .to {
+  margin-left: 0.9em;
+}
+math-type .summation-like-symbol.inline.non-limit-kind > .to.to-prod,
+math-type .summation-like-symbol.inline.non-limit-kind .from.from-prod {
+  margin-left: 1em;
+}
+math-type .summation-like-symbol > symbol {
+  font-size: 1.5em;
+}
+math-type .summation-like-symbol > symbol > span {
+  vertical-align: 0.1em;
+  line-height: 1.4em;
+}
+math-type .summation-like-symbol > add {
+  top: -1.5em;
+}
+math-type .summation-like-symbol > .custom-symbol {
+  font-weight: bold;
+}
+math-type .summation-like-symbol.non-limit-kind > .from,
+math-type .summation-like-symbol.non-limit-kind > .to {
+  margin-left: 1.3em;
+}
+math-type .summation-like-symbol.non-limit-kind > .to.to-prod,
+math-type .summation-like-symbol.non-limit-kind .from.from-prod {
+  margin-left: 1.5em;
+}
+math-type .summation-like-symbol.non-limit-kind > .to {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+hcomposed-symbol {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Asana-Math, Asana;
+}
+hcomposed-symbol > start {
+  display: block;
+  float: left;
+  overflow: hidden;
+}
+hcomposed-symbol > middle {
+  display: block;
+  flex-grow: 1;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+hcomposed-symbol > middle > fixed {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+hcomposed-symbol > middle > fixed > inside {
+  display: inline-block;
+  overflow: hidden;
+}
+hcomposed-symbol > end {
+  display: block;
+  overflow: hidden;
+}
+/* z-index region*/
+math-type .arrow-like-symbol {
+  padding: 0 0.2em;
+  display: block;
+}
+math-type .arrow-like-symbol > arrow-like-simple > add {
+  opacity: 0.5;
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  display: block;
+  position: absolute;
+  font-size: 0.6em;
+  cursor: pointer;
+  margin-left: -0.4em;
+  z-index: 999;
+  opacity: 0.7;
+  top: -0.5em;
+  left: 50%;
+  left: 0.8em;
+  top: -0.7em;
+}
+math-type .arrow-like-symbol > arrow-like-simple > add:hover {
+  border-color: gray;
+  opacity: 1;
+}
+math-type .arrow-like-symbol > arrow-like-simple > add > i {
+  display: block;
+  height: 1em;
+  padding: 0.1em 0.15em;
+  width: 0.8em;
+}
+math-type .arrow-like-symbol > middle {
+  display: block;
+  text-align: center;
+  clear: both;
+  width: 100%;
+  position: relative;
+}
+math-type .arrow-like-symbol > middle > inside {
+  display: inline-block;
+  height: 0.55em;
+  width: 100%;
+}
+math-type .arrow-like-symbol > middle > inside > hcomposed-symbol {
+  position: absolute;
+  top: 0.4em;
+  left: 0;
+}
+math-type .arrow-like-symbol > editarea.small-margin {
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+}
+math-type .arrow-like-symbol > editarea.large-padding {
+  margin: 0 1.3em;
+}
+math-type .arrow-like-symbol > editarea > line {
+  font-size: 0.7em;
+}
+math-type .arrow-like-symbol > .top {
+  float: left;
+  width: 100%;
+  clear: both;
+  margin-bottom: -0.6em;
+  z-index: 1;
+  position: relative;
+}
+math-type .arrow-like-symbol > .bottom {
+  margin-top: -0.45em;
+}
+.over-icon {
+  margin: auto;
+  width: 12px;
+  font-size: 13px;
+}
+.over-icon .over-wrapper {
+  line-height: 10px;
+}
+/* z-index region*/
+math-type .over-arrow-symbol {
+  display: block;
+}
+math-type .over-arrow-symbol > arrow-symbol {
+  display: block;
+  margin-right: -0.1em;
+  position: relative;
+}
+math-type .over-arrow-symbol > arrow-symbol > hcomposed-symbol {
+  position: absolute;
+}
+math-type .over-arrow-symbol > arrow-symbol > arrow-wrapper {
+  margin-right: -0.2em;
+}
+math-type .over-arrow-symbol > editarea {
+  display: inline-flex;
+}
+math-type .over-arrow-symbol > editarea > area-container > line,
+math-type .over-arrow-symbol > editarea > line {
+  justify-content: center;
+  text-align: center;
+}
+/* z-index region*/
+math-type .over-line-symbol {
+  display: block;
+}
+math-type .over-line-symbol > editarea {
+  display: inline-flex;
+}
+math-type .over-line-symbol > line-border {
+  display: block;
+  position: relative;
+}
+math-type .over-line-symbol > line-border > hcomposed-symbol {
+  position: absolute;
+}
+math-type .over-line-symbol > line-border > svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.over-line-icon {
+  margin: auto;
+  border-top: solid 1px black;
+  width: 12px;
+  padding-top: 4px;
+  margin-top: 8px;
+}
+.over-line-icon .square {
+  text-decoration: overline;
+  width: 6px;
+  height: 6px;
+  border-style: solid;
+  border-width: 1px;
+  margin: auto;
+  border-color: gray;
+}
+brace-top-wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  font-family: Asana-Math, Asana;
+}
+brace-top-wrapper > middle-wrapper {
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+}
+brace-top-wrapper > middle-wrapper > fixed {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+brace-top-wrapper > middle-wrapper > fixed > middle-inside {
+  overflow: hidden;
+}
+brace-top-wrapper first,
+brace-top-wrapper middle,
+brace-top-wrapper last {
+  overflow: hidden;
+  position: relative;
+}
+brace-top-wrapper first {
+  min-width: 0.7em;
+  width: 0.7em;
+}
+brace-top-wrapper > middle {
+  min-width: 0.6em;
+  width: 0.6em;
+}
+brace-top-wrapper > last {
+  min-width: 0.7em;
+  width: 0.7em;
+}
+bracket-top-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: Asana-Math, Asana;
+}
+bracket-top-wrapper > first,
+bracket-top-wrapper middle,
+bracket-top-wrapper last {
+  overflow: hidden;
+  position: relative;
+}
+bracket-top-wrapper > first {
+  height: 0.5em;
+  min-height: 0.5em;
+}
+bracket-top-wrapper middle-wrapper {
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+}
+bracket-top-wrapper middle-wrapper > fixed {
+  overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+bracket-top-wrapper middle-wrapper > fixed > middle {
+  display: block;
+  overflow: hidden;
+}
+bracket-top-wrapper > last {
+  height: 0.65em;
+  min-height: 0.65em;
+}
+parenthesis-top-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: Asana-Math, Asana;
+}
+parenthesis-top-wrapper > first,
+parenthesis-top-wrapper middle,
+parenthesis-top-wrapper last {
+  overflow: hidden;
+  position: relative;
+  height: 1em;
+  min-height: 1em;
+}
+parenthesis-top-wrapper > first {
+  min-height: 0.9em;
+  height: 0.9em;
+}
+parenthesis-top-wrapper middle-wrapper {
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+}
+parenthesis-top-wrapper middle-wrapper > fixed {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+parenthesis-top-wrapper middle-wrapper > fixed > middle {
+  display: block;
+  overflow: hidden;
+}
+parenthesis-top-wrapper > last {
+  min-height: 1.0em;
+  height: 1.0em;
+}
+.over-brace-icon {
+  margin: auto;
+  font-size: 12px;
+}
+.over-brace-icon .square {
+  margin-top: -7px;
+}
+/* z-index region*/
+math-type .over-brace-symbol {
+  display: block;
+  position: relative;
+}
+math-type .over-brace-symbol > add {
+  opacity: 0.5;
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  display: block;
+  position: absolute;
+  font-size: 0.6em;
+  cursor: pointer;
+  margin-left: -0.4em;
+  z-index: 999;
+  opacity: 0.7;
+  top: -0.5em;
+  left: 50%;
+  top: -1.5em;
+  margin-left: -0.6em;
+}
+math-type .over-brace-symbol > add:hover {
+  border-color: gray;
+  opacity: 1;
+}
+math-type .over-brace-symbol > add > i {
+  display: block;
+  height: 1em;
+  padding: 0.1em 0.15em;
+  width: 0.8em;
+}
+math-type .over-brace-symbol > top-brace {
+  pointer-events: none;
+  display: block;
+  min-width: 1.1em;
+  position: relative;
+  clear: both;
+  margin-bottom: -0.1em;
+}
+math-type .over-brace-symbol > top-brace > brace-top-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+math-type .over-brace-symbol > editarea {
+  display: inline-flex;
+  width: 100%;
+  align-self: center;
+  clear: both;
+}
+math-type .over-brace-symbol > editarea.overValue {
+  font-size: 0.7em;
+  float: left;
+  width: 100%;
+  margin-bottom: 0.1em;
+}
+.icon-hat {
+  margin: auto;
+  width: 12px;
+  font-size: 12px;
+}
+.icon-hat .square {
+  margin-top: -3px;
+}
+math-type .wide-hat-symbol,
+math-type .wide-tilde-symbol {
+  display: block;
+}
+math-type .wide-hat-symbol > editarea,
+math-type .wide-tilde-symbol > editarea {
+  display: inline-flex;
+}
+math-type .wide-hat-symbol > symbol,
+math-type .wide-tilde-symbol > symbol {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+math-type .wide-hat-symbol > symbol > svg-composed-symbol,
+math-type .wide-tilde-symbol > symbol > svg-composed-symbol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+math-type .wide-hat-symbol > symbol > svg-composed-symbol.right-sign,
+math-type .wide-tilde-symbol > symbol > svg-composed-symbol.right-sign {
+  transform: translate(0.2em, 0);
+  width: 0.4em;
+}
+math-type .wide-hat-symbol > symbol > svg-composed-symbol.left-sign,
+math-type .wide-tilde-symbol > symbol > svg-composed-symbol.left-sign {
+  transform: translate(-0.04em, 0);
+  width: 0.4em;
+}
+.over-symbol-icon {
+  margin: auto;
+  width: 12px;
+  font-size: 12px;
+}
+.over-symbol-icon .square {
+  margin-left: 3px;
+  margin-top: -7px;
+}
+math-type .over-arc-symbol {
+  display: block;
+}
+math-type .over-arc-symbol > editarea {
+  display: inline-flex;
+}
+math-type .over-arc-symbol > symbol {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+math-type .over-arc-symbol > symbol > svg-composed-symbol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.under-symbol-icon {
+  margin: auto;
+  width: 12px;
+  font-size: 12px;
+  margin-left: 5px;
+}
+.under-symbol-icon .under-wrapper {
+  margin-top: -16px;
+  margin-left: -1px;
+}
+over-arc {
+  display: block;
+}
+over-arc > editarea {
+  display: inline-flex;
+}
+over-arc > symbol {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+over-arc > symbol > svg-composed-symbol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.under-line-icon {
+  margin: auto;
+  width: 12px;
+  font-size: 12px;
+}
+.under-line-icon .square {
+  margin-top: -20px;
+  margin-left: 3px;
+}
+/* z-index region*/
+math-type .under-line-symbol {
+  display: block;
+}
+math-type .under-line-symbol > editarea {
+  display: inline-flex;
+}
+math-type .under-line-symbol > line-border {
+  /*border-top: 0.12em solid black;*/
+  display: block;
+  position: relative;
+}
+math-type .under-line-symbol > line-border > svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.icon-under-line {
+  width: 12px;
+  margin: auto;
+  border-bottom: solid 1px black;
+  padding-bottom: 4px;
+  margin-top: 8px;
+}
+/* z-index region*/
+math-type .under-brace-symbol {
+  display: flex;
+  flex-flow: column;
+  position: relative;
+}
+math-type .under-brace-symbol > add {
+  opacity: 0.5;
+  background-color: #f7f7f7;
+  border: 1px solid #c3c2c2;
+  color: gray;
+  display: block;
+  position: absolute;
+  font-size: 0.6em;
+  cursor: pointer;
+  margin-left: -0.4em;
+  z-index: 999;
+  opacity: 0.7;
+  top: -0.5em;
+  left: 50%;
+  top: 3em;
+}
+math-type .under-brace-symbol > add:hover {
+  border-color: gray;
+  opacity: 1;
+}
+math-type .under-brace-symbol > add > i {
+  display: block;
+  height: 1em;
+  padding: 0.1em 0.15em;
+  width: 0.8em;
+}
+math-type .under-brace-symbol > bottom-brace {
+  pointer-events: none;
+  display: block;
+  position: relative;
+  min-width: 1.3em;
+}
+math-type .under-brace-symbol > bottom-brace > brace-top-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+math-type .under-brace-symbol > editarea {
+  margin-left: 0.15em;
+  margin-right: 0.15em;
+  align-self: center;
+}
+math-type .under-brace-symbol > editarea.underValue {
+  font-size: 0.7em;
+}
+.under-brace-icon {
+  width: 12px;
+  margin: auto;
+  font-size: 12px;
+}
+.under-brace-icon .brace-wrapper {
+  margin-top: -14px;
+}
+math-type .constant-text > constant-text {
+  font-family: Asana;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+}
+math-type .constant-text > constant-text.close-left {
+  margin-left: 0;
+}
+math-type .constant-text > constant-text.close-right {
+  margin-right: 0;
+}
+math-type .operator-name {
+  display: block;
+}
+math-type .operator-name > editarea {
+  font-family: Asana;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+  display: inline-flex;
+}
+math-type .operator-name > editarea.close-left {
+  margin-left: 0;
+}
+math-type .operator-name > editarea.close-right {
+  margin-right: 0;
+}
+.math-group > editarea {
+  float: left;
+}
+.group-icon .rectangle {
+  width: 23px;
+  height: 12px;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+  border-color: gray;
+  font-family: fantasy;
+  color: black;
+  padding-top: 1px;
+  font-size: 9px;
+  line-height: 14px;
+  vertical-align: middle;
+  margin: auto;
+}
+/* z-index region*/
+math-type .over-symbol {
+  display: block;
+  position: relative;
+}
+math-type .over-symbol > editarea {
+  display: inline-flex;
+  width: 100%;
+}
+math-type .over-symbol > symbol {
+  font-family: Asana-Math, Asana;
+  height: 8em;
+  display: block;
+  text-align: center;
+  position: relative;
+}
+math-type .over-symbol > symbol > inner {
+  display: block;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+math-type .over-symbol > symbol.dot > inner.left-sign {
+  transform: translate(-0.07em, 0);
+}
+math-type .over-symbol > symbol.dot > inner.right-sign {
+  transform: translate(0.2em, 0);
+}
+math-type .over-symbol > symbol.dot > inner {
+  transform: translate(0.05em, 0);
+}
+math-type .over-symbol > symbol.acute > inner.left-sign {
+  transform: translate(-0.04em, 0);
+}
+math-type .over-symbol > symbol.acute > inner.right-sign {
+  transform: translate(0.25em, 0);
+}
+math-type .over-symbol > symbol.acute > inner {
+  transform: translate(0.1em, 0);
+}
+math-type .over-symbol > symbol.grave > inner.left-sign,
+math-type .over-symbol > symbol.breve > inner.left-sign,
+math-type .over-symbol > symbol.check > inner.left-sign {
+  transform: translate(-0.07em, 0);
+}
+math-type .over-symbol > symbol.grave > inner.right-sign,
+math-type .over-symbol > symbol.breve > inner.right-sign,
+math-type .over-symbol > symbol.check > inner.right-sign {
+  transform: translate(0.2em, 0);
+}
+math-type .over-symbol > symbol.ddddot {
+  min-width: 0.9em;
+}
+math-type .over-symbol > symbol.dddot {
+  min-width: 0.7em;
+}
+.math-xx > editarea {
+  float: left;
+}
+.math-xx-icon .rectangle {
+  width: 23px;
+  height: 12px;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+  border-color: gray;
+  font-family: fantasy;
+  color: black;
+  padding-top: 1px;
+  font-size: 9px;
+  line-height: 14px;
+  vertical-align: middle;
+  margin: auto;
+}
+.icon-pair-symbol {
+  margin: auto;
+  display: flex;
+}
+.icon-pair-symbol .square {
+  margin: 4px 2px;
+}
+.icon-pair-symbol .empty {
+  height: 12px;
+  border: 1px solid lightgray;
+}
+math-type .big-delimiter-symbol {
+  display: inline-flex;
+  align-items: center;
+  font-family: Asana;
+  position: relative;
+}
+math-type .big-delimiter-symbol > base-line-indicator {
+  height: inherit;
+}
+math-type .big-delimiter-symbol > big-delimiter > svg-composed-symbol {
+  height: 100%;
+  width: 100%;
+}
+math-type .big-delimiter-symbol > big-delimiter > bulb {
+  left: -10px;
+}
+math-type .big-delimiter-symbol > big-delimiter > setting {
+  width: 158px;
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: -40px;
+}
+math-type .big-delimiter-symbol > big-delimiter > setting > .select-box-container {
+  margin-right: 4px;
+}
+math-type .big-delimiter-symbol > big-delimiter > setting > .select-box-container:last-child {
+  margin-right: 0px;
+}
+numeric-slider {
+  display: flex;
+  align-items: baseline;
+  padding-top: 3px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+numeric-slider.mobile-tablet {
+  align-items: center;
+}
+numeric-slider input-wrapper {
+  width: 20px;
+}
+numeric-slider numeric-unit {
+  font-size: 12px;
+  color: gray;
+  padding-left: 2px;
+  padding-right: 0px;
+}
+numeric-slider numeric-icon {
+  border: 1px solid transparent;
+}
+numeric-slider numeric-icon.selected {
+  border: 1px solid lightgray;
+}
+expandable-component {
+  outline: none;
+  display: block;
+  position: relative;
+}
+expandable-component item-options {
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  top: 26px;
+  background: white;
+  border: 1px solid gray;
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  padding: 3px;
+  border: 1px solid lightgray;
+}
+expandable-component item-option {
+  cursor: default;
+  display: block;
+  border: 1px solid transparent;
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+expandable-component item-option:hover {
+  border: 1px solid #eae9e9;
+}
+expand-container {
+  display: block;
+  position: absolute;
+}
+.color-picker no-color-select {
+  display: block;
+  text-align: center;
+  /* width: 100%; */
+  /* height: 20px; */
+  border: 1px solid lightgray;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  color: gray;
+  padding: 2px;
+  cursor: default;
+}
+.color-picker no-color-select:hover {
+  color: black;
+}
+.color-picker color-select {
+  position: absolute;
+  top: 30px;
+  left: 0px;
+  background: white;
+}
+diagram-settings axis2d-settings {
+  display: flex;
+}
+diagram-settings axis2d-settings slider {
+  width: 100px;
+}
+diagram-settings axis2d-settings slider pi {
+  min-width: 0px;
+}
+diagram-settings axis2d-settings svg {
+  stroke: black;
+  fill: none;
+  stroke-width: 1px;
+}
+diagram-settings axis2d-settings svg > path {
+  transform: translate(0px, 5px);
+}
+diagram-settings axis2d-settings svg > path.numering {
+  transform: translate(0px, 8px);
+}
+diagram-settings axis2d-settings text {
+  stroke: none;
+  font-size: 10px;
+  font-weight: bold;
+  fill: black;
+  font-family: Asana-Math, Asana;
+}
+diagram-settings axis2d-settings numering-settings {
+  display: flex;
+}
+.shapes-region .axis2d text {
+  font-weight: normal;
+  text-anchor: end;
+  stroke: none;
+  font-size: 11px;
+  font-weight: bold;
+}
+math-type .math-diagram .svg-line-part {
+  stroke: black;
+  stroke-width: 1px;
+  fill: none;
+}
+math-type .math-diagram .svg-line-part1 {
+  stroke: black;
+  stroke-width: 1px;
+  fill: none;
+}
+diagram-settings wave-settings {
+  display: flex;
+}
+/* z-index region*/
+selection-settings.mt-common-dialog {
+  position: relative;
+  display: flex;
+  height: 23px;
+  flex-direction: row;
+  white-space: nowrap;
+  opacity: 1;
+  box-shadow: initial;
+  border: none;
+  background: transparent;
+  transition: opacity 0.25s ease-in-out;
+  z-index: 11999;
+}
+selection-settings.mt-common-dialog selection-content {
+  display: flex;
+}
+selection-settings.mt-common-dialog separate-hbar {
+  border-left: 1px solid lightgray;
+  margin-left: 2px;
+  margin-right: 2px;
+  display: block;
+  margin-top: 3px;
+  margin-bottom: 2px;
+}
+selection-settings.mt-common-dialog .fa.fa-share {
+  border: 1px solid transparent;
+  padding: 2px;
+  color: gray;
+  font-size: 13px;
+  cursor: pointer;
+}
+selection-settings.mt-common-dialog .fa.fa-share:hover {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+selection-settings.mt-common-dialog.hide {
+  visibility: hidden;
+  opacity: 0;
+}
+selection-settings.mt-common-dialog font-select-container {
+  display: block;
+}
+selection-settings.mt-common-dialog small-symbol {
+  font-family: Asana;
+  font-size: 10px;
+  vertical-align: 3px;
+}
+selection-settings.mt-common-dialog arrow-inside {
+  font-family: Asana;
+  font-size: 10px;
+  vertical-align: 2px;
+}
+selection-settings.mt-common-dialog big-symbol {
+  font-family: Asana;
+  font-size: 14px;
+  vertical-align: 3px;
+}
+selection-settings.mt-common-dialog .math-default {
+  line-height: 18px;
+  padding-top: 4px;
+  font-size: 14px;
+}
+selection-settings.mt-common-dialog.math {
+  display: block;
+  white-space: nowrap;
+  padding: 5px;
+  padding-left: 0px;
+}
+selection-settings.mt-common-dialog font-select {
+  display: inline-block;
+  padding: 0 2px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: #757575;
+}
+selection-settings.mt-common-dialog font-select.selected {
+  background: white;
+  border: 1px solid lightgray;
+}
+selection-settings.mt-common-dialog font-select:hover {
+  border: 1px solid lightgray;
+}
+selection-settings.mt-common-dialog styled-select {
+  padding-top: 3px;
+}
+selection-settings.mt-common-dialog styled-select.font-select {
+  margin-right: 5px;
+}
+selection-settings.mt-common-dialog list-items-options {
+  margin-top: 3px;
+  margin-left: 5px;
+}
+selection-settings.mt-common-dialog list-items-options > i {
+  width: 13px;
+  text-align: center;
+}
+check-box-wrapper {
+  display: flex;
+  font-size: 11px;
+  color: gray;
+}
+check-box-wrapper.disabled check-box-rect {
+  border: 1px solid #e2e1e1;
+  color: lightgray;
+}
+check-box-wrapper.disabled check-box-rect:hover {
+  border: 1px solid #e2e1e1;
+}
+check-box-wrapper.mobile-tablet check-box-rect {
+  margin-top: 5px;
+  width: 16px;
+  height: 15px;
+  font-size: 13px;
+}
+check-box-wrapper.mobile-tablet check-box-rect > i {
+  left: 2px;
+  top: 1px;
+}
+check-box-wrapper check-box-rect {
+  margin-top: 7px;
+  width: 13px;
+  height: 12px;
+  border: 1px solid #c3c2c2;
+  position: relative;
+  display: block;
+  font-size: 11px;
+  color: green;
+  background: white;
+}
+check-box-wrapper check-box-rect:hover {
+  border: 1px solid gray;
+}
+check-box-wrapper check-box-rect > i {
+  display: block;
+  position: absolute;
+  left: 1px;
+  top: 1px;
+}
+check-box-wrapper > span {
+  padding-top: 8px;
+  padding-left: 3px;
+  font-size: 11px;
+}
+check-box-wrapper.unchecked check-box-rect > i {
+  display: none;
+}
+math-type empty-part-rect {
+  display: block;
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  background: lightgray;
+  width: 10px;
+  height: 10px;
+}
+math-type .arrow-part > item > svg {
+  transform: translateY(2px);
+  overflow: hidden;
+}
+math-type .arrow-part svg {
+  width: 100%;
+  height: 100%;
+  stroke: gray;
+  stroke-width: 1px;
+  fill: none;
+  overflow: visible;
+}
+math-type .arrow-part no-tail,
+math-type .arrow-part no-head {
+  font-size: 11px;
+  padding: 3px;
+  margin-top: 2px;
+  display: block;
+}
+math-type .arrow-part.arrow-shaft > item {
+  width: 40px;
+}
+math-type .arrow-part.arrow-shaft item-option {
+  width: 60px;
+}
+math-type .arrow-part.arrow-shaft > svg {
+  overflow: hidden;
+}
+math-type .arrow-part.arrow-tail > item {
+  margin-left: 4px;
+  width: 15px;
+}
+math-type .arrow-part.arrow-tail > item empty-part-rect {
+  left: 3px;
+}
+math-type .arrow-part.arrow-head > item {
+  width: 18px;
+  margin-left: -2px;
+}
+diagram-settings expandable-component.thickness > item {
+  width: 26px;
+}
+diagram-settings expandable-component.thickness item-option.thickness-option {
+  width: 40px;
+  height: 12px;
+}
+diagram-settings expandable-component.thickness svg {
+  stroke: gray;
+  stroke-width: 1px;
+  fill: none;
+}
+diagram-settings thickness {
+  position: relative;
+  display: flex;
+  height: 100%;
+}
+diagram-settings thickness > svg.thickness {
+  width: 25px;
+  height: 100%;
+  position: static;
+}
+diagram-settings thickness > svg.thickness line {
+  stroke: gray;
+  stroke-width: 1px;
+}
+diagram-settings thickness > svg.thickness path {
+  fill: #d2cfcf;
+  stroke: none;
+}
+math-type expandable-component.buton-action {
+  cursor: pointer;
+  color: gray;
+}
+math-type expandable-component.buton-action:hover,
+math-type expandable-component.buton-action.selected {
+  color: black;
+}
+math-type expandable-component.buton-action:hover label-display,
+math-type expandable-component.buton-action.selected label-display {
+  border: 1px solid #e2e0e0;
+}
+math-type expandable-component.buton-action label-display {
+  font-size: 12px;
+  padding-top: 5px;
+  display: flex;
+  border: 1px solid transparent;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-top: 0px;
+  padding-bottom: 4px;
+  cursor: pointer;
+}
+math-type expandable-component.buton-action i {
+  padding-left: 5px;
+  padding-top: 1px;
+}
+math-type expandable-component.buton-action label-item-container {
+  display: block;
+  position: absolute;
+  left: 0px;
+  top: 27px;
+  width: 100px;
+  background: #f7f7f7;
+  border: 1px solid #c5c5c5;
+  box-shadow: 1px 1px 1px 0px #8a8787;
+}
+math-type expandable-component.buton-action label-item-container > label-item:hover {
+  background-color: #bfe4bd;
+}
+/* z-index region*/
+math-type diagram-settings {
+  width: 500px;
+  background: #f7f7f7;
+  z-index: 5000;
+  margin-top: 2px;
+  height: 25px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  display: block;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+math-type diagram-settings rest {
+  display: flex;
+  justify-content: flex-end;
+}
+math-type diagram-settings main {
+  display: flex;
+  flex-direction: row;
+}
+math-type diagram-settings main.font-size-container .input-container {
+  height: 13px;
+}
+math-type diagram-settings inside {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+}
+math-type diagram-settings id-item {
+  color: gray;
+  font-size: 10px;
+  padding-left: 5px;
+  padding-top: 7px;
+  margin-right: 5px;
+  width: 30px;
+}
+math-type diagram-settings pair-option {
+  display: flex;
+  flex-direction: row;
+}
+math-type diagram-settings item {
+  outline: none;
+  color: gray;
+  cursor: pointer;
+  border: 1px solid transparent;
+  position: relative;
+  height: 23px;
+  display: block;
+  width: 30px;
+}
+math-type diagram-settings item.selected {
+  background: white;
+  border: 1px solid lightgray;
+}
+math-type diagram-settings item:hover {
+  border: 1px solid lightgray;
+}
+math-type diagram-settings item svg {
+  width: 100%;
+  height: 100%;
+}
+math-type diagram-settings .quadratic-line-select,
+math-type diagram-settings .cubic-line-select {
+  display: block;
+}
+math-type diagram-settings item-group {
+  display: flex;
+}
+math-type diagram-settings item.control-point-adding,
+math-type diagram-settings item.control-point-removing {
+  width: 23px;
+  margin-left: 3px;
+}
+math-type diagram-settings item.control-point-adding.disabled,
+math-type diagram-settings item.control-point-removing.disabled {
+  opacity: 0.2;
+}
+math-type diagram-settings item.control-point-adding.disabled:hover,
+math-type diagram-settings item.control-point-removing.disabled:hover {
+  border: 1px solid transparent;
+}
+math-type diagram-settings item.control-point-adding > svg,
+math-type diagram-settings item.control-point-removing > svg {
+  transform: translateY(2px);
+}
+math-type diagram-settings item.control-point-adding circle,
+math-type diagram-settings item.control-point-removing circle {
+  stroke: green;
+  fill: snow;
+  stroke-width: 2px;
+}
+math-type diagram-settings item.control-point-adding path,
+math-type diagram-settings item.control-point-removing path {
+  stroke: gray;
+  stroke-width: 2px;
+  transform: translateX(14px);
+}
+math-type diagram-settings .control-point-removing {
+  margin-left: 0;
+}
+math-type diagram-settings separator {
+  display: block;
+  position: absolute;
+  height: 22px;
+  top: 5px;
+  border-left: 1px solid lightgray;
+  width: 1px;
+}
+math-type diagram-settings relative-separator {
+  display: block;
+  position: relative;
+  margin-left: 6px;
+  margin-right: 5px;
+}
+math-type diagram-settings relative-separator > bar {
+  display: block;
+  position: absolute;
+  height: 22px;
+  top: 2px;
+  border-left: 1px solid lightgray;
+  width: 1px;
+}
+math-type diagram-settings .id-separator {
+  left: 35px;
+}
+math-type diagram-settings .arrow-end-separator {
+  left: 106px;
+}
+math-type diagram-settings .arrow-parts-separator {
+  left: 186px;
+}
+math-type diagram-settings .intersect-detail {
+  display: block;
+  width: 15px;
+  height: 100%;
+}
+math-type diagram-settings intersection-types {
+  display: flex;
+  flex-direction: row;
+}
+math-type diagram-settings intersections-details {
+  display: flex;
+  flex-direction: row;
+}
+math-type diagram-settings intersections-details slider {
+  width: 70px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+math-type diagram-settings .intersection-type {
+  width: 25px;
+}
+math-type diagram-settings .intersection-type svg {
+  stroke: gray;
+  stroke-width: 1px;
+  fill: none;
+}
+.math-diagram .intersections-group {
+  stroke-width: 2px;
+  stroke: black;
+  fill: transparent;
+}
+.math-diagram .intersections-group:hover .intersection-group,
+.math-diagram .intersections-group.selected .intersection-group {
+  filter: url(#selected-filter);
+}
+.rectangle-selection-layer {
+  stroke: gray;
+  fill: none;
+  stroke-width: 1px;
+  stroke-dasharray: 1.5px 2.5px;
+}
+/* z-index region*/
+math-type .math-diagram {
+  background: white;
+  cursor: default;
+  width: 100%;
+  font-size: 17px;
+  font-family: Asana-Math, Asana;
+}
+math-type .math-diagram .connection-point g {
+  fill-opacity: 0.6;
+}
+math-type .math-diagram .connection-point:hover g {
+  fill-opacity: 1;
+}
+math-type .math-diagram > math-diagram {
+  border: 1px solid transparent;
+}
+math-type .math-diagram > math-diagram > clip-region > svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+math-type .math-diagram .add-label {
+  fill: gray;
+}
+math-type .math-diagram .add-label:hover {
+  fill: black;
+}
+math-type .math-diagram clip-region {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+math-type .math-diagram .diagram-editor {
+  margin: 0 2px;
+}
+math-type .math-diagram .mobile-tablet connection-controls control-point {
+  width: 20px;
+  height: 20px;
+}
+math-type .math-diagram connection-controls control-point {
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  opacity: 0.3;
+}
+math-type .math-diagram connection-controls control-point > svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  position: absolute;
+}
+math-type .math-diagram connection-controls control-point > svg circle {
+  fill: transparent;
+  stroke: green;
+  stroke-width: 2px;
+}
+math-type .math-diagram connection-controls control-point:hover {
+  opacity: 1;
+}
+math-type .math-diagram connection-controls control-point:hover > svg > circle {
+  stroke: purple;
+  opacity: 1;
+}
+math-type .math-diagram .control-point-guide {
+  stroke: lightgray;
+  stroke-width: 0.5px;
+}
+math-type .math-diagram .connection-group,
+math-type .math-diagram .shapes-region {
+  stroke: black;
+  fill: none;
+}
+math-type .math-diagram .arrow-line:hover .real {
+  filter: url(#selected-filter);
+}
+math-type .math-diagram .mobile-tablet .shape .transparent,
+math-type .math-diagram .mobile-tablet .composite-shape .transparent {
+  stroke-width: 8px;
+}
+math-type .math-diagram .shape,
+math-type .math-diagram .composite-shape {
+  stroke-width: 1px;
+  fill: none;
+}
+math-type .math-diagram .shape:hover .real,
+math-type .math-diagram .composite-shape:hover .real,
+math-type .math-diagram .shape.group-selected .real,
+math-type .math-diagram .composite-shape.group-selected .real {
+  filter: url(#selected-filter);
+}
+math-type .math-diagram .shape.selected .real,
+math-type .math-diagram .composite-shape.selected .real {
+  filter: none;
+}
+math-type .math-diagram .shape .transparent,
+math-type .math-diagram .composite-shape .transparent {
+  stroke-width: 6px;
+  stroke: transparent;
+  stroke-dasharray: none;
+  fill: none;
+}
+math-type .math-diagram .mobile-tablet .connection.transparent,
+math-type .math-diagram .mobile-tablet .connection.transparent > line,
+math-type .math-diagram .mobile-tablet .connection.transparent > path {
+  stroke-width: 8px;
+}
+math-type .math-diagram .connection {
+  stroke-width: 1px;
+  fill: none;
+}
+math-type .math-diagram .connection.selected.real {
+  filter: none;
+}
+math-type .math-diagram .connection.group-selected.real {
+  filter: url(#selected-filter);
+}
+math-type .math-diagram .connection.transparent,
+math-type .math-diagram .connection.transparent > line,
+math-type .math-diagram .connection.transparent > path {
+  pointer-events: visiblePainted;
+  stroke-width: 6px;
+  stroke: transparent;
+  stroke-dasharray: none;
+  fill: none;
+}
+math-type .math-diagram .frame {
+  stroke-width: 1px;
+  fill: transparent;
+}
+math-type math-diagram {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+math-type math-diagram position-container {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  display: block;
+}
+math-type math-diagram dg-editor-container {
+  position: absolute;
+  min-width: 20px;
+  border-collapse: border-box;
+  transform: translate(-50%, -50%);
+}
+math-type math-diagram coverlayer,
+math-type math-diagram labelcoverlayer {
+  position: absolute;
+  background: transparent;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 500;
+}
+math-type math-diagram coverlayer:hover,
+math-type math-diagram labelcoverlayer:hover {
+  box-shadow: 0px 0px 1px 1px green;
+}
+math-type math-diagram connection-point {
+  position: absolute;
+  display: block;
+  height: 6px;
+  width: 6px;
+  background: lightgray;
+  border: 1px solid gray;
+  bottom: -10px;
+  left: 50%;
+  margin-left: -3px;
+  cursor: e-resize;
+}
+math-type diagram-bar-region {
+  display: block;
+}
+math-type diagram-bar-region text-box-moving {
+  width: 1px;
+  height: 1px;
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  align-items: center;
+  justify-content: center;
+}
+math-type diagram-bar-region text-box-moving > box {
+  cursor: default;
+  padding-left: 5px;
+  padding-top: 5px;
+  font-family: Asana-Math, Asana;
+  font-size: 12px;
+  display: block;
+  min-width: 20px;
+  min-height: 20px;
+  border: 1px solid gray;
+}
+math-type diagram-bar {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+math-type diagram-bar svg {
+  position: absolute;
+}
+math-type diagram-bar bar-header {
+  display: block;
+  height: 3px;
+  background: lightgray;
+  margin-left: -2px;
+  margin-right: -2px;
+  margin-top: -2px;
+}
+math-type diagram-bar item {
+  cursor: default;
+  padding: 5px;
+  border: 1px transparent solid;
+  color: gray;
+}
+math-type diagram-bar item:hover,
+math-type diagram-bar item.selected {
+  border: 1px #e6e5e5 solid;
+  background: white;
+}
+math-type diagram-bar .text-field,
+math-type diagram-bar .arrow {
+  font-family: Asana-Math, Asana;
+  font-size: 12px;
+}
+math-type diagram-bar .text-field:hover {
+  color: black;
+}
+math-type diagram-bar .arrow {
+  font-weight: bold;
+  display: inline-flex;
+  flex-direction: row;
+  position: relative;
+}
+math-type diagram-bar .arrow arrow-container {
+  font-size: 16px;
+  display: block;
+  width: 14px;
+}
+math-type diagram-bar .arrow arrow-container:hover {
+  color: black;
+}
+math-type diagram-bar .arrow inside {
+  position: absolute;
+  top: 1px;
+  left: 3px;
+}
+math-type diagram-bar .shape {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+math-type diagram-bar .shape selected-shape {
+  width: 13px;
+  display: block;
+  position: relative;
+  height: 14px;
+}
+math-type diagram-bar .shape selected-shape svg {
+  width: 100%;
+  height: 100%;
+  stroke: gray;
+}
+math-type diagram-bar .shape selected-shape svg:hover {
+  stroke: black;
+}
+math-type diagram-bar .shape selected-shape circle {
+  fill: transparent;
+  stroke-width: 1px;
+}
+math-type diagram-bar select-shape-mark {
+  padding-left: 2px;
+  color: gray;
+  display: block;
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+math-type diagram-bar select-shape-mark.mobile {
+  padding-left: 6px;
+}
+math-type diagram-bar select-shape-mark:hover {
+  color: black;
+  border-color: lightgray;
+}
+tag-ref-name {
+  color: green;
+  cursor: pointer;
+}
+tag-ref-name:hover {
+  text-decoration: underline;
+}
+math-type .symbol-container {
+  display: flex;
+  flex-direction: row;
+  min-height: 25px;
+  padding-left: 4px;
+  padding-right: 12px;
+  align-items: center;
+  cursor: pointer;
+}
+math-type .symbol-container.selected {
+  background-color: #bfe4bd;
+}
+math-type .symbol-friendly-name {
+  flex-grow: 1;
+  /*padding-top: 6px;*/
+}
+math-type .symbol-icon {
+  /*padding-top: 6px;*/
+  margin-right: 15px;
+  min-width: 20px;
+  text-align: center;
+}
+math-type .symbol-type {
+  /*padding-top: 6px;*/
+  padding-right: 3px;
+}
+math-type .short-cut {
+  text-align: center;
+  color: gray;
+  /*vertical-align: middle;*/
+  /*line-height: 20px;*/
+  margin: 0 2px 0 2px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+math-type .short-cut span {
+  font-size: 10px;
+}
+math-type .hidden {
+  display: none;
+}
+math-type .expand-rectangles-message {
+  margin: 0px 0 0 19px;
+  font-size: 10px;
+  color: gray;
+  cursor: pointer;
+}
+/* z-index region*/
+selection-wrapper {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  user-select: none;
+  pointer-events: none;
+  z-index: 11699;
+}
+selection-wrapper > selection {
+  display: block;
+  position: absolute;
+  background-color: rgba(0, 126, 255, 0.15);
+  user-select: none;
+  width: 100px;
+  height: 100px;
+  transform-origin: 0 0;
+}
+selection-wrapper.inactive > selection {
+  background-color: rgba(58, 57, 57, 0.13);
+}
+/* z-index region*/
+math-type {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-text-stroke: 1px transparent;
+  display: block;
+  position: relative;
+  padding: 20px;
+  color: black;
+  padding-top: 15px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;
+  cursor: text;
+}
+math-type input-wrapper {
+  overflow: visible;
+  height: 18px;
+  display: block;
+  background: white;
+  box-sizing: border-box;
+}
+math-type input-wrapper > input:not([type]),
+math-type input-wrapper input[type="text"] {
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  outline: none;
+  border: 1px solid lightgray;
+  border-radius: 0;
+  background: transparent;
+  display: block;
+  padding-top: 1px;
+  padding-bottom: 3px;
+}
+math-type input-wrapper > input:not([type]):focus,
+math-type input-wrapper input[type="text"]:focus {
+  border: 1px solid gray;
+}
+math-type.mobile-tablet.ios input-wrapper {
+  border: 1px solid lightgray;
+}
+math-type.mobile-tablet.ios input-wrapper > input:not([type]),
+math-type.mobile-tablet.ios input-wrapper input[type="text"] {
+  width: calc(143% - 4px);
+  height: calc(144% - 4px);
+  border: none;
+  font-size: 16px;
+  transform: scale(0.7);
+  transform-origin: 0 0;
+  border-radius: 0px;
+  padding-left: 2px !important;
+  padding: 2px;
+}
+math-type.mobile-tablet.ios input-wrapper > input:not([type]):focus,
+math-type.mobile-tablet.ios input-wrapper input[type="text"]:focus {
+  border: none;
+}
+math-type composition-indicator {
+  display: block;
+  position: absolute;
+  height: 2px;
+  min-width: 2px;
+  border-bottom: 2px solid gray;
+  left: 0;
+  top: 0;
+}
+math-type .focus-element {
+  outline: none;
+  overflow: hidden;
+  width: 0px;
+  height: 0px;
+  top: 0px;
+  left: 0px;
+  display: block;
+  position: absolute;
+  font-size: 40px;
+}
+#root,
+.main-container {
+  width: 100%;
+  color: #212121;
+}
+.text-cursor {
+  position: absolute;
+  color: green;
+  /*font-size: 1.2em;*/
+  pointer-events: none;
+  border-left: 2px solid green;
+  display: block;
+  top: 0px;
+  left: 0px;
+  z-index: 500;
+}
+math-edit-container {
+  display: block;
+  outline: none;
+  position: relative;
+  font-family: 'Asana';
+}
+.root-editor {
+  font-family: arial, verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+  font-size: 15px;
+  min-height: 500px;
+  box-sizing: border-box;
+}
+.menu {
+  color: #ffffff;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-family: "HelveticaNeue-Medium", sans-serif;
+  font-size: 14px;
+  display: inline-block;
+  transform: scale(1, 1.5);
+  -webkit-transform: scale(1, 1.5);
+  /* Safari and Chrome */
+  -moz-transform: scale(1, 1.5);
+  /* Firefox */
+  -ms-transform: scale(1, 1.5);
+  /* IE 9+ */
+  -o-transform: scale(1, 1.5);
+  /* Opera */
+}
+.math-mode-font {
+  font-family: Asana-Math, Asana;
+}
+.math-bb-font {
+  font-family: Asana-Mathbb, Asana;
+}
+.setting-group-options {
+  font-size: 13px;
+  color: gray;
+}
+.setting-group-options > i {
+  padding: 2px 2px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  /*box-sizing: border-box;*/
+}
+.setting-group-options > i.selected {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+.setting-group-options > i:hover {
+  border: 1px solid lightgray;
+}
+.setting-group-options > i.disabled {
+  opacity: 0.3;
+}
+.setting-group-options > i.disabled:hover {
+  background-color: inherit;
+  border: 1px solid transparent;
+}
+.font-size-tiny {
+  font-size: 7.5px;
+}
+.font-size-scriptsize {
+  font-size: 10.5px;
+}
+.font-size-footnotesize {
+  font-size: 12px;
+}
+.font-size-small {
+  font-size: 13.5px;
+}
+.font-size-large {
+  font-size: 18px;
+}
+.font-size-Large {
+  font-size: 21.6px;
+}
+.font-size-LARGE {
+  font-size: 25.92px;
+}
+.font-size-huge {
+  font-size: 31.11px;
+}
+.font-size-Huge {
+  font-size: 37.32px;
+}
+.font-name-pcr {
+  font-family: Courier New, Courier, monospace;
+}
+.font-name-helvet {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.font-name-ptm {
+  font-family: 'Times New Roman', Times, serif;
+}
+.font-bold {
+  font-weight: bold;
+}
+.font-italic {
+  font-style: italic;
+}
+.font-underline {
+  text-decoration: underline;
+}
+.font-line-through {
+  text-decoration: line-through;
+}
+.math-rm {
+  font-family: Asana-Mathrm, Asana-Math, Asana;
+}
+.math-bf {
+  font-family: Asana-Mathrm, Asana-Math, Asana;
+  font-weight: bold;
+}
+.math-boldsymbol {
+  font-family: Asana-Math, Asana;
+  font-weight: bold;
+}
+.math-it {
+  font-family: Asana-Mathit, Asana-Math, Asana;
+}
+.math-bb {
+  font-family: Asana-Mathbb, Asana-Math, Asana;
+}
+.math-cal {
+  font-family: Asana-Mathcal, Asana-Math, Asana;
+}
+.math-frak {
+  font-family: Asana-Mathfrak, Asana-Math, Asana;
+}
+.math-sf {
+  font-family: Asana-Mathsf, Asana-Math, Asana;
+}
+.math-tt {
+  font-family: Asana-Mathtt, Asana-Math, Asana;
+}
+.math-scr {
+  font-family: Asana-Mathscr, Asana-Math, Asana;
+}
+.math-text,
+.normal-text {
+  font-family: arial, verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+  font-size: 0.8888em;
+}
+.math-default,
+.math-normal {
+  font-family: Asana-Math, Asana;
+}
+.mt-common-dialog {
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  background-color: #f7f7f7;
+  border: 1px lightgray solid;
+  z-index: 11950;
+  padding: 6px;
+  cursor: default;
+}
+.tool-tip {
+  color: #757575 !important;
+  font-size: 11px !important;
+  font-family: Arial, sans-serif !important;
+  box-shadow: 1px 1px 7px grey;
+  z-index: 20500 !important;
+  background-color: white !important;
+}
+.tool-tip.show {
+  opacity: 1 !important;
+}
+disabled-layer {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 2px;
+  background: rgba(247, 247, 247, 0.66);
+}
+math-type tag-container tag-select-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+math-type tag-container tag-box-select {
+  position: absolute;
+  display: block;
+  background-color: green;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 11980;
+}
+math-type tag-container tag-box-select:hover {
+  opacity: 0.2;
+}
+math-type tag-container tag-box-gap {
+  position: absolute;
+  display: block;
+  background-color: white;
+  opacity: 0.9;
+  z-index: 11980;
+}
+.setting-popup-zindex {
+  z-index: 11599;
+}
+math-type svg.selectable {
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+math-type svg.selectable.selected {
+  background: white;
+  border: solid 1px lightgray;
+}
+math-type svg.selectable:hover {
+  border: solid 1px lightgray;
+}
+button.btn-ripple {
+  height: 39px;
+  display: inline-block;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: #f7f7f7;
+  border: 1px solid lightgray;
+  border-radius: 7px;
+  box-shadow: #e0dddd 1px 1px 1px 0px;
+  color: gray;
+  margin-right: 3px;
+  outline: none;
+  padding: 0.2em;
+}
+/* Ripple magic */
+button.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+button.btn-ripple:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+button.btn-ripple:active:after {
+  animation: ripple 1s ease-out;
+}
+@media print {
+  header,
+  .export-bar-container,
+  .no-print,
+  ref-tag.empty-line-tag,
+  .text-cursor,
+  selection-wrapper,
+  message-box-container,
+  connection-controls,
+  .control-point-guide,
+  tool-bar,
+  items-bar,
+  document-sidebar,
+  resize-bar,
+  diagram-expander,
+  warning-error-region,
+  loading-layer,
+  resizing-info,
+  toc-refresh {
+    display: none !important;
+  }
+  .group-selected {
+    filter: unset !important;
+  }
+  math-diagram {
+    border: none !important;
+  }
+  .selected {
+    background: unset !important;
+  }
+  .math-container-symbol.selected {
+    background: unset !important;
+  }
+  .matrix-symbol.align-symbol {
+    background: unset !important;
+  }
+  .matrix-symbol.gather-symbol {
+    background: unset !important;
+  }
+  tr.selected,
+  td.selected {
+    border: unset !important;
+  }
+  tr.selected.hline {
+    border-top: 1px solid black !important;
+  }
+  tr.selected.last-hline {
+    border-bottom: 1px solid black !important;
+  }
+  td.selected.vline {
+    border-left: 1px solid black !important;
+  }
+  td.selected.last-vline {
+    border-right: 1px solid black !important;
+  }
+  .selected {
+    outline: unset !important;
+  }
+  body {
+    position: relative !important;
+  }
+  page,
+  #root,
+  body,
+  html {
+    height: 100% !important;
+    width: 100% !important;
+    position: relative !important;
+    background: transparent !important;
+  }
+  container-layer {
+    margin: 0 !important;
+    background: transparent !important;
+  }
+  editor-container {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    width: 100% !important;
+  }
+  content-area {
+    padding: 0px !important;
+    margin: 0;
+    background: transparent !important;
+  }
+  compositeblock.image-container,
+  table,
+  compositeblock.math-diagram,
+  img {
+    page-break-inside: avoid;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+  compositeblock.table-symbol {
+    break-inside: avoid !important;
+  }
+  .math-container-symbol {
+    page-break-inside: always !important;
+    break-inside: always !important;
+    -webkit-column-break-inside: always !important;
+  }
+  .math-container-symbol line {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    -webkit-break-inside: avoid;
+  }
+  line.root {
+    page-break-inside: always !important;
+    break-inside: always !important;
+    -webkit-column-break-inside: always !important;
+    -webkit-break-inside: always !important;
+  }
+}
+/* z-index region*/
+math-type line-setting {
+  display: flex;
+  position: relative;
+}
+math-type line-setting > setting-icon {
+  background-color: #f7f7f7;
+  opacity: 0.2;
+  cursor: pointer;
+  font-size: 13px;
+}
+math-type line-setting > setting-icon:hover {
+  opacity: 1;
+}
+math-type line-setting > detail {
+  display: flex;
+  margin-top: 8px;
+}
+math-type line-setting > detail > list-items-options,
+math-type line-setting > detail indent-outdent-options {
+  padding-left: 3px;
+}
+math-type line-setting section-item-wrapper {
+  display: inline-block;
+  cursor: pointer;
+  height: 14px;
+  position: relative;
+  width: 19px;
+}
+math-type line-setting section-item-wrapper > wrap {
+  font-size: 7px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  height: 17px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  /* padding-top: 3px; */
+  justify-content: center;
+  border: 1px solid transparent;
+  padding: 0 2px;
+  width: 13px;
+}
+math-type line-setting section-item-wrapper > wrap.selected {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+math-type line-setting section-item-wrapper > wrap:hover {
+  border: 1px solid lightgray;
+}
+math-type line-setting section-item {
+  display: block;
+  white-space: pre;
+}
+/* z-index region*/
+.message-box-container {
+  font-size: 12px;
+  width: 500px;
+  height: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-family: Verdana, sans-serif;
+  border: 1px solid lightgray;
+  z-index: 11990;
+  max-width: 100%;
+  bottom: 4px;
+}
+.message-box-container .message {
+  padding-right: 20px;
+}
+.message-box-container.is-android {
+  bottom: 24px;
+}
+.message-box-container.center {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+}
+.message-box-container .message-icon {
+  text-align: right;
+  width: 25px;
+  padding-right: 10px;
+}
+.message-box-container.show {
+  visibility: visible;
+  opacity: 1;
+}
+.message-box-container.hide {
+  display: none;
+  opacity: 0;
+}
+.message-box-container .close-icon {
+  position: absolute;
+  top: -1px;
+  right: 6px;
+  color: dimgray;
+  padding: 8px;
+}
+.message-box-container .close-icon :hover {
+  color: black;
+  cursor: pointer;
+}
+.message-box-container.warning-effect {
+  color: #9F6000;
+  background-color: #FEEFB3;
+}
+.message-box-container.error-effect {
+  color: #D8000C;
+  background-color: #FFBABA;
+}
+.message-box-container.info-effect {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+}
+progress-bar-overlay {
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.11);
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+progress-bar-overlay > container {
+  z-index: 10001;
+  position: absolute;
+  background-color: white;
+  left: 50%;
+  top: 50%;
+  width: 300px;
+  height: 40px;
+  margin-left: -150px;
+  margin-top: -20px;
+  padding: 10px;
+  text-align: center;
+  color: gray;
+  box-shadow: 1px 2px 5px #848484;
+  font-size: 13px;
+}
+progress-bar-overlay > container > label {
+  margin-bottom: 5px;
+  display: inline-block;
+}
+math-type > remove-confirm-container > confirm {
+  position: absolute;
+  display: block;
+  background-color: rgba(255, 0, 0, 0.37);
+  opacity: 0.3;
+  border: 1px solid #e82b2b;
+  z-index: 20;
+}
+math-type modal-dialog.import-latex modal-container.mt-common-dialog {
+  max-width: 95vw;
+}
+math-type modal-dialog.import-latex math-type editarea.root-editor {
+  min-height: 100px;
+}
+math-type modal-dialog.import-latex import-info {
+  margin-bottom: 2px;
+  font-size: 12px;
+  color: gray;
+}
+math-type modal-dialog.import-latex textarea.latex {
+  outline: none;
+  height: 200px;
+  min-height: 200px;
+  resize: none;
+}
+math-type modal-dialog.import-latex button.ok {
+  margin: auto;
+  margin-top: 4px;
+  width: 50px;
+}
+math-type modal-dialog.import-latex import-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+math-type modal-dialog.import-latex display-math {
+  overflow: auto;
+  flex-grow: 1;
+  height: 10px;
+}
+math-type modal-dialog.import-latex parse-error {
+  font-size: 12px;
+  color: #e44c4c;
+  text-align: center;
+}
+/* z-index region*/
+modal-dialog > modal-container {
+  width: 700px;
+  min-height: 300px;
+  height: calc(100% - 100px);
+  left: 50%;
+  top: 60px;
+  transform: translate(-50%, 0);
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  z-index: 20001;
+}
+modal-dialog > modal-container.mt-common-dialog {
+  z-index: 20001;
+}
+modal-dialog modal-content {
+  flex-grow: 1;
+  display: flex;
+  color: gray;
+}
+modal-dialog modal-header {
+  min-height: 20px;
+  /* border-bottom: 1px solid gray; */
+  color: white;
+  margin-left: -7px;
+  margin-right: -7px;
+  margin-top: -7px;
+  padding-left: 10px;
+  padding-top: 5px;
+  font-size: 13px;
+  background: #4CAF50;
+  padding-right: 7px;
+  margin-bottom: 10px;
+  border-bottom: 1px #c1bfbf solid;
+}
+modal-dialog modal-header > cancel-button {
+  float: right;
+  color: white;
+  margin-top: -6px;
+  font-size: 14px;
+  padding-top: 5px;
+  cursor: pointer;
+}
+modal-dialog modal-header > cancel-button:hover {
+  color: lightgray;
+}
+modal-dialog modal-footer {
+  display: flex;
+  align-items: center;
+  min-height: 25px;
+}
+overlay {
+  opacity: 0.2;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: black;
+  z-index: 20000;
+}
+math-type .export-latex modal-container.mt-common-dialog {
+  max-width: 95vw;
+}
+math-type .export-latex export-container {
+  font-size: 12px;
+  color: gray;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+math-type .export-latex export-container > .radio {
+  height: 25px;
+}
+math-type .export-latex export-container > .radio > label {
+  cursor: pointer;
+  margin: 0px 3px;
+}
+math-type .export-latex export-container > .radio > input {
+  cursor: pointer;
+}
+math-type .export-latex textarea {
+  outline: none;
+  flex-grow: 1;
+  min-height: 150px;
+  resize: none;
+}
+/* z-index region*/
+math-type tool-bar {
+  cursor: default;
+  z-index: 13000;
+  position: fixed;
+  top: 35px;
+  left: 0;
+  height: 35px;
+  width: 100%;
+  background: #f7f7f7;
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  border: 1px lightgray solid;
+  padding-left: 50px;
+}
+math-type tool-bar too-bar-container {
+  display: flex;
+  justify-content: center;
+  width: 700px;
+  min-width: 700px;
+  height: 100%;
+}
+math-type tool-bar.mobile-tablet {
+  overflow-x: visible;
+  padding-bottom: 8px;
+}
+math-type tool-bar.mobile-tablet too-bar-container {
+  transform: scale(1.3, 1.3);
+  padding: 0;
+  transform-origin: 0px 0px;
+  position: relative;
+  padding-left: 13px;
+}
+math-type tool-bar.mobile-tablet.select-only {
+  display: none;
+}
+math-type tool-bar v-separator {
+  display: block;
+  border-left: 1.5px solid lightgray;
+  margin-top: 1px;
+  margin-bottom: 10px;
+  margin-left: 2px;
+}
+math-type tool-bar tool-bar-item {
+  display: flex;
+}
+math-type tool-bar tool-bar-item-separator {
+  display: block;
+  width: 4px;
+  margin-left: 4px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  border-left: 2px solid #e0dfdf;
+}
+math-type tool-bar i.fa.undo-redo {
+  cursor: pointer;
+  float: left;
+  display: block;
+  padding: 5px 4px;
+  padding-bottom: 3px;
+  color: gray;
+  border: 1px solid transparent;
+  margin-top: 5px;
+  font-size: 13px;
+  margin-right: 3px;
+}
+math-type tool-bar i.fa.undo-redo:hover {
+  border: 1px solid #cccaca;
+}
+/* z-index region*/
+math-type items-bar {
+  cursor: default;
+  display: block;
+  position: fixed;
+  left: 10px;
+  top: 90px;
+  border: 1px lightgray solid;
+  background: #f7f7f7;
+  padding: 5px;
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  color: gray;
+  z-index: 900;
+}
+math-type items-bar.mobile-tablet {
+  top: 84px;
+  left: 41px;
+  opacity: 0.9;
+  height: 27px;
+}
+math-type items-bar.mobile-tablet.is-android {
+  top: unset;
+  bottom: 4px;
+  left: 20px;
+}
+math-type items-bar.mobile-tablet.diagram {
+  height: unset;
+  bottom: unset;
+  top: 145px;
+  left: 1px;
+  transform: scale(1.3);
+  transform-origin: 0 0;
+}
+math-type items-bar.mobile-tablet > item-container {
+  display: flex;
+  transform: scale(1.5, 1.5);
+  padding-top: 1px;
+}
+math-type items-bar.mobile-tablet .diagram-item,
+math-type items-bar.mobile-tablet .table-item {
+  display: none;
+}
+math-type items-bar.mobile-tablet item:hover {
+  border: 1px #e6e5e5 transparent;
+  background: none;
+}
+math-type items-bar item {
+  display: block;
+  border: 1px solid transparent;
+  padding: 3px;
+  stroke: gray;
+  fill: gray;
+}
+math-type items-bar item:hover {
+  border: 1px #e6e5e5 solid;
+  background: white;
+}
+math-type items-bar item.disabled {
+  border: 1px solid transparent;
+  color: lightgray;
+  stroke: lightgray;
+  fill: lightgray;
+}
+math-type items-bar item.trigger-item {
+  position: relative;
+  height: 16px;
+}
+math-type items-bar item.trigger-item svg {
+  width: 19px;
+  height: 16px;
+  transform: translate(2px, 0);
+}
+math-type items-bar item.trigger-item svg path {
+  stroke: none;
+}
+math-type items-bar item.trigger-item .fa.fa-bars {
+  position: absolute;
+  left: 9.5px;
+  top: 7.5px;
+  font-size: 8px;
+}
+/* z-index region*/
+math-type context-menu-container {
+  position: absolute;
+  left: 100px;
+  top: 300px;
+  z-index: 11900;
+  box-shadow: 2px 2px 3px 0px #c3c3c3;
+  border: 1px solid lightgray;
+  width: 200px;
+  background: white;
+  cursor: default;
+  outline: none;
+}
+math-type context-menu-container ct-item {
+  display: block;
+  padding: 6px 9px;
+  font-size: 13px;
+  color: gray;
+}
+math-type context-menu-container ct-item.disabled {
+  color: lightgray;
+}
+math-type context-menu-container ct-item:hover {
+  background: #eae9e9;
+}
+math-type context-menu-container ct-icon {
+  width: 20px;
+  display: inline-block;
+}
+math-type context-menu-container ct-separator {
+  width: 100%;
+  display: block;
+  height: 1px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border-top: 1px solid lightgray;
+}
+.table-settings-detail matrix-layout-detail {
+  margin-top: -1px;
+  height: 20px;
+}
+.table-settings-detail matrix-layout-detail label.icon {
+  font-size: 14px;
+  display: inline-block;
+  margin-top: -4px;
+}
+.table-settings-detail matrix-layout-detail input-wrapper {
+  width: 15px;
+}
+/* z-index region*/
+math-type .mobile-keys-support-region {
+  position: fixed;
+  top: 84px;
+  left: 95px;
+  color: gray;
+  z-index: 11609;
+  opacity: 0.9;
+  display: flex;
+  width: auto;
+  z-index: 11995;
+}
+math-type .mobile-keys-support-region.is-android {
+  top: unset;
+  bottom: 4px;
+  left: 77px;
+}
+math-type .mobile-keys-support-region.select-only {
+  top: 40px;
+  left: 45px;
+}
+modal-dialog.swift modal-container.mt-common-dialog {
+  min-height: 0;
+  height: auto;
+  background: white;
+  border: none;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-header {
+  display: none;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-content {
+  font-size: 12px;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer {
+  display: block;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer buttons-group {
+  display: flex;
+  justify-content: flex-end;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer buttons-group.center {
+  justify-content: center;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer message {
+  flex-grow: 1;
+  font-size: 12px;
+  padding-top: 3px;
+  color: #ce0303;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer message > span {
+  padding-left: 3px;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer > div {
+  display: flex;
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 4px;
+  justify-content: flex-end;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer > div.center {
+  justify-content: center;
+  flex-direction: column;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer > div.center message {
+  text-align: center;
+  padding-bottom: 10px;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer .thin-loader {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1px;
+  display: block;
+}
+modal-dialog.swift modal-container.mt-common-dialog modal-footer .ok,
+modal-dialog.swift modal-container.mt-common-dialog modal-footer .cancel,
+modal-dialog.swift modal-container.mt-common-dialog modal-footer .no {
+  width: 60px;
+  margin-left: 10px;
+}
+modal-dialog.swift.document-name modal-container.mt-common-dialog {
+  width: 500px;
+  max-width: 95vw;
+}
+modal-dialog.swift.document-name document-name {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+modal-dialog.swift.document-name document-name label {
+  display: block;
+  font-size: 12px;
+}
+modal-dialog.swift.document-name document-name textarea {
+  width: auto;
+  display: block;
+  margin: 5px 0px;
+  height: 39px;
+  outline: none;
+  border: 1px solid lightgray;
+  resize: vertical;
+}
+modal-dialog.confirm-dialog modal-container.mt-common-dialog {
+  width: 400px;
+  max-width: 95vw;
+}
+modal-dialog.confirm-dialog modal-container.mt-common-dialog modal-footer > div {
+  justify-content: center;
+}
+confirm-dialog {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+confirm-dialog label {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  padding: 10px;
+}
+a.facebook:hover svg {
+  fill: #2d4373;
+}
+a.facebook svg {
+  fill: #3b5998;
+}
+a.facebook i {
+  text-align: center;
+  color: white;
+}
+a.google:hover svg {
+  fill: #c23321;
+}
+a.google svg {
+  fill: #dd4b39;
+}
+a.google i {
+  text-align: center;
+  color: white;
+}
+a.twitter:hover svg {
+  fill: #2795e9;
+}
+a.twitter svg {
+  fill: #55acee;
+}
+a.twitter i {
+  text-align: center;
+  color: white;
+}
+a.github:hover svg {
+  fill: #2b2b2b;
+}
+a.github svg {
+  fill: #444;
+}
+a.github i {
+  text-align: center;
+  color: white;
+}
+modal-dialog.unsave-document-confirm modal-container {
+  width: 350px;
+  max-width: 95vw;
+}
+modal-content unsave-confirm {
+  display: block;
+  text-align: center;
+  padding-bottom: 10px;
+}
+modal-content unsave-confirm > i.fa.fa-exclamation-triangle {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 10px;
+  color: orange;
+}
+/* z-index region*/
+document-sidebar {
+  position: fixed;
+  left: 1px;
+  top: 35px;
+  width: 200px;
+  bottom: -1px;
+  border: 1px solid #cecbcb;
+  background: white;
+  box-shadow: 1px 1px 1px 0px #e0dddd;
+  z-index: 19800;
+}
+document-sidebar.mobile-tablet i.hide-side-bar {
+  font-size: 18px;
+  padding-top: 8px;
+  padding-bottom: 6px;
+  padding-right: 10px;
+}
+document-sidebar.mobile-tablet i.hide-share {
+  font-size: 18px;
+  padding-top: 3px;
+  padding-bottom: 6px;
+  padding-right: 6px;
+}
+document-sidebar.hide {
+  top: 50%;
+  width: 20px;
+  height: 37px;
+  left: -1px;
+}
+document-sidebar.hide.mobile-tablet {
+  top: 84px;
+  width: 28px;
+  background: #f7f7f7;
+  opacity: 0.9;
+}
+document-sidebar.hide.mobile-tablet show-indicator {
+  padding: 9px 10px;
+}
+document-sidebar.hide.mobile-tablet.view-only {
+  top: 40px;
+}
+document-sidebar.hide show-indicator {
+  display: block;
+}
+document-sidebar.hide document-sidebar-container {
+  display: none;
+}
+document-sidebar.hide document-sidebar-resize-indicator {
+  display: none;
+}
+document-sidebar.hide login-message {
+  display: none;
+}
+document-sidebar show-indicator {
+  display: block;
+  cursor: pointer;
+  padding: 8px 5px;
+  display: none;
+}
+document-sidebar document-sidebar-container {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+document-sidebar document-sidebar-header {
+  height: 35px;
+  min-height: 35px;
+  padding-left: 6px;
+  display: block;
+  border-bottom: 1px solid lightgray;
+  background: #f7f7f7;
+  box-shadow: 0px 1px 2px 0px #dad7d7;
+  font-size: 14px;
+}
+document-sidebar document-sidebar-header.mobile-tablet > i.fa {
+  font-size: 16px;
+  padding-right: 10px;
+}
+document-sidebar document-sidebar-header > div.rename-icon:hover {
+  color: #4e4d4d;
+}
+document-sidebar document-sidebar-header > div.rename-icon.disabled {
+  color: lightgray;
+  cursor: default;
+}
+document-sidebar document-sidebar-header > i.fa {
+  cursor: pointer;
+  padding: 0 5px;
+  padding-top: 10px;
+  padding-bottom: 8px;
+}
+document-sidebar document-sidebar-header > i.fa:hover {
+  color: #4e4d4d;
+}
+document-sidebar document-sidebar-header > i.fa.disabled {
+  color: lightgray;
+  cursor: default;
+}
+document-sidebar document-sidebar-header > i.fa.fa-angle-double-left {
+  float: right;
+}
+document-sidebar document-sidebar-header i.fa.fa-trash-o {
+  margin-left: 25px;
+}
+document-sidebar document-sidebar-list {
+  display: block;
+  overflow-y: auto;
+  position: relative;
+  flex-grow: 1;
+}
+document-sidebar document-sidebar-list document-sidebar-list-container {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: block;
+}
+document-sidebar document-sidebar-list .thin-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+document-sidebar document-sidebar-resize-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -3px;
+  width: 6px;
+  cursor: col-resize;
+}
+document-sidebar share-section-resize-indicator {
+  position: absolute;
+  top: -3;
+  left: 0;
+  right: 0;
+  height: 6px;
+  cursor: row-resize;
+}
+document-sidebar confirm-message message {
+  display: block;
+  font-size: 13px;
+}
+document-sidebar confirm-message name {
+  display: block;
+  font-weight: bold;
+  padding-top: 10px;
+}
+document-sidebar login-message {
+  font-size: 12px;
+  width: 96%;
+  position: absolute;
+  display: block;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #b7b5b5;
+}
+document-sidebar login-message > span {
+  display: block;
+}
+document-sidebar login-message button {
+  display: inline-block;
+  margin-top: 10px;
+  border: 1px solid lightgray;
+  color: #2d2d2d;
+  background: #fbf9f9;
+  cursor: pointer;
+  font-size: 12px;
+}
+document-sidebar login-message button:hover {
+  background: #efeded;
+}
+document-sidebar login-message login-text {
+  display: block;
+  margin: 10px;
+  color: black;
+}
+document-sidebar login-message .social-icon {
+  cursor: pointer;
+}
+document-sidebar #measure-text {
+  font-size: 13px;
+}
+document-sidebar document-item {
+  font-size: 13px;
+  padding: 4px 5px;
+  padding-left: 12px;
+  display: flex;
+  cursor: default;
+  user-select: none;
+}
+document-sidebar document-item.mobile-tablet {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+document-sidebar document-item.for-readonly {
+  flex-direction: column;
+}
+document-sidebar document-item.for-readonly name-container {
+  display: flex;
+}
+document-sidebar document-item.for-readonly by {
+  display: block;
+  font-size: 12px;
+  padding-left: 10px;
+}
+document-sidebar document-item.for-readonly by display-name {
+  padding-left: 3px;
+  color: #4caf50;
+}
+document-sidebar document-item.for-readonly i.fa {
+  padding-left: 3px;
+}
+document-sidebar document-item:hover {
+  background: #f7f7f7;
+}
+document-sidebar document-item.selected {
+  background: #e1e8f5;
+}
+document-sidebar document-item.editing {
+  color: #585858;
+}
+document-sidebar document-item icon {
+  margin-right: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+document-sidebar document-item icon i.fa.fa-share {
+  position: absolute;
+  left: 2px;
+  top: 5px;
+  color: gray;
+  font-size: 8px;
+}
+document-sidebar document-item icon start {
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  font-size: 14px;
+  color: #af0606;
+}
+document-sidebar document-item icon > div {
+  position: relative;
+}
+document-sidebar document-item icon > div > i.fa.fa-pencil {
+  left: 4px;
+  top: -1px;
+  position: absolute;
+}
+document-sidebar document-item icon:hover > i.fa::before {
+  content: "\F016";
+}
+document-sidebar document-item name-container {
+  max-height: 30px;
+  display: block;
+  overflow: hidden;
+}
+document-sidebar share-section {
+  display: flex;
+  flex-direction: column;
+}
+document-sidebar share-section.hide share-list {
+  display: none;
+}
+document-sidebar share-section.hide share-section-resize-indicator {
+  display: none;
+}
+document-sidebar share-section share-section-header {
+  position: relative;
+  font-size: 12px;
+  padding: 5px 5px;
+  background: #f7f7f7;
+  display: block;
+  border: 1px solid lightgray;
+  border-left: none;
+  border-right: none;
+  box-shadow: 0px 1px 2px 0px #dad7d7;
+}
+document-sidebar share-section share-section-header > i.fa {
+  position: absolute;
+  right: 4px;
+  padding: 5px;
+  top: 0px;
+  cursor: pointer;
+}
+document-sidebar share-section share-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-top: 5px;
+}
+document-sidebar error-container {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: #ce0303;
+  padding: 10px;
+}
+document-sidebar error-container > i.fa.fa-exclamation-triangle {
+  padding-right: 10px;
+  display: block;
+  font-size: 17px;
+}
+.mobile-tablet div.rename-icon {
+  width: 25px;
+  height: 25px;
+}
+.mobile-tablet div.rename-icon > i.fa.fa-i-cursor {
+  font-size: 14px;
+}
+.mobile-tablet div.rename-icon > i.fa.fa-font {
+  font-size: 16px;
+  top: 0px;
+}
+div.rename-icon {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  width: 20px;
+}
+div.rename-icon > i.fa.fa-i-cursor {
+  font-size: 11px;
+}
+div.rename-icon > i.fa.fa-font {
+  font-size: 12px;
+  position: absolute;
+  top: 3px;
+  left: 5px;
+}
+quick-start {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999999999;
+}
+quick-start > overlay {
+  z-index: 0;
+  opacity: 0.7;
+}
+quick-start editarea.root-editor {
+  min-height: 100px;
+}
+quick-start qs-footer {
+  padding: 5px;
+  font-size: 13px;
+  color: white;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+quick-start qs-footer span {
+  padding-right: 10px;
+}
+quick-start qs-footer > button.btn-normal {
+  display: inline-block;
+}
+quick-start qs-guide-board-container {
+  cursor: default;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 500px;
+  height: 160px;
+  transform: translate(-50%, -310px);
+  padding: 10px;
+  background: white;
+  box-shadow: 0px 1px 2px 0px #4c4949;
+  font-size: 14px;
+  color: gray;
+}
+quick-start qs-guide-board-container stand-out {
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background: #f1f0f0;
+  color: black;
+  margin-right: 5px;
+  font-family: monospace;
+}
+quick-start qs-guide-board-container key-piece {
+  display: inline-block;
+  /* width: 21px; */
+  /* height: 16px; */
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 1px 1px 1px -1px #4c4949;
+}
+quick-start qs-guide-board-container gb-header {
+  display: block;
+  border-bottom: 1px solid lightgray;
+  padding-bottom: 2px;
+  margin-bottom: 7px;
+  color: green;
+}
+quick-start qs-guide-board-container bpoint {
+  font-size: 12px;
+  padding: 2px;
+  display: block;
+}
+quick-start qs-guide-board-container bpoint.center {
+  text-align: center;
+  margin-top: 11px;
+}
+quick-start > qs-math-type-container {
+  padding: 5px;
+  z-index: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 510px;
+  transform: translate(-50%, -50%);
+  margin-top: 50px;
+  background: #f3eeee;
+  box-shadow: 0px 1px 2px 0px #4c4949;
+}
+quick-start > qs-math-type-container > math-type {
+  position: relative;
+  display: block;
+  border: 1px solid lightgray;
+  background: white;
+  cursor: text;
+  height: 300px;
+}
+quick-start > qs-math-type-container > math-type:hover {
+  border: 1px solid gray;
+}
+quick-start > qs-math-type-container > math-type tool-bar {
+  display: none;
+}
+quick-start > qs-math-type-container > math-type items-bar {
+  display: none;
+  left: -60px;
+  top: 0px;
+  box-shadow: 0px 1px 2px 0px #4c4949;
+}
+quick-start button.previous,
+quick-start button.next {
+  display: inline-block;
+  margin-top: -5px;
+  float: right;
+}
+quick-start button.next {
+  margin-left: 5px;
+}
+/* z-index region*/
+container-layer {
+  display: block;
+  min-height: 400px;
+  background: #eeeeee;
+  margin-top: 80px;
+  outline: none;
+  -webkit-backface-visibility: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+container-layer.mobile-tablet {
+  padding-top: 80px;
+  margin-top: 0px;
+  width: 100%;
+  height: calc(100vh - 0px);
+  overflow: scroll;
+  display: flex;
+}
+container-layer.mobile-tablet content-area {
+  margin-left: auto;
+  margin-right: auto;
+}
+container-layer.mobile-tablet editor-container {
+  margin-bottom: 100px;
+}
+container-layer.mobile-tablet-ios {
+  -webkit-overflow-scrolling: touch;
+}
+container-layer content-area {
+  display: block;
+  flex-direction: column;
+  align-items: center;
+  color: gray;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: visible;
+}
+container-layer content-area.mobile-tablet {
+  margin-top: 40px;
+  padding-right: 50px;
+  padding-left: 50px;
+  width: auto;
+}
+container-layer content-area > green-bar {
+  display: block;
+  height: 15px;
+  background: #4CAF50;
+  width: 100%;
+  border-bottom: 1px solid #c7c5c5;
+  margin-top: -1px;
+}
+container-layer content-area > editor-container {
+  -webkit-user-select: none;
+  /* Chrome all / Safari all */
+  -moz-user-select: none;
+  /* Firefox all */
+  -ms-user-select: none;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 300px;
+  border: 1px solid #c7c5c5;
+  border-left: 2px solid #c7c5c5;
+  background: white;
+  position: relative;
+  display: block;
+}
+container-layer content-area > editor-container > embeded-editor {
+  flex-grow: 1;
+  display: block;
+  min-height: 400px;
+}
+container-layer content-area > editor-container > resize-bar {
+  width: 2px;
+  border-left: 1px solid #dedcdc;
+  cursor: col-resize;
+  position: absolute;
+  right: 0px;
+  height: 100%;
+  top: 0px;
+}
+container-layer content-area resizing-bar {
+  display: block;
+  width: 2px;
+  border-left: 1px solid #4CAF50;
+  position: absolute;
+  height: 100%;
+  top: 0;
+}
+container-layer resizing-info {
+  display: block;
+  position: absolute;
+  top: 50%;
+  font-size: 10px;
+  width: 70px;
+  color: #4CAF50;
+  background: white;
+  border: 1px solid #dedcdc;
+  padding: 5px;
+}
+container-layer loading-layer {
+  display: none;
+  z-index: 11900;
+}
+container-layer loading-layer.show {
+  display: block;
+}
+container-layer loading-layer overlay-loading {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 11900;
+}
+container-layer loading-layer .thin-loader {
+  z-index: 11901;
+}
+container-layer warning-error-region {
+  position: fixed;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* padding-left: 130px; */
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+container-layer warning-error-region warning,
+container-layer warning-error-region error {
+  background: white;
+  padding: 2px 7px;
+  border: 1px solid lightgray;
+  margin-right: 5px;
+}
+container-layer warning-error-region warning > i.fa.fa-exclamation-triangle,
+container-layer warning-error-region error > i.fa.fa-exclamation-triangle {
+  padding-right: 5px;
+}
+container-layer warning-error-region warning {
+  color: orange;
+}
+container-layer warning-error-region error {
+  color: #ce0303;
+}
+/* z-index region*/
+.export-bar-container {
+  position: fixed;
+  top: 0;
+  left: 30px;
+  font-size: 18px;
+  width: 260px;
+  display: flex;
+  flex-direction: row;
+  outline: none;
+  color: white;
+  padding: 0 0 0 0px;
+  font-family: Arial, sans-serif;
+  z-index: 19900;
+}
+.export-bar-container.mobile-small-layout {
+  width: 100px;
+}
+.export-bar-container.mobile-small-layout > div {
+  margin-left: 0;
+}
+.export-bar-container.mobile-small-layout div.menu-bar-container div.button {
+  width: 30px;
+  font-size: 15px;
+  padding-top: 1px;
+  margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.export-bar-container.mobile-small-layout save-button {
+  margin-left: 0;
+}
+.export-bar-container > div {
+  margin-left: 10px;
+}
+.export-bar-container .items {
+  color: black;
+}
+.export-bar-container share-button,
+.export-bar-container save-button,
+.export-bar-container print-button {
+  font-size: 12px;
+  padding-top: 2px;
+  padding: 2px 6px 0px 5px;
+  display: block;
+  margin-top: 7px;
+  margin-left: 14px;
+  height: 16px;
+  cursor: pointer;
+}
+.export-bar-container share-button,
+.export-bar-container print-button {
+  border: 1px solid transparent;
+}
+.export-bar-container share-button i.fa,
+.export-bar-container print-button i.fa {
+  padding-right: 0px;
+  margin-right: 3px;
+  /* font-size: 14px; */
+  display: inline-block;
+}
+.export-bar-container share-button:hover,
+.export-bar-container print-button:hover {
+  border: 1px solid white;
+}
+.export-bar-container share-button.disabled,
+.export-bar-container print-button.disabled {
+  color: lightgray;
+  border: 1px solid transparent;
+  cursor: default;
+}
+.export-bar-container save-button {
+  border: 1px solid white;
+}
+.export-bar-container save-button::before {
+  content: "Save";
+}
+.export-bar-container save-button:hover {
+  background: #54c158;
+}
+.export-bar-container save-button.readonly {
+  border: 1px solid lightgray;
+  cursor: default;
+  color: lightgray;
+}
+.export-bar-container save-button.readonly:hover {
+  background: transparent;
+}
+.export-bar-container save-button.readonly::before {
+  content: "Readonly";
+}
+.export-bar-container save-button.saving {
+  border: none;
+  cursor: default;
+  color: lightgray;
+}
+.export-bar-container save-button.saving:hover {
+  background: transparent;
+}
+.export-bar-container save-button.saving::before {
+  content: "Saving";
+}
+.export-bar-container save-button.saved {
+  cursor: default;
+  border: 1px solid lightgray;
+  opacity: 0.5;
+  color: lightgray;
+}
+.export-bar-container save-button.saved:hover {
+  background: transparent;
+}
+.export-bar-container save-button.saved::before {
+  content: "Saved";
+}
+.menu-bar-container {
+  font-size: 12px;
+  position: relative;
+  outline: none;
+}
+.menu-bar-container.disabled .button {
+  color: lightgray;
+}
+.menu-bar-container.disabled .button:hover {
+  text-decoration: none;
+}
+.menu-bar-container .hide-button {
+  width: 45px;
+  height: 30px;
+}
+.menu-bar-container .button {
+  position: absolute;
+  top: 0;
+  color: white;
+  cursor: default;
+  text-align: center;
+  width: 45px;
+  height: 30px;
+  line-height: 30px;
+  z-index: 999;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+.menu-bar-container .button:hover {
+  text-decoration: underline;
+}
+.menu-bar-container .button.selected {
+  color: black;
+  border: 1px solid lightgray;
+  border-bottom: none;
+  background-color: white;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+  transition: none;
+}
+.menu-bar-container .items {
+  border: 1px solid lightgray;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  width: 220px;
+  position: absolute;
+  z-index: 999999;
+  padding: 4px 0px 4px 0px;
+}
+.menu-bar-container .items .item {
+  display: flex;
+  flex-direction: row;
+  min-height: 30px;
+  align-items: center;
+  cursor: pointer;
+}
+.menu-bar-container .items .item .selected {
+  background-color: #bfe4bd;
+}
+.menu-bar-container .items .item .inside-box {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+}
+.menu-bar-container .items .item .inside-box > i {
+  display: inline-block;
+  width: 25px;
+  text-align: center;
+}
+.menu-bar-container .items .item .disabled {
+  color: lightgray;
+}
+.menu-bar-container .show {
+  visibility: visible;
+}
+.menu-bar-container .hide {
+  display: none;
+}
+modal-dialog.swift.share-dialog modal-container {
+  width: 500px;
+  max-width: 95vw;
+}
+modal-dialog.swift.share-dialog check-box-wrapper {
+  margin-bottom: 7px;
+}
+modal-dialog.swift.share-dialog document-name {
+  width: 100%;
+  margin-bottom: 10px;
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
+modal-dialog.swift.share-dialog share-dialog {
+  width: 100%;
+}
+modal-dialog.swift.share-dialog share-dialog > div {
+  width: 100%;
+  display: flex;
+  margin-bottom: 3px;
+}
+modal-dialog.swift.share-dialog share-dialog > div.hide {
+  display: none;
+}
+modal-dialog.swift.share-dialog share-dialog > div input {
+  flex-grow: 1;
+}
+modal-dialog.swift.share-dialog share-dialog > div button {
+  margin-left: 5px;
+}
+modal-dialog.swift.share-dialog copied-text {
+  visibility: hidden;
+  font-size: 11px;
+  /* margin-top: 4px; */
+  padding-left: 2px;
+  margin-bottom: 5px;
+  display: inline-block;
+  color: green;
+}
+modal-dialog.swift.share-dialog copied-text.show {
+  visibility: visible;
+}
+modal-dialog.swift.share-dialog buttons-group {
+  width: 100%;
+}
+modal-dialog.swift.share-dialog buttons-group button.cancel.btn-normal {
+  margin: auto;
+}
+modal-dialog.swift.share-dialog buttons-group button.ok.btn-primary {
+  display: none;
+}
+modal-dialog.about modal-container {
+  background: white;
+}
+modal-dialog.about modal-content {
+  width: 100%;
+}
+modal-dialog.about about-content {
+  text-align: center;
+  width: 100%;
+  color: black;
+  font-size: 13px;
+}
+modal-dialog.about app-name {
+  font-size: 22px;
+}
+modal-dialog.about email-address {
+  color: dodgerblue;
+}
+modal-dialog.about version {
+  margin-top: -1px;
+  display: block;
+  color: gray;
+  font-size: 11px;
+}
+user-popup {
+  color: gray;
+  border: 1px solid #e2e1e1;
+  background: white;
+  box-shadow: 1px 1px 7px grey;
+  text-align: left;
+  position: fixed;
+  top: 31px;
+  right: 9px;
+  width: 170px;
+  outline: none;
+  padding: 5px;
+  cursor: default;
+}
+user-popup svg {
+  position: absolute;
+  left: 155px;
+  top: -8px;
+  width: 20px;
+  height: 20px;
+}
+user-popup display-name {
+  font-weight: bold;
+}
+user-popup logout-region {
+  display: block;
+  border-top: 1px solid lightgray;
+  padding-top: 5px;
+  margin-top: 10px;
+}
+user-popup logout-region button {
+  float: right;
+}
+/* z-index region*/
+modal-dialog.swift.login-dialog {
+  z-index: 20000;
+}
+modal-dialog.swift.login-dialog modal-container {
+  width: 300px;
+}
+modal-dialog.swift.login-dialog modal-content {
+  padding-bottom: 20px;
+}
+modal-dialog.swift.login-dialog buttons-group {
+  width: 100%;
+}
+modal-dialog.swift.login-dialog buttons-group button.cancel.btn-normal {
+  margin: auto;
+}
+modal-dialog.swift.login-dialog buttons-group button.ok.btn-primary {
+  display: none;
+}
+login-dialog {
+  width: 100%;
+  text-align: center;
+}
+login-dialog message {
+  margin: 10px;
+  display: block;
+}
+login-dialog .btn-github {
+  color: #fff;
+  background-color: #444;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-github:hover {
+  color: #fff;
+  background-color: #2b2b2b;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-facebook {
+  color: #fff;
+  background-color: #3b5998;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-facebook:hover {
+  color: #fff;
+  background-color: #2d4373;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-google {
+  color: #fff;
+  background-color: #dd4b39;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-google:hover {
+  color: #fff;
+  background-color: #c23321;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-twitter {
+  color: #fff;
+  background-color: #55acee;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-twitter:hover {
+  color: #fff;
+  background-color: #2795e9;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-block + .btn-block {
+  margin-top: 5px;
+}
+login-dialog .btn {
+  width: 150px;
+  display: block;
+  margin: auto;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+login-dialog .btn-social {
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 44px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+login-dialog .btn-social > :first-child {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  line-height: 34px;
+  font-size: 1.6em;
+  text-align: center;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+login-dialog .btn-social.btn-sm {
+  padding-left: 38px;
+}
+login-dialog .btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+/* z-index region*/
+header {
+  position: relative;
+  background: #eeeeee;
+  box-sizing: border-box;
+  top: 0px;
+  background: #4CAF50;
+  z-index: 15000;
+}
+header login-name {
+  float: right;
+  height: 27px;
+  text-align: right;
+  width: 120px;
+  font-size: 13px;
+  padding-left: 15px;
+  transition: background 0.5s;
+  font-size: 12px;
+}
+header login-name > display-name {
+  cursor: pointer;
+  padding: 10px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+header login-name.need-login > display-name {
+  text-decoration: underline;
+}
+header separator-bar {
+  position: absolute;
+  border-left: 1px solid white;
+  left: 280px;
+  top: 0;
+  bottom: 0;
+}
+header document-name {
+  position: absolute;
+  height: calc(100% - 10px);
+  left: 270px;
+  padding-top: 9px;
+  right: 30px;
+  font-size: 14px;
+  display: block;
+  width: initial;
+  right: 130px;
+  font-family: monospace;
+}
+header document-name:hover div.rename-icon {
+  visibility: visible;
+}
+header document-name div.rename-icon {
+  visibility: hidden;
+  width: 20px;
+  text-align: left;
+  cursor: pointer;
+  color: white;
+}
+header document-name div.rename-icon.hide {
+  visibility: hidden;
+}
+header document-name display-name {
+  position: relative;
+}
+header document-name display-name span {
+  display: block;
+  overflow: hidden;
+  /* word-wrap: normal; */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+header.scroll {
+  border-bottom: 1px solid #c7c5c5;
+}
+header app-mode {
+  font-size: 12px;
+}
+header > logo {
+  font-size: 20px;
+  height: 100%;
+  width: 150px;
+  left: 25px;
+  margin-left: -15px;
+  display: block;
+  position: absolute;
+  text-align: center;
+  padding-top: 8px;
+  box-sizing: border-box;
+  cursor: default;
+}
+header > logo > span {
+  display: block;
+  float: left;
+  font-size: 16px;
+}
+header > logo > power {
+  display: block;
+  float: left;
+  font-size: 0.6em;
+}
+header > logo > index {
+  float: left;
+  margin-left: 0px;
+  margin-top: -9px;
+}
+header > logo > index > img {
+  width: 25px;
+  height: 30px;
+}
+header > logo > index > svg {
+  width: 19px;
+  height: 30px;
+}
+header > account-information {
+  margin-right: 10px;
+  position: absolute;
+  right: 0px;
+  font-size: 12px;
+  display: block;
+  color: #616161;
+  height: 100%;
+  width: 70px;
+  box-sizing: border-box;
+  padding-top: 5px;
+}
+header > about-information {
+  display: block;
+  height: 100%;
+  width: 100px;
+  position: absolute;
+  box-sizing: border-box;
+  right: 0px;
+  padding-right: 15px;
+  /* top: 17px; */
+  font-size: 0.7em;
+  cursor: default;
+  text-align: right;
+  /* transition: top 0.5s; */
+  height: 30px;
+  padding-top: 10px;
+}
+header > about-information > about-text {
+  display: block;
+}
+header > about-information:hover {
+  text-decoration: underline;
+}
+header modal-dialog.swift.logout-dialog modal-container.mt-common-dialog {
+  width: 400px;
+  top: 30%;
+}
+header modal-dialog.swift.logout-dialog modal-container.mt-common-dialog modal-footer button.ok.btn-primary {
+  display: none;
+}
+header modal-dialog.swift.logout-dialog modal-container.mt-common-dialog modal-footer > div {
+  flex-direction: column;
+  align-items: center;
+}
+header modal-dialog.swift.logout-dialog logout-dialog {
+  text-align: center;
+  width: 100%;
+  padding: 10px;
+}
+html,
+body,
+page,
+#root {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-text-stroke: 1px transparent;
+  text-rendering: optimizeLegibility;
+  width: 100%;
+  display: block;
+  padding: 0;
+  margin: 0;
+  background: #eeeeee;
+  font-family: "Segoe UI", Arial, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+input:not([type]),
+input[type="text"],
+textarea {
+  border: 1px solid lightgray;
+  border-radius: 0;
+  outline: none;
+  padding: 2px;
+  margin: 0px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+page.ios {
+  -webkit-user-select: none;
+  /* disable selection/Copy of UIWebView */
+  -webkit-touch-callout: none;
+  /* disable the IOS popup when long-press on a link */
+  user-select: none;
+}
+body {
+  background: #eeeeee;
+}
+header {
+  display: block;
+  width: 100%;
+  height: 35px;
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+container {
+  display: block;
+  width: 100%;
+  height: calc(100% - 50px);
+  background: white;
+  position: relative;
+}
+file-list {
+  display: block;
+  width: 100px;
+  height: calc(95%);
+  float: left;
+}
+content-area {
+  width: 100%;
+  overflow: auto;
+  float: left;
+  overflow: hidden;
+  background: #eeeeee;
+}
+.thin-loader {
+  height: 4px;
+  top: 73px;
+  width: 100%;
+  position: fixed;
+  overflow: hidden;
+  background-color: #ddd;
+  display: none;
+}
+.thin-loader.show {
+  display: block;
+}
+.thin-loader:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 4px;
+  background-color: #4caf50;
+  animation: loading 2s linear infinite;
+}
+.thin-loader.suppress:before {
+  animation: none;
+}
+@keyframes loading {
+  from {
+    left: -200px;
+    width: 30%;
+  }
+  50% {
+    width: 30%;
+  }
+  70% {
+    width: 70%;
+  }
+  80% {
+    left: 50%;
+  }
+  95% {
+    left: 120%;
+  }
+  to {
+    left: 100%;
+  }
+}
+.btn-normal,
+.btn-primary {
+  display: block;
+  cursor: pointer;
+  outline: none;
+  height: 20px;
+}
+.btn-primary {
+  border: 1px solid #97d899;
+  background: #4CAF50;
+  color: white;
+}
+.btn-primary:hover {
+  background: #4d9a50;
+}
+.btn-primary:disabled {
+  background: #e0e0e0;
+  border: 1px solid lightgray;
+  cursor: default;
+  color: gray;
+}
+.btn-normal {
+  background: white;
+  border: 1px solid lightgray;
+  color: gray;
+}
+.btn-normal:hover {
+  background: #f7f6f6;
+}
+.btn-normal:disabled {
+  background: #e0e0e0;
+  border: 1px solid lightgray;
+  cursor: default;
+  color: gray;
+}
+
+/*# sourceMappingURL=styles.css.map*/

@@ -1,0 +1,540 @@
+════════════════════════════════════════════════════════════════════════════════
+                    PADANAN KODE PYTHON KE C++ DAN C
+                   (Word Abbreviation Problem - Codeforces 71A)
+════════════════════════════════════════════════════════════════════════════════
+
+KODE PYTHON ASLI
+════════════════
+
+```python
+n = int(input())
+for _ in range(n):
+    word = input()
+    if len(word) > 10:
+        print(f"{word[0]}{len(word) - 2}{word[-1]}")
+    else:
+        print(word)
+```
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+PADANAN DALAM C++
+═════════════════
+
+VERSI 1: Menggunakan std::string (PALING MUDAH)
+────────────────────────────────────────────────
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    
+    for (int i = 0; i < n; i++) {
+        string word;
+        cin >> word;
+        
+        if (word.length() > 10) {
+            cout << word[0] << word.length() - 2 << word[word.length() - 1] << endl;
+        } else {
+            cout << word << endl;
+        }
+    }
+    
+    return 0;
+}
+```
+
+PENJELASAN C++ VERSI 1:
+───────────────────────
+
+• #include <iostream>     → Untuk cin, cout
+• #include <string>       → Untuk tipe data string
+• using namespace std     → Agar tidak perlu std:: setiap kali
+
+• int n; cin >> n;        → Baca integer (seperti input() di Python)
+• string word;            → Deklarasi variabel string
+• cin >> word;            → Baca string dari input
+
+• word.length()           → Panjang string (seperti len(word) di Python)
+• word[0]                 → Karakter pertama (sama seperti Python)
+• word[word.length() - 1] → Karakter terakhir (di Python: word[-1])
+
+• cout << ... << endl;    → Print dengan newline
+
+
+────────────────────────────────────────────────────────────────────────────────
+
+VERSI 2: Menggunakan char array (CARA KLASIK C++)
+──────────────────────────────────────────────────
+
+```cpp
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    
+    for (int i = 0; i < n; i++) {
+        char word[101];  // Maksimal 100 karakter + null terminator
+        cin >> word;
+        
+        int len = strlen(word);
+        
+        if (len > 10) {
+            cout << word[0] << len - 2 << word[len - 1] << endl;
+        } else {
+            cout << word << endl;
+        }
+    }
+    
+    return 0;
+}
+```
+
+PENJELASAN C++ VERSI 2:
+───────────────────────
+
+• char word[101]          → Array karakter (C-style string)
+                            101 karena butuh 1 untuk '\0' (null terminator)
+• strlen(word)            → Fungsi untuk menghitung panjang string
+                            (dari <cstring> atau <string.h>)
+• word[len - 1]           → Karakter terakhir
+
+
+────────────────────────────────────────────────────────────────────────────────
+
+VERSI 3: C++ MODERN (C++11 dan lebih baru)
+───────────────────────────────────────────
+
+```cpp
+#include <iostream>
+#include <string>
+
+int main() {
+    int n;
+    std::cin >> n;
+    
+    for (int i = 0; i < n; ++i) {
+        std::string word;
+        std::cin >> word;
+        
+        auto len = word.size();
+        
+        if (len > 10) {
+            std::cout << word.front() << len - 2 << word.back() << '\n';
+        } else {
+            std::cout << word << '\n';
+        }
+    }
+    
+    return 0;
+}
+```
+
+PENJELASAN C++ VERSI 3:
+───────────────────────
+
+• auto len = word.size()  → Auto type inference (C++11)
+• word.front()            → Karakter pertama (sama dengan word[0])
+• word.back()             → Karakter terakhir (sama dengan word[len-1])
+• '\n'                    → Lebih cepat dari endl (tidak flush buffer)
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+PADANAN DALAM C
+═══════════════
+
+VERSI 1: Menggunakan scanf/printf (STANDAR)
+────────────────────────────────────────────
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    
+    for (int i = 0; i < n; i++) {
+        char word[101];
+        scanf("%s", word);
+        
+        int len = strlen(word);
+        
+        if (len > 10) {
+            printf("%c%d%c\n", word[0], len - 2, word[len - 1]);
+        } else {
+            printf("%s\n", word);
+        }
+    }
+    
+    return 0;
+}
+```
+
+PENJELASAN C VERSI 1:
+─────────────────────
+
+• #include <stdio.h>      → Untuk scanf, printf
+• #include <string.h>     → Untuk strlen
+
+• scanf("%d", &n)         → Baca integer
+                            PENTING: pakai & untuk alamat variabel!
+• scanf("%s", word)       → Baca string
+                            Tidak pakai & karena array sudah alamat
+
+• strlen(word)            → Menghitung panjang string
+• printf("%c%d%c\n", ...) → Print dengan format specifier
+                            %c = character
+                            %d = integer/decimal
+                            %s = string
+                            \n = newline
+
+
+────────────────────────────────────────────────────────────────────────────────
+
+VERSI 2: Menggunakan gets/puts (DEPRECATED - TIDAK DISARANKAN)
+───────────────────────────────────────────────────────────────
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    getchar();  // Buang newline setelah scanf
+    
+    for (int i = 0; i < n; i++) {
+        char word[101];
+        fgets(word, sizeof(word), stdin);
+        
+        // Hapus newline dari fgets
+        word[strcspn(word, "\n")] = '\0';
+        
+        int len = strlen(word);
+        
+        if (len > 10) {
+            printf("%c%d%c\n", word[0], len - 2, word[len - 1]);
+        } else {
+            printf("%s\n", word);
+        }
+    }
+    
+    return 0;
+}
+```
+
+CATATAN VERSI 2:
+────────────────
+
+⚠️ JANGAN pakai gets() → SANGAT BERBAHAYA (buffer overflow)!
+✓ Pakai fgets() sebagai gantinya
+
+• fgets(word, 101, stdin)     → Baca string dengan batas ukuran
+• strcspn(word, "\n")         → Cari posisi newline
+• word[...] = '\0'            → Ganti newline dengan null terminator
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+PERBANDINGAN DETAIL
+═══════════════════
+
+┌──────────────────────┬─────────────────┬─────────────────┬───────────────┐
+│ Operasi              │ Python          │ C++             │ C             │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Baca integer         │ int(input())    │ cin >> n        │ scanf("%d")   │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Baca string          │ input()         │ cin >> word     │ scanf("%s")   │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Panjang string       │ len(word)       │ word.length()   │ strlen(word)  │
+│                      │                 │ atau .size()    │               │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Karakter pertama     │ word[0]         │ word[0]         │ word[0]       │
+│                      │                 │ atau .front()   │               │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Karakter terakhir    │ word[-1]        │ word[len-1]     │ word[len-1]   │
+│                      │                 │ atau .back()    │               │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Print                │ print()         │ cout << ... <<  │ printf()      │
+│                      │                 │ endl            │               │
+├──────────────────────┼─────────────────┼─────────────────┼───────────────┤
+│ Loop n kali          │ for _ in        │ for (int i=0;   │ for (int i=0; │
+│                      │ range(n)        │ i<n; i++)       │ i<n; i++)     │
+└──────────────────────┴─────────────────┴─────────────────┴───────────────┘
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+PERBEDAAN PENTING
+═════════════════
+
+1. **DEKLARASI VARIABEL**
+   ──────────────────────
+
+   Python:  word = input()              # Tipe otomatis
+   C++:     string word; cin >> word;   # Harus deklarasi tipe
+   C:       char word[101];             # Harus deklarasi ukuran array
+
+
+2. **INDEX NEGATIF**
+   ─────────────────
+
+   Python:  word[-1]                    # Karakter terakhir
+   C++/C:   word[len - 1]               # Harus hitung manual
+   
+   Python mendukung index negatif, C++/C TIDAK!
+
+
+3. **STRING IMMUTABLE vs MUTABLE**
+   ────────────────────────────────
+
+   Python:  String adalah immutable (tidak bisa diubah langsung)
+   C++:     std::string adalah mutable (bisa diubah)
+   C:       char array adalah mutable (bisa diubah)
+
+
+4. **NULL TERMINATOR**
+   ───────────────────
+
+   Python:  Tidak ada konsep null terminator
+   C++:     std::string otomatis handle (tidak perlu khawatir)
+   C:       HARUS ada '\0' di akhir string!
+   
+   Contoh: char word[101] → butuh 101 untuk 100 karakter + 1 '\0'
+
+
+5. **MEMORY MANAGEMENT**
+   ──────────────────────
+
+   Python:  Garbage collection otomatis
+   C++:     std::string otomatis manage memory
+   C:       Manual memory management (array ukuran fixed)
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+CONTOH EKSEKUSI
+═══════════════
+
+Input:
+```
+4
+word
+localization
+internationalization
+pneumonoultramicroscopicsilicovolcanoconiosis
+```
+
+Output (SEMUA BAHASA SAMA):
+```
+word
+l10n
+i18n
+p43s
+```
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+REKOMENDASI
+═══════════
+
+📌 **UNTUK PEMULA:**
+
+• Python:     Paling mudah, paling readable
+• C++:        Gunakan std::string (Versi 1)
+• C:          Gunakan scanf/printf dengan char array
+
+
+📌 **UNTUK COMPETITIVE PROGRAMMING:**
+
+• C++:        Versi 3 (modern, dengan '\n' instead of endl untuk speed)
+• C:          Versi 1 (scanf/printf lebih cepat dari cin/cout)
+
+
+📌 **TIPS OPTIMASI:**
+
+C++ untuk speed:
+```cpp
+ios_base::sync_with_stdio(false);  // Putus sinkronisasi dengan C
+cin.tie(NULL);                      // Putus tie antara cin dan cout
+```
+
+Tambahkan di awal main() untuk membuat cin/cout secepat scanf/printf!
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+KESALAHAN UMUM
+══════════════
+
+1. **C++ / C: Lupa & pada scanf untuk integer**
+   ────────────────────────────────────────────
+
+   ❌ SALAH:  scanf("%d", n);      // Error!
+   ✓ BENAR:   scanf("%d", &n);     // Perlu alamat
+
+
+2. **C: Lupa null terminator**
+   ───────────────────────────
+
+   ❌ SALAH:  char word[100];      // Kalau input 100 karakter akan overflow!
+   ✓ BENAR:   char word[101];      // 100 karakter + 1 untuk '\0'
+
+
+3. **Python index negatif di C++/C**
+   ─────────────────────────────────
+
+   ❌ SALAH (C++/C):  word[-1]           // Undefined behavior!
+   ✓ BENAR (C++/C):   word[len - 1]      // Hitung manual
+
+
+4. **C++: Lupa include header**
+   ────────────────────────────
+
+   ❌ SALAH:  string word; (tanpa #include <string>)
+   ✓ BENAR:   #include <string> di awal
+
+
+5. **C: Lupa include string.h untuk strlen**
+   ─────────────────────────────────────────
+
+   ❌ SALAH:  strlen(word); (tanpa #include <string.h>)
+   ✓ BENAR:   #include <string.h> di awal
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+KODE LENGKAP SIAP PAKAI
+════════════════════════
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              KODE C++ (RECOMMENDED)
+═══════════════════════════════════════════════════════════════════════════════
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    // Optimasi untuk competitive programming (opsional)
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int n;
+    cin >> n;
+    
+    for (int i = 0; i < n; i++) {
+        string word;
+        cin >> word;
+        
+        int len = word.length();
+        
+        if (len > 10) {
+            cout << word[0] << len - 2 << word[len - 1] << '\n';
+        } else {
+            cout << word << '\n';
+        }
+    }
+    
+    return 0;
+}
+```
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                               KODE C (RECOMMENDED)
+═══════════════════════════════════════════════════════════════════════════════
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    
+    for (int i = 0; i < n; i++) {
+        char word[101];
+        scanf("%s", word);
+        
+        int len = strlen(word);
+        
+        if (len > 10) {
+            printf("%c%d%c\n", word[0], len - 2, word[len - 1]);
+        } else {
+            printf("%s\n", word);
+        }
+    }
+    
+    return 0;
+}
+```
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+COMPILE DAN RUN
+═══════════════
+
+**C++:**
+```bash
+# Compile
+g++ -o solution solution.cpp
+
+# atau dengan optimasi
+g++ -O2 -std=c++17 -o solution solution.cpp
+
+# Run
+./solution
+```
+
+**C:**
+```bash
+# Compile
+gcc -o solution solution.c
+
+# atau dengan optimasi
+gcc -O2 -std=c11 -o solution solution.c
+
+# Run
+./solution
+```
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+KESIMPULAN
+══════════
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║  PYTHON → C++ → C                                                        ║
+║                                                                           ║
+║  Python:   Paling mudah, paling readable                                ║
+║  C++:      Balance antara kemudahan dan performa                        ║
+║  C:        Paling cepat, tapi paling verbose                            ║
+║                                                                           ║
+║  Untuk competitive programming:                                          ║
+║  • Mulai dengan Python (untuk cepat)                                    ║
+║  • Pindah ke C++ std::string (untuk balance)                           ║
+║  • Gunakan C jika butuh speed maksimal                                  ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              AKHIR DOKUMEN
+════════════════════════════════════════════════════════════════════════════════

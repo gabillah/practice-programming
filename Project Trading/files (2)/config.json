@@ -1,0 +1,125 @@
+{
+  "data_source": {
+    "provider": "demo",
+    "api_key": "",
+    "reconnect_delay": 5,
+    "max_reconnects": 20,
+    "websocket_url": ""
+  },
+  "pairs": [
+    "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "USD/CHF",
+    "AUD/USD",
+    "NZD/USD",
+    "USD/CAD",
+    "EUR/GBP",
+    "EUR/JPY",
+    "GBP/JPY",
+    "XAU/USD",
+    "XAG/USD"
+  ],
+  "timeframes": [
+    "1min",
+    "5min",
+    "15min",
+    "1h",
+    "4h",
+    "1day"
+  ],
+  "primary_tf": "15min",
+  "account": {
+    "initial_balance": 10000.0,
+    "currency": "USD",
+    "leverage": 100,
+    "margin_call_pct": 50.0,
+    "stop_out_pct": 20.0
+  },
+  "trading": {
+    "default_lot": 0.1,
+    "min_lot": 0.01,
+    "max_lot": 100.0,
+    "lot_step": 0.01,
+    "max_open_trades": 20,
+    "allow_hedging": true,
+    "slippage_pips": 1.0,
+    "commission_per_lot": 7.0
+  },
+  "signal_engine": {
+    "min_confluence": 3,
+    "signal_cooldown": 300,
+    "use_ml_filter": true,
+    "use_session_filter": true,
+    "auto_trade": false,
+    "auto_lot": 0.01,
+    "min_confidence": 0.55
+  },
+  "risk": {
+    "risk_per_trade_pct": 1.5,
+    "max_daily_loss_pct": 5.0,
+    "default_sl_atr_mult": 2.0,
+    "default_tp_rr": 2.0,
+    "trailing_stop": true,
+    "trailing_atr_mult": 1.5,
+    "kelly_fraction": 0.25,
+    "spread_filter_pips": 3.0
+  },
+  "indicators": {
+    "ema_fast": 9,
+    "ema_slow": 21,
+    "ema_trend": 200,
+    "rsi_period": 14,
+    "rsi_ob": 70,
+    "rsi_os": 30,
+    "macd_fast": 12,
+    "macd_slow": 26,
+    "macd_signal": 9,
+    "bb_period": 20,
+    "bb_std": 2.0,
+    "stoch_k": 14,
+    "stoch_d": 3,
+    "stoch_smooth": 3,
+    "atr_period": 14,
+    "adx_period": 14,
+    "adx_thresh": 25,
+    "cci_period": 20,
+    "williams_period": 14,
+    "mfi_period": 14,
+    "supertrend_period": 10,
+    "supertrend_mult": 3.0,
+    "donchian_period": 20,
+    "keltner_period": 20,
+    "keltner_mult": 2.0,
+    "ichimoku_tenkan": 9,
+    "ichimoku_kijun": 26,
+    "ichimoku_senkou": 52,
+    "squeeze_bb": 20,
+    "squeeze_kc": 20,
+    "vwap_enabled": true,
+    "pivot_method": "classic",
+    "hma_period": 21
+  },
+  "ml": {
+    "model_type": "random_forest",
+    "n_estimators": 200,
+    "lookback": 20,
+    "retrain_interval": 3600,
+    "min_samples": 200,
+    "confidence_thresh": 0.6,
+    "feature_window": 60
+  },
+  "ui": {
+    "theme": "light",
+    "refresh_ms": 2000,
+    "max_candles": 200,
+    "window_width": 1820,
+    "window_height": 1000,
+    "font_family": "Segoe UI",
+    "font_size": 10
+  },
+  "reports": {
+    "csv_path": "reports/trades.csv",
+    "auto_export": true
+  }
+}

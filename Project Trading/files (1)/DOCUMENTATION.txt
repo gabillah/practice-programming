@@ -1,0 +1,1508 @@
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                  ║
+║          APEX FOREX SIGNAL SYSTEM  v3.0  –  COMPLETE USER MANUAL                ║
+║                                                                                  ║
+║          Professional Algorithmic Trading Signal Terminal                        ║
+║          With Live Market Data Streaming & Advanced Analytics                    ║
+║                                                                                  ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+
+Document version  : 3.0.0
+Last updated      : 2026
+Platform          : Windows 10/11 | macOS 12+ | Linux Ubuntu 20.04+
+Python required   : 3.10 or newer
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TABLE OF CONTENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1.   Overview & Key Features
+  2.   System Requirements
+  3.   Installation (Step-by-Step)
+  4.   Running the Application Locally
+  5.   Live Market Data Configuration
+         5a. Free Demo Mode (no API key)
+         5b. Twelve Data (recommended free tier)
+         5c. Polygon.io
+         5d. OANDA v20
+  6.   Configuration File Reference  (config.json)
+  7.   Understanding Trading Signals
+         7a. Signal Strength Levels
+         7b. Confidence Score Explained
+         7c. Entry / Stop Loss / Take Profit Logic
+         7d. How to Read a Signal Card
+  8.   Indicator System – Full Technical Reference
+         8a. Trend Indicators
+         8b. Momentum Oscillators
+         8c. Volatility Indicators
+         8d. Volume Indicators
+         8e. Statistical & Quantitative Indicators
+         8f. Machine Learning Pattern Filter
+         8g. Price Action & Candlestick Patterns
+  9.   Risk Management System
+         9a. Fixed Fractional Position Sizing
+         9b. Kelly Criterion Scaling
+         9c. ATR-Based Stop Loss & Take Profit
+         9d. Daily Loss Limit & Circuit Breaker
+         9e. Performance Metrics Reference
+ 10.   GUI Walkthrough
+         10a. Header Bar
+         10b. Watchlist Panel
+         10c. Chart Area & Toolbar
+         10d. Signals Tab
+         10e. Performance Tab
+         10f. Risk Tab
+         10g. Log Tab
+ 11.   Building a Standalone Windows .EXE
+ 12.   Building for macOS (.app Bundle)
+ 13.   Building for Linux (AppImage / Debian Package)
+ 14.   Command-Line Options
+ 15.   Troubleshooting
+ 16.   Frequently Asked Questions
+ 17.   Glossary of Financial & Technical Terms
+ 18.   Disclaimer & Risk Warning
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 – OVERVIEW & KEY FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Apex Forex Signal System is a fully self-contained desktop application that
+streams live forex and precious-metal prices via WebSocket and applies a
+multi-strategy signal fusion engine to identify high-probability BUY and SELL
+trade opportunities in real time.
+
+The system fuses 22 independent technical, statistical, and machine-learning
+strategies through a weighted-vote mechanism. A signal is only published when
+a configurable minimum number of strategies agree (default: 3 confluences),
+helping to eliminate false positives.
+
+INSTRUMENTS COVERED (default)
+──────────────────────────────
+  Major FX   : EUR/USD  GBP/USD  USD/JPY  USD/CHF  AUD/USD  NZD/USD  USD/CAD
+  Cross FX   : EUR/GBP  EUR/JPY  GBP/JPY
+  Metals     : XAU/USD (Gold)   XAG/USD (Silver)
+
+KEY FEATURES
+────────────
+  ✓ Real-time WebSocket price streaming – up to 4 ticks/second
+  ✓ Historical bar bootstrap on startup (300 candles per pair via REST)
+  ✓ 22 independent signal strategies in the fusion engine
+  ✓ Machine learning filter: Random Forest or Gradient Boosting classifier
+  ✓ Confluence gating – fires only when min N strategies agree
+  ✓ ATR-based dynamic SL with 3-tiered take-profit (TP1 / TP2 / TP3)
+  ✓ Kelly Criterion position sizing with fractional scaling
+  ✓ Hurst Exponent regime detection (trending vs mean-reverting)
+  ✓ RSI / MACD divergence detection
+  ✓ Kalman Filter price smoothing
+  ✓ Full Ichimoku Kinko Hyo cloud analysis
+  ✓ Squeeze Momentum (BB inside KC detection)
+  ✓ Real-time candlestick charting with EMA, BB, SuperTrend overlays
+  ✓ Per-signal risk:reward ratio and position size in lots
+  ✓ Performance metrics: Sharpe, Sortino, Calmar, Max DD, VaR 95%, CVaR
+  ✓ Signal export to CSV (reports/trades.csv) – auto updated
+  ✓ Session filter (Sydney / Tokyo / London / New York)
+  ✓ Light-mode professional GUI (Tkinter + Matplotlib)
+  ✓ Headless mode for server-side deployment
+  ✓ Packagable to .EXE (Windows), .app (macOS), AppImage (Linux)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 – SYSTEM REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MINIMUM
+  OS       : Windows 10 (64-bit) / macOS Monterey 12 / Ubuntu 20.04 LTS
+  CPU      : 2-core, 2 GHz
+  RAM      : 2 GB free
+  Disk     : 500 MB free
+  Python   : 3.10 or higher
+  Network  : Stable internet connection (for live data)
+  Display  : 1280 × 720 minimum
+
+RECOMMENDED
+  OS       : Windows 11 / macOS Ventura 13+ / Ubuntu 22.04 LTS
+  CPU      : 4-core, 3 GHz (needed for ML retraining without lag)
+  RAM      : 8 GB
+  Disk     : 2 GB (for logs and ML model cache)
+  Python   : 3.11+
+  Network  : Broadband ≥ 10 Mbps with low latency (< 50 ms to data server)
+  Display  : 1920 × 1080 (Full HD) or higher
+
+PYTHON DEPENDENCIES (installed automatically via requirements.txt)
+  numpy           ≥ 1.24.0   – numerical arrays, fast math
+  pandas          ≥ 2.0.0    – data frames for analysis
+  matplotlib      ≥ 3.7.0    – charting (TkAgg backend)
+  scipy           ≥ 1.10.0   – statistics, optimization
+  scikit-learn    ≥ 1.3.0    – Random Forest / Gradient Boosting ML models
+  websocket-client≥ 1.6.0    – WebSocket stream connection
+  requests        ≥ 2.31.0   – REST API historical data loader
+  ta              ≥ 0.10.2   – supplemental technical analysis helpers
+  Pillow          ≥ 9.5.0    – image rendering in GUI
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 – INSTALLATION (STEP-BY-STEP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─── STEP 1 : Verify Python version ───────────────────────────────────────────
+
+Open a terminal (Command Prompt / PowerShell on Windows, Terminal on macOS /
+Linux) and type:
+
+    python --version
+
+You need Python 3.10 or higher.  If you see Python 2.x or an older 3.x, visit
+https://www.python.org/downloads/ and install the latest 3.11 or 3.12 release.
+
+On some systems the command is "python3" instead of "python":
+
+    python3 --version
+
+
+─── STEP 2 : Extract the project folder ──────────────────────────────────────
+
+Unzip or copy the "apex_forex" folder to a convenient location, e.g.:
+
+    Windows : C:\Users\YourName\apex_forex\
+    macOS   : /Users/YourName/apex_forex/
+    Linux   : /home/yourname/apex_forex/
+
+The folder structure should look like this:
+
+    apex_forex/
+    ├── main.py                  ← Entry point
+    ├── requirements.txt
+    ├── config.json              ← Created automatically on first run
+    ├── core/
+    │   ├── app_controller.py
+    │   ├── config_manager.py
+    │   ├── logger.py
+    │   └── signal_engine.py
+    ├── data/
+    │   └── stream_manager.py
+    ├── ml/
+    │   └── pattern_engine.py
+    ├── risk/
+    │   └── risk_manager.py
+    ├── reporting/
+    │   └── trade_log.py
+    ├── ui/
+    │   └── main_window.py
+    ├── logs/                    ← Created automatically
+    └── reports/                 ← Created automatically
+
+
+─── STEP 3 : Create a virtual environment (recommended) ──────────────────────
+
+A virtual environment keeps Apex Forex dependencies isolated from other
+Python projects on your computer.
+
+    # Navigate into the folder
+    cd C:\Users\YourName\apex_forex          (Windows)
+    cd /Users/YourName/apex_forex            (macOS / Linux)
+
+    # Create virtual environment
+    python -m venv venv
+
+    # Activate it
+    Windows PowerShell : .\venv\Scripts\Activate.ps1
+    Windows CMD        : venv\Scripts\activate.bat
+    macOS / Linux      : source venv/bin/activate
+
+You should see "(venv)" at the start of your terminal prompt.
+
+
+─── STEP 4 : Install dependencies ────────────────────────────────────────────
+
+With the virtual environment active, run:
+
+    pip install -r requirements.txt
+
+This will download and install all required packages.  Expect this to take
+1–5 minutes depending on your internet speed.
+
+If pip is outdated, upgrade it first:
+
+    pip install --upgrade pip
+
+
+─── STEP 5 : Verify installation ─────────────────────────────────────────────
+
+Run this quick check to confirm everything is installed:
+
+    python -c "import numpy, pandas, matplotlib, sklearn, websocket, scipy; print('OK')"
+
+You should see:  OK
+
+If any module is missing, re-run:  pip install -r requirements.txt
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 – RUNNING THE APPLICATION LOCALLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANT: The market price feed remains LIVE as long as the application is
+running and you have a valid internet connection (or the demo simulator is
+active). There is no manual "refresh" required – the stream is continuous.
+
+─── Start normally (GUI mode) ────────────────────────────────────────────────
+
+    cd apex_forex            (navigate to the project folder)
+    python main.py
+
+The GUI window will open within 2–5 seconds. During startup:
+  1. The config.json file is created (if it does not exist)
+  2. Required directories (logs/, reports/, data/) are created
+  3. Historical price bars are downloaded (up to 300 candles per pair)
+  4. The live WebSocket stream begins
+  5. The signal engine starts processing bars
+
+In DEMO MODE (default, no API key needed) the price simulator starts
+immediately. All 12 instruments stream realistic synthetic price movements
+at 4 ticks per second.
+
+
+─── Start in debug mode ──────────────────────────────────────────────────────
+
+    python main.py --debug
+
+Enables verbose DEBUG-level logging in both the console and log file.
+Useful for troubleshooting connection issues or indicator computation.
+
+
+─── Start in headless mode (no GUI) ──────────────────────────────────────────
+
+    python main.py --headless
+
+The signal engine runs without opening a window. All signals are written
+to  logs/apex_forex.log  and  reports/trades.csv. This mode is suitable
+for running on a server or VPS.
+
+
+─── Use a custom configuration file ─────────────────────────────────────────
+
+    python main.py --config my_settings.json
+
+See Section 6 for the full config.json reference.
+
+
+─── Keeping the stream alive continuously ────────────────────────────────────
+
+The stream reconnects automatically if the connection drops. Settings:
+  • reconnect_delay  : seconds to wait before reconnecting (default: 5)
+  • max_reconnects   : maximum retry attempts (default: 20)
+
+For truly continuous 24/7 operation on Windows, use Task Scheduler.
+On Linux/macOS, use a systemd service or screen/tmux session:
+
+    # Linux / macOS – keep running in background with tmux
+    tmux new-session -d -s forex 'cd /path/to/apex_forex && python main.py --headless'
+
+    # Detach: Ctrl+B then D
+    # Re-attach: tmux attach -t forex
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5 – LIVE MARKET DATA CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The system supports four data providers. Configure them by editing config.json
+(created automatically in the apex_forex folder on first run).
+
+─── 5a. DEMO MODE (default – no API key required) ────────────────────────────
+
+  In config.json, set:
+
+      "data_source": {
+          "provider": "demo",
+          "api_key":  ""
+      }
+
+  The built-in price simulator generates synthetic prices using:
+    - Geometric Brownian Motion (GBM) for realistic random walks
+    - Ornstein-Uhlenbeck mean-reversion component
+    - Simulated trading sessions (spread widens outside London/NY hours)
+    - Occasional "news spike" events for realistic volatility
+
+  Demo mode is fully functional – all indicators, signals, risk management,
+  charting, and CSV export work identically to live mode.
+
+  NOTE: Demo prices are synthetic. They do NOT reflect real market prices.
+  Use demo mode to test the software and understand signal behaviour before
+  connecting to a live data source.
+
+
+─── 5b. TWELVE DATA (recommended free tier) ──────────────────────────────────
+
+  Twelve Data provides a free WebSocket forex stream with a generous API limit.
+
+  Step 1: Sign up at  https://twelvedata.com  (free account)
+  Step 2: In your dashboard, copy your API key
+  Step 3: Edit config.json:
+
+      "data_source": {
+          "provider": "twelvedata",
+          "api_key":  "YOUR_TWELVE_DATA_API_KEY_HERE"
+      }
+
+  Free plan limits:
+    • 8 WebSocket connections
+    • 800 API credits/day for REST (historical data)
+    • Real-time forex tick data included
+
+  The system will use the REST endpoint for historical bootstrap and the
+  WebSocket endpoint for live streaming automatically.
+
+  Alternatively, set the environment variable instead of editing config.json:
+    Windows : set APEX_API_KEY=your_key_here
+    Linux   : export APEX_API_KEY=your_key_here
+
+
+─── 5c. POLYGON.IO ───────────────────────────────────────────────────────────
+
+  Step 1: Sign up at  https://polygon.io  (free or paid plan)
+  Step 2: Copy your API key from the dashboard
+  Step 3: Edit config.json:
+
+      "data_source": {
+          "provider": "polygon",
+          "api_key":  "YOUR_POLYGON_API_KEY_HERE"
+      }
+
+  Note: Polygon.io free plan has delayed data (15 minutes). A paid Stocks
+  Starter or Options plan provides real-time forex ticks.
+
+  The WebSocket endpoint used is:  wss://socket.polygon.io/forex
+  Pairs are subscribed as "C.EURUSD", "C.GBPUSD", etc.
+
+
+─── 5d. OANDA v20 ────────────────────────────────────────────────────────────
+
+  OANDA provides a streaming REST API (not WebSocket) for live forex prices.
+  It requires an active OANDA trading account (demo or live).
+
+  Step 1: Open an account at  https://www.oanda.com
+  Step 2: Generate a v20 API access token from  https://www.oanda.com/demo-account/
+          (or live account settings)
+  Step 3: Edit config.json:
+
+      "data_source": {
+          "provider":       "oanda",
+          "api_key":        "YOUR_OANDA_ACCESS_TOKEN",
+          "websocket_url":  "https://stream-fxtrade.oanda.com"
+      }
+
+  For demo accounts use:   https://stream-fxpractice.oanda.com
+
+  NOTE: OANDA integration uses their v20 streaming pricing endpoint. Make sure
+  your account has the appropriate permissions and is funded (demo accounts
+  are free and unlimited).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6 – CONFIGURATION FILE REFERENCE (config.json)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The config.json file is created automatically in the apex_forex folder the
+first time the application runs. It contains all configurable parameters.
+
+Below is a reference of every parameter:
+
+────────────────────────────────────────────────────────────────────────────────
+data_source section
+────────────────────────────────────────────────────────────────────────────────
+  provider          : "demo" | "twelvedata" | "polygon" | "oanda"
+                      Which data provider to use.
+  api_key           : Your API key string (leave blank for demo mode).
+  reconnect_delay   : Seconds to wait before reconnect attempt (default: 5).
+  max_reconnects    : Max reconnect attempts before giving up (default: 20).
+
+────────────────────────────────────────────────────────────────────────────────
+pairs (array of strings)
+────────────────────────────────────────────────────────────────────────────────
+  List of instruments to monitor.
+  Example:  ["EUR/USD", "GBP/USD", "XAU/USD"]
+  Note: Adding many pairs increases CPU usage. 12 pairs is the recommended max
+  for systems with 2 CPU cores.
+
+────────────────────────────────────────────────────────────────────────────────
+timeframes
+────────────────────────────────────────────────────────────────────────────────
+  timeframes        : Array of timeframes to build bars for.
+                      Options: "1min" "5min" "15min" "30min" "1h" "4h" "1day"
+  primary_tf        : The main timeframe used for signal generation and charts.
+                      Default: "15min"
+
+────────────────────────────────────────────────────────────────────────────────
+signal_engine section
+────────────────────────────────────────────────────────────────────────────────
+  min_confluence    : Minimum number of indicator strategies that must agree
+                      before a signal is published. Default: 3
+                      Higher values = fewer but higher quality signals.
+                      Recommended range: 2 – 5.
+  signal_cooldown   : Minimum seconds between signals for the same pair.
+                      Prevents signal spam. Default: 300 (5 minutes).
+  require_trend_confirm : If true, momentum signals must align with the
+                      EMA-200 trend direction. Default: true.
+  use_ml_filter     : Enable / disable the ML pattern probability filter.
+                      Default: true.
+  use_session_filter: Only generate signals during active market sessions.
+                      Default: true.
+
+────────────────────────────────────────────────────────────────────────────────
+indicators section
+────────────────────────────────────────────────────────────────────────────────
+  ema_fast          : Fast EMA period (default: 9)
+  ema_slow          : Slow EMA period (default: 21)
+  ema_trend         : Long-term trend EMA period (default: 200)
+  rsi_period        : RSI period (default: 14)
+  rsi_overbought    : RSI overbought threshold (default: 70)
+  rsi_oversold      : RSI oversold threshold (default: 30)
+  macd_fast         : MACD fast EMA period (default: 12)
+  macd_slow         : MACD slow EMA period (default: 26)
+  macd_signal       : MACD signal line EMA period (default: 9)
+  bb_period         : Bollinger Bands SMA period (default: 20)
+  bb_std            : Bollinger Bands standard deviation multiplier (default: 2.0)
+  stoch_k           : Stochastic %K period (default: 14)
+  stoch_d           : Stochastic %D smoothing period (default: 3)
+  stoch_smooth      : Stochastic %K smoothing period (default: 3)
+  atr_period        : ATR period for volatility measurement (default: 14)
+  adx_period        : ADX period for trend strength (default: 14)
+  adx_threshold     : ADX value above which market is considered trending (default: 25)
+  cci_period        : CCI period (default: 20)
+  williams_period   : Williams %R period (default: 14)
+  mfi_period        : Money Flow Index period (default: 14)
+  ichimoku_tenkan   : Ichimoku Tenkan-sen period (default: 9)
+  ichimoku_kijun    : Ichimoku Kijun-sen period (default: 26)
+  ichimoku_senkou   : Ichimoku Senkou Span B period (default: 52)
+  pivot_method      : Pivot point type: "classic" | "fibonacci" | "camarilla"
+  vwap_enabled      : Enable VWAP overlay and vote (default: true)
+  supertrend_period : SuperTrend ATR period (default: 10)
+  supertrend_mult   : SuperTrend ATR multiplier (default: 3.0)
+  hma_period        : Hull Moving Average period (default: 21)
+  donchian_period   : Donchian Channel breakout period (default: 20)
+  keltner_period    : Keltner Channel EMA period (default: 20)
+  keltner_atr_mult  : Keltner Channel ATR multiplier (default: 2.0)
+  squeeze_bb_period : Squeeze Momentum Bollinger period (default: 20)
+  squeeze_kc_period : Squeeze Momentum Keltner period (default: 20)
+
+────────────────────────────────────────────────────────────────────────────────
+risk section
+────────────────────────────────────────────────────────────────────────────────
+  account_balance   : Your starting account balance in USD (default: 10000).
+                      Update this to match your actual broker balance.
+  risk_per_trade_pct: Percentage of balance to risk per trade (default: 1.5).
+                      1.5% means you risk $150 on a $10,000 account per trade.
+                      Conservative traders use 0.5% – 1.0%.
+                      Aggressive traders may use 2.0% – 3.0% (not recommended).
+  max_open_trades   : Maximum number of simultaneous open positions (default: 5).
+  max_daily_loss_pct: Circuit breaker – stops all signals if daily loss exceeds
+                      this percentage of balance (default: 5.0%).
+  default_sl_atr_mult: Stop loss distance = ATR × this multiplier (default: 2.0).
+  default_tp_rr     : Take-profit TP1 is set at SL distance × this R:R ratio.
+                      Default: 2.0 means TP1 is 2× the SL distance (1:2 R:R).
+  trailing_stop     : Enable trailing stop logic (default: true).
+  trailing_atr_mult : Trailing stop distance in ATR multiples (default: 1.5).
+  kelly_fraction    : Fractional Kelly scaling factor (default: 0.25 = 25% Kelly).
+  use_dynamic_sizing: Apply Kelly scaling to position sizes (default: true).
+  spread_filter_pips: Reject signals when spread exceeds this (default: 3.0 pips).
+
+────────────────────────────────────────────────────────────────────────────────
+ml section
+────────────────────────────────────────────────────────────────────────────────
+  model_type        : "random_forest" or "gradient_boost" (default: random_forest)
+  lookback_candles  : Number of candles used to build ML features (default: 20)
+  retrain_interval  : Seconds between model retraining cycles (default: 3600)
+  min_train_samples : Minimum labeled samples before ML is activated (default: 500)
+  confidence_thresh : ML probability threshold to cast a vote (default: 0.60)
+                      0.60 means model must be ≥60% confident to vote.
+
+────────────────────────────────────────────────────────────────────────────────
+ui section
+────────────────────────────────────────────────────────────────────────────────
+  theme             : "light" (only light mode is currently supported)
+  refresh_ms        : GUI refresh interval in milliseconds (default: 1000)
+  max_candles       : Maximum candles to display on chart (default: 150)
+  window_width      : Initial window width in pixels (default: 1600)
+  window_height     : Initial window height in pixels (default: 950)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7 – UNDERSTANDING TRADING SIGNALS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─── 7a. SIGNAL STRENGTH LEVELS ──────────────────────────────────────────────
+
+  Strength is determined by the CONFIDENCE score (see 7b).
+
+  ●○○○  WEAK         Confidence 52% – 59%
+                      Proceed with caution. Use smaller position size.
+                      Consider waiting for additional confirmation.
+
+  ●●○○  MODERATE     Confidence 60% – 69%
+                      Acceptable signal quality. Standard position sizing.
+
+  ●●●○  STRONG       Confidence 70% – 79%
+                      Good quality signal with solid confluence.
+                      Full position size is appropriate.
+
+  ●●●●  VERY STRONG  Confidence 80%+
+                      Highest quality signal with maximum agreement.
+                      Consider scaling in or using full position.
+
+─── 7b. CONFIDENCE SCORE EXPLAINED ─────────────────────────────────────────
+
+  The confidence score (0% – 100%) is calculated as:
+
+      Confidence = Sum of weights of agreeing indicators
+                   ─────────────────────────────────────
+                   Total weight of all indicators that voted
+
+  Each indicator has a weight (1.0 – 3.0). High-impact indicators like
+  SuperTrend, Ichimoku, and the ML filter carry more weight (2.5 – 3.0)
+  than supplementary indicators like Williams %R or OBV (1.0).
+
+  A confidence of 75% BUY means that 75% of the total available voting
+  weight agreed on a bullish direction.
+
+  Signals with confidence below 52% are silently discarded.
+
+─── 7c. ENTRY / STOP LOSS / TAKE PROFIT LOGIC ───────────────────────────────
+
+  ENTRY PRICE
+  The entry price is the current mid-price (average of bid and ask) at
+  the moment the signal fires.
+
+  In live trading you would execute at the ask price for BUY orders and
+  the bid price for SELL orders. The spread is shown on each signal card
+  and is already factored into the signal quality filter.
+
+  STOP LOSS (SL)
+  The stop loss is placed at:
+      BUY  : entry - (ATR × sl_atr_mult)
+      SELL : entry + (ATR × sl_atr_mult)
+
+  Where ATR is the 14-period Average True Range and sl_atr_mult defaults
+  to 2.0. This gives each trade room to breathe through normal volatility
+  while cutting losses on directional moves against you.
+
+  TAKE PROFIT LEVELS (TP1 / TP2 / TP3)
+  Three take-profit levels are provided. The default Risk:Reward is 1:2.
+
+      TP1 = entry ± (SL distance × RR × 1.0)     → 1:2.0 R:R
+      TP2 = entry ± (SL distance × RR × 1.5)     → 1:3.0 R:R
+      TP3 = entry ± (SL distance × RR × 2.0)     → 1:4.0 R:R
+
+  Common trade management approach:
+    • Close 50% of position at TP1, move SL to breakeven
+    • Close 30% at TP2
+    • Let remaining 20% run to TP3 with trailing stop
+
+  POSITION SIZE
+  Displayed in standard lots (1 lot = 100,000 units of base currency).
+  Calculated as:
+
+      risk_usd   = account_balance × (risk_per_trade_pct / 100)
+      risk_pips  = |entry - stop_loss| / pip_size
+      pip_value  = $10 per pip per standard lot (for USD pairs)
+      lots       = risk_usd / (risk_pips × pip_value) × kelly_fraction
+
+  For a $10,000 account with 1.5% risk, that is $150 risk per trade.
+  At a 20-pip SL: lots = $150 / (20 × $10) × 0.25 = 0.19 lots.
+
+─── 7d. HOW TO READ A SIGNAL CARD ──────────────────────────────────────────
+
+  Each signal in the Signals tab appears as a card with:
+
+  ┌──────────────────────────────────────────────────────────────┐
+  │  EUR/USD     ▲ BUY     ●●●○        14:32:17                  │
+  │                                                               │
+  │  Entry      SL          TP1         TP2         TP3           │
+  │  1.08542    1.08401     1.08824     1.08965     1.09106       │
+  │                                                               │
+  │  Confidence ████████░░ 78%   R:R 2.1   📦 0.19L  🕐 15min    │
+  │  London/New York                                              │
+  │                                                               │
+  │  SuperTrend flipped BULLISH · EMA fast crossed above slow    │
+  │  Bullish RSI divergence detected · Price above Ichimoku…     │
+  └──────────────────────────────────────────────────────────────┘
+
+  Colour bar on left : Green = BUY, Red = SELL
+  Pair + direction   : Instrument and direction
+  Dots               : Signal strength (●●●○ = STRONG)
+  Timestamp          : Time signal was generated (local time)
+  Price levels       : Entry, Stop Loss, TP1/2/3 to 5 decimal places
+  Confidence bar     : Visual indicator of confidence percentage
+  R:R                : Risk-to-reward ratio for TP1
+  📦 Lots            : Recommended position size in lots
+  🕐 Timeframe       : Chart timeframe the signal was generated on
+  Session            : Active forex market sessions at signal time
+  Notes              : Top indicator reasons that contributed to the signal
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8 – INDICATOR SYSTEM – FULL TECHNICAL REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All indicators are computed in pure NumPy inside  core/signal_engine.py  with
+no reliance on TA-lib. This makes the system portable and easy to compile.
+
+─── 8a. TREND INDICATORS ────────────────────────────────────────────────────
+
+  EMA CROSSOVER (weight 2.5)
+  ──────────────────────────
+  Formula: EMA(n) = close × k + EMA_prev × (1 - k)   where k = 2/(n+1)
+  Signal:
+    BUY  when EMA(9) crosses above EMA(21) — "golden cross"
+    SELL when EMA(9) crosses below EMA(21) — "death cross"
+  A trend-alignment vote (weight 1.0) is also cast continuously based on
+  whether EMA(9) is above or below EMA(21) even without a fresh crossover.
+
+  EMA-200 TREND FILTER (weight 2.0)
+  ───────────────────────────────────
+  The 200-period EMA acts as a long-term trend filter.
+    BUY  vote when price > EMA(200)  → uptrend context
+    SELL vote when price < EMA(200)  → downtrend context
+
+  SUPERTREND (weight 2.5)
+  ───────────────────────
+  Formula: Upper Band = (H + L) / 2 + ATR × multiplier
+           Lower Band = (H + L) / 2 - ATR × multiplier
+  Direction flips when price crosses through the band.
+  Most heavily weighted trend indicator. Crossover vote carries 2.5 weight;
+  directional alignment carries 1.0 weight.
+
+  ICHIMOKU KINKO HYO (weight 2.5)
+  ────────────────────────────────
+  Five components:
+    Tenkan-sen (9)  : Short-term midpoint (conversion line)
+    Kijun-sen  (26) : Medium-term midpoint (base line)
+    Senkou Span A   : Average of Tenkan + Kijun, plotted 26 periods ahead
+    Senkou Span B   : 52-period midpoint, plotted 26 periods ahead
+    Chikou Span     : Current close shifted 26 periods back
+  BUY  signal when: price > cloud AND Tenkan > Kijun
+  SELL signal when: price < cloud AND Tenkan < Kijun
+
+  ADX TREND STRENGTH (weight 1.5)
+  ─────────────────────────────────
+  The ADX (Average Directional Index) measures trend strength (0–100).
+  The DI+ and DI- lines show direction.
+    Vote BUY  when ADX > 25 AND DI+ > DI-  (strong uptrend)
+    Vote SELL when ADX > 25 AND DI- > DI+  (strong downtrend)
+  ADX below 25 indicates a ranging market – no ADX vote is cast.
+
+  DONCHIAN CHANNEL BREAKOUT (weight 1.5)
+  ───────────────────────────────────────
+  The Donchian Channel plots the highest high and lowest low over N periods.
+    BUY  when price breaks above the previous period's upper channel
+    SELL when price breaks below the previous period's lower channel
+  Breakouts from consolidated ranges signal the start of new trends.
+
+─── 8b. MOMENTUM OSCILLATORS ────────────────────────────────────────────────
+
+  RSI – RELATIVE STRENGTH INDEX (weight 1.5)
+  ───────────────────────────────────────────
+  Formula: RSI = 100 - 100 / (1 + Avg_Gain / Avg_Loss)
+    BUY  vote when RSI < 30 (oversold)
+    SELL vote when RSI > 70 (overbought)
+  Mild directional votes (weight 0.5) when RSI is in the 45–55 range.
+
+  RSI DIVERGENCE (weight 2.0)
+  ───────────────────────────
+  Divergence detects when price and RSI disagree:
+    Bullish divergence: price makes a lower low, RSI makes a higher low
+                        → suggests weakening downtrend, possible reversal up
+    Bearish divergence: price makes a higher high, RSI makes a lower high
+                        → suggests weakening uptrend, possible reversal down
+  This is one of the highest-reliability signals and carries weight 2.0.
+
+  MACD – MOVING AVERAGE CONVERGENCE DIVERGENCE (weight 2.0)
+  ──────────────────────────────────────────────────────────
+  MACD Line   = EMA(12) - EMA(26)
+  Signal Line = EMA(9) of MACD Line
+  Histogram   = MACD Line - Signal Line
+    BUY  vote when histogram crosses from negative to positive
+    SELL vote when histogram crosses from positive to negative
+  Mild directional votes when MACD line is above/below zero.
+
+  STOCHASTIC OSCILLATOR (weight 1.0)
+  ────────────────────────────────────
+  %K = (Close - Lowest Low) / (Highest High - Lowest Low) × 100
+  %D = SMA(3) of %K
+    BUY  vote when %K crosses above %D in oversold zone (< 20)
+    SELL vote when %K crosses below %D in overbought zone (> 80)
+
+  CCI – COMMODITY CHANNEL INDEX (weight 1.0)
+  ──────────────────────────────────────────
+  CCI = (Typical Price - SMA) / (0.015 × Mean Deviation)
+    BUY  vote when CCI < -100 (oversold extreme)
+    SELL vote when CCI > +100 (overbought extreme)
+
+  WILLIAMS %R (weight 1.0)
+  ────────────────────────
+  %R = (Highest High - Close) / (Highest High - Lowest Low) × -100
+    BUY  vote when %R < -80 (oversold)
+    SELL vote when %R > -20 (overbought)
+
+  MFI – MONEY FLOW INDEX (weight 1.0)
+  ─────────────────────────────────────
+  MFI is a volume-weighted RSI.
+  Typical Price × Volume = Money Flow
+    BUY  vote when MFI < 20 (oversold with volume confirmation)
+    SELL vote when MFI > 80 (overbought with volume confirmation)
+
+─── 8c. VOLATILITY INDICATORS ───────────────────────────────────────────────
+
+  BOLLINGER BANDS (weight 1.5)
+  ─────────────────────────────
+  Middle Band = SMA(20)
+  Upper Band  = SMA(20) + 2 × Standard Deviation
+  Lower Band  = SMA(20) - 2 × Standard Deviation
+    BUY  vote when price touches/breaks below lower band (mean reversion)
+    SELL vote when price touches/breaks above upper band (mean reversion)
+  The BB %B indicator provides additional overbought/oversold signals.
+  Bands are shown on the chart as grey dashed lines with a light fill.
+
+  KELTNER CHANNEL (weight 1.0)
+  ─────────────────────────────
+  Middle Line = EMA(20)
+  Upper Band  = EMA(20) + 2 × ATR(20)
+  Lower Band  = EMA(20) - 2 × ATR(20)
+    BUY  vote when price drops below lower channel (volatility squeeze)
+    SELL vote when price rises above upper channel
+
+  SQUEEZE MOMENTUM (weight 1.5)
+  ──────────────────────────────
+  Detects when Bollinger Bands are entirely inside Keltner Channels —
+  known as a "squeeze". This indicates low volatility compression that
+  typically precedes an explosive breakout.
+  A linear-regression-based momentum oscillator identifies breakout direction:
+    BUY  vote when momentum crosses from negative to positive after a squeeze
+    SELL vote when momentum crosses from positive to negative after a squeeze
+
+  ATR – AVERAGE TRUE RANGE (used internally)
+  ────────────────────────────────────────────
+  ATR does not generate signals directly but is used to:
+    • Calculate stop loss and take profit distances
+    • Normalise position sizes
+    • Filter highly volatile conditions
+
+─── 8d. VOLUME INDICATORS ───────────────────────────────────────────────────
+
+  VWAP – VOLUME WEIGHTED AVERAGE PRICE (weight 1.0)
+  ───────────────────────────────────────────────────
+  VWAP = Cumulative(Typical Price × Volume) / Cumulative(Volume)
+    BUY  vote when price is above VWAP (institutional demand)
+    SELL vote when price is below VWAP (institutional supply)
+  Note: VWAP resets at the start of each trading day.
+
+  OBV – ON-BALANCE VOLUME (weight 1.0)
+  ──────────────────────────────────────
+  OBV accumulates volume positively on up-days and negatively on down-days.
+  OBV trend is compared to its own 20-period EMA:
+    BUY  vote when OBV > EMA(OBV, 20) (bullish volume pressure)
+    SELL vote when OBV < EMA(OBV, 20) (bearish volume pressure)
+
+  MFI (see Momentum section above) also uses volume data.
+
+─── 8e. STATISTICAL & QUANTITATIVE INDICATORS ───────────────────────────────
+
+  HURST EXPONENT (weight 1.0)
+  ────────────────────────────
+  The Hurst Exponent H measures the long-range dependence of price data.
+
+    H < 0.45 : Mean-reverting market  → use oscillator-based signals
+    H ≈ 0.50 : Random walk            → neutral, no Hurst vote cast
+    H > 0.55 : Trending market        → use trend-following signals
+
+  When H > 0.55, the Hurst module reinforces the current trend direction.
+  When H < 0.45, it switches to Z-Score mean reversion signals.
+
+  Z-SCORE MEAN REVERSION (weight 1.0)
+  ─────────────────────────────────────
+  Z = (price - rolling mean) / rolling std
+    BUY  vote when Z < -2.0 (price is 2 standard deviations below mean)
+    SELL vote when Z > +2.0 (price is 2 standard deviations above mean)
+  Only active when Hurst < 0.45 (confirmed mean-reverting regime).
+
+  PIVOT POINTS (weight 1.5)
+  ──────────────────────────
+  Classic pivot formula (configurable to Fibonacci or Camarilla):
+    PP = (H + L + C) / 3
+    R1 = 2PP - L,   R2 = PP + (H - L),   R3 = H + 2(PP - L)
+    S1 = 2PP - H,   S2 = PP - (H - L),   S3 = L - 2(H - PP)
+    BUY  vote when price is within 0.2% of a support level (S1/S2/S3)
+    SELL vote when price is within 0.2% of a resistance level (R1/R2/R3)
+
+  KALMAN FILTER (used internally for smoothing)
+  ──────────────────────────────────────────────
+  The Kalman Filter is a recursive Bayesian estimator that smooths price
+  data while adapting to changing market conditions. Unlike a fixed-window
+  moving average, it dynamically weights new measurements based on
+  measurement noise vs process noise parameters. Used internally to
+  provide a smoother price estimate for ML feature generation.
+
+  AUTOCORRELATION (used in ML features)
+  ───────────────────────────────────────
+  Lag-1 autocorrelation of returns measures serial dependence.
+  Positive autocorrelation → momentum tendency.
+  Negative autocorrelation → mean-reversion tendency.
+  This is incorporated into the ML feature vector.
+
+─── 8f. MACHINE LEARNING PATTERN FILTER (weight 3.0) ────────────────────────
+
+  The ML filter is the highest-weight component in the signal fusion engine.
+  It uses a supervised classifier trained on historical bar features to
+  predict the probability of a bullish or bearish next bar.
+
+  MODEL TYPES
+    random_forest    : Ensemble of 200 decision trees. Robust and fast.
+    gradient_boost   : Gradient Boosted Trees. Slightly more accurate
+                       but slower to retrain.
+
+  FEATURE VECTOR (35+ features per bar)
+    • Returns at lags 1, 2, 3, 5 (short-term momentum)
+    • Log returns mean and standard deviation
+    • Momentum at 5, 10, 20-bar windows
+    • ATR as % of price (volatility normalisation)
+    • Approximated RSI (normalised to 0–1)
+    • Bollinger Band %B position
+    • Candle body size, upper wick, lower wick ratios
+    • Volume relative to 5 and 20-period averages
+    • Rolling skewness and kurtosis of returns
+    • Lag-1 autocorrelation
+    • Linear regression slope over the lookback window
+    • Price position within lookback high/low range
+    • Simplified MACD signal
+    • Volatility percentile (high/low regime flag)
+
+  TRAINING PROCESS
+  The model is trained online as new labeled bars arrive. A bar is labeled
+  1 (bullish) or 0 (bearish) based on whether the next bar's close is
+  higher or lower. Training begins automatically after 200+ samples
+  accumulate (takes 200 completed bars on the primary timeframe, typically
+  50–200 minutes depending on the timeframe).
+
+  Until the ML model is trained, the system falls back to a heuristic
+  logistic function based on recent price slope.
+
+  PROBABILITY OUTPUT
+  The classifier outputs calibrated probabilities. If the bullish probability
+  exceeds the confidence threshold (default 0.60), a BUY vote with weight
+  3.0 is cast. Similarly for bearish probability.
+
+─── 8g. PRICE ACTION & CANDLESTICK PATTERNS (weight 2.0) ────────────────────
+
+  The system detects 10 classic candlestick reversal and continuation patterns:
+
+  BULLISH PATTERNS → BUY vote (weight 2.0)
+  ──────────────────────────────────────────
+  Hammer           : Long lower wick (>2× body), small upper wick, after downtrend
+  Bullish Engulfing: Bullish candle body completely engulfs previous bearish candle
+  Morning Star     : 3-candle pattern: bearish → doji/small → strong bullish
+  Marubozu Bull    : Full-body bullish candle with no wicks (strong momentum)
+  Pinbar Bull      : Long lower wick (>60% of range), tiny upper wick
+
+  BEARISH PATTERNS → SELL vote (weight 2.0)
+  ──────────────────────────────────────────
+  Shooting Star    : Long upper wick (>2× body), small lower wick, after uptrend
+  Bearish Engulfing: Bearish candle body completely engulfs previous bullish candle
+  Evening Star     : 3-candle pattern: bullish → doji/small → strong bearish
+  Marubozu Bear    : Full-body bearish candle with no wicks (strong momentum)
+  Pinbar Bear      : Long upper wick (>60% of range), tiny lower wick
+
+  NEUTRAL
+  Doji             : Body < 10% of total candle range (indecision). No vote cast.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9 – RISK MANAGEMENT SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─── 9a. FIXED FRACTIONAL POSITION SIZING ────────────────────────────────────
+
+  The primary sizing method risks a fixed percentage of account balance
+  per trade. The number of lots is calculated so that hitting the stop
+  loss costs exactly risk_per_trade_pct % of balance.
+
+  Formula:
+    risk_usd    = balance × (risk_per_trade_pct / 100)
+    pip_val_usd = pip value per standard lot (pair-specific, e.g. $10/pip)
+    risk_pips   = |entry_price - stop_loss| / pip_size
+    lots        = risk_usd / (risk_pips × pip_val_usd)
+
+  This approach keeps risk constant in dollar terms regardless of
+  the distance to stop loss.
+
+─── 9b. KELLY CRITERION ────────────────────────────────────────────────────
+
+  The Kelly Criterion computes the theoretically optimal bet size to
+  maximise long-run geometric portfolio growth.
+
+  Full Kelly formula:
+    f* = (b × p - q) / b
+
+  Where:
+    b = win-to-loss ratio (average win / average loss)
+    p = probability of winning (historical win rate)
+    q = 1 - p
+
+  The system uses FRACTIONAL Kelly (default 25% of full Kelly):
+    adjusted_lots = lots × f* × 0.25
+
+  Full Kelly is considered too aggressive for live trading. Fractional
+  Kelly balances growth with drawdown protection.
+
+  The Kelly fraction is applied after the fixed fractional size, providing
+  a second layer of position sizing control.
+
+─── 9c. ATR-BASED STOP LOSS & TAKE PROFIT ───────────────────────────────────
+
+  Using ATR for stop placement adapts to current market volatility.
+  Wide ATR (volatile market) → wider stop and TP
+  Narrow ATR (quiet market)  → tighter stop and TP
+
+  This prevents being stopped out by normal price noise while
+  still cutting losses on genuine directional moves.
+
+  Default settings:
+    SL distance = ATR(14) × 2.0
+    TP1 distance= SL distance × 2.0  (1:2 R:R)
+    TP2 distance= SL distance × 3.0  (1:3 R:R)
+    TP3 distance= SL distance × 4.0  (1:4 R:R)
+
+─── 9d. DAILY LOSS LIMIT & CIRCUIT BREAKER ──────────────────────────────────
+
+  If the total closed-trade loss in a single calendar day (UTC) exceeds
+  max_daily_loss_pct of the account balance, all signal generation is
+  suspended until midnight UTC.
+
+  This protects against:
+    • Choppy trending market conditions
+    • News event volatility
+    • System errors or data feed issues
+
+  Default: 5% daily loss limit
+  On a $10,000 account: signals stop after $500 of daily losses.
+  Reset time: midnight UTC daily.
+
+─── 9e. PERFORMANCE METRICS REFERENCE ──────────────────────────────────────
+
+  WIN RATE
+  Percentage of closed trades that were profitable.
+  Formula: wins / total_trades
+  Target: > 50% for a system with R:R ≥ 1:2
+
+  PROFIT FACTOR
+  Gross profit / gross loss.
+  > 1.5 is considered acceptable; > 2.0 is good.
+
+  EXPECTANCY
+  Average dollar profit per trade.
+  Formula: (win_rate × avg_win) - (loss_rate × avg_loss)
+  Must be positive for a viable system.
+
+  SHARPE RATIO (Annualised)
+  Excess return per unit of total risk.
+  Formula: (mean_return - risk_free_rate) / std_return × √252
+  > 1.0 is acceptable; > 2.0 is excellent.
+
+  SORTINO RATIO (Annualised)
+  Like Sharpe but penalises only downside volatility.
+  > 1.0 is acceptable; > 2.0 is excellent.
+  Generally preferable to Sharpe for skewed return distributions.
+
+  CALMAR RATIO
+  Annualised return / maximum drawdown.
+  > 1.0 is acceptable; > 3.0 is excellent.
+
+  MAXIMUM DRAWDOWN
+  The largest peak-to-trough equity decline on record.
+  Shown as a percentage of peak equity.
+  Keep below 20% for prudent risk management.
+
+  VALUE-AT-RISK (VaR) 95%
+  Parametric estimate of the maximum expected loss on 95% of trading days.
+  A VaR of 2% means you expect to lose no more than 2% on 95% of days.
+
+  CONDITIONAL VALUE-AT-RISK (CVaR / Expected Shortfall) 95%
+  The expected loss on the worst 5% of days.
+  Always ≥ VaR. Measures tail risk beyond the VaR threshold.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 10 – GUI WALKTHROUGH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─── 10a. HEADER BAR ─────────────────────────────────────────────────────────
+
+  ⬡ APEX FOREX | Signal System | ● Connecting… | UTC 14:32:01 | Session | Balance
+
+  Left  : App logo and name
+  Middle: Stream status indicator
+            ● Green  → stream connected and receiving data
+            ● Red    → stream error or disconnected
+            ○ Grey   → connecting or idle
+  Right : UTC clock, active session, account balance and equity
+
+─── 10b. WATCHLIST PANEL (left sidebar) ─────────────────────────────────────
+
+  Shows all monitored pairs with live bid, ask, and % change.
+
+  Clicking on any row selects that pair for the chart.
+  Selected pair is highlighted in blue.
+
+  Prices flash green on upward tick and red on downward tick.
+  The % change shows movement since the previous tick.
+
+  Scroll down to see all pairs if the list is longer than the panel.
+
+─── 10c. CHART AREA & TOOLBAR ───────────────────────────────────────────────
+
+  TOOLBAR (above the chart)
+    Pair name and current mid-price (large, live-updating)
+    Timeframe buttons: 1min / 5min / 15min / 1h / 4h / 1day
+      → Click to switch the chart to that timeframe
+    Checkboxes: EMA / BB / ST
+      → Toggle EMA overlays, Bollinger Bands, SuperTrend on/off
+
+  PRICE CHART (upper 2/3)
+    Candlestick chart of the selected pair and timeframe.
+    Green candles = bullish (close > open)
+    Red candles   = bearish (close < open)
+
+    Overlays (when enabled):
+      Blue line   : Fast EMA (9-period)
+      Orange line : Slow EMA (21-period)
+      Purple line : Trend EMA (200-period)
+      Grey dashes : Bollinger Bands upper and lower
+      Teal/Red    : SuperTrend line (colour = direction)
+
+    Signal markers:
+      Green ▲ triangle = BUY signal
+      Red   ▼ triangle = SELL signal
+      Dotted lines show the SL and TP1 levels for the last 5 signals.
+
+  RSI SUB-CHART (lower 1/3)
+    RSI-14 line in purple.
+    Dashed lines at 70 (overbought) and 30 (oversold).
+    Red/green fills show overbought/oversold zones.
+    Midline at 50 for directional reference.
+
+─── 10d. SIGNALS TAB ────────────────────────────────────────────────────────
+
+  Displays the last 30 signals in reverse chronological order (newest first).
+  Each signal is a card (see Section 7d for full description).
+
+  Summary bar shows: total signal count | buy count | sell count
+
+  "Clear" button removes all displayed signal cards (does not affect the CSV log).
+
+  When a new signal fires for a pair in the watchlist, that pair's row flashes
+  green (BUY) or red (SELL) for 1.2 seconds to draw your attention.
+
+─── 10e. PERFORMANCE TAB ────────────────────────────────────────────────────
+
+  Shows live-updating performance metrics from the last 100 closed trades.
+  Metrics update every time a trade is closed.
+
+  Each metric is displayed in a card with label and current value.
+  All metrics are described in detail in Section 9e above.
+
+─── 10f. RISK TAB ───────────────────────────────────────────────────────────
+
+  Displays current risk parameters and account status:
+    Account Balance  : Your configured account balance (USD)
+    Equity           : Balance + open trade unrealised P&L
+    Daily P&L        : Net profit/loss so far today (green=profit, red=loss)
+    Open Trades      : Number of currently open simulated trades
+    Daily Loss Limit : Your configured max daily loss percentage
+    Risk / Trade     : Your configured risk per trade percentage
+
+─── 10g. LOG TAB ────────────────────────────────────────────────────────────
+
+  Real-time scrolling log of all application events.
+  Colour coded:
+    Cyan  = INFO   (general events, stream status)
+    Green = BUY    (buy signals)
+    Red   = SELL   (sell signals)
+    Yellow= WARNING (non-critical issues, reconnects)
+    Red   = ERROR  (problems requiring attention)
+
+  The log is also written to: logs/apex_forex.log
+  Rotating log files, max 5 files × 10 MB each.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 11 – BUILDING A STANDALONE WINDOWS .EXE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A standalone .EXE can be created with PyInstaller. The .EXE includes Python,
+all dependencies, and your code – users need NOT have Python installed.
+
+─── Step 1: Install PyInstaller ──────────────────────────────────────────────
+
+  With your virtual environment active:
+
+      pip install pyinstaller
+
+─── Step 2: Build the .EXE ──────────────────────────────────────────────────
+
+  Navigate to the apex_forex folder, then run:
+
+      pyinstaller --onefile --windowed --name "ApexForex" ^
+          --add-data "config.json;." ^
+          --hidden-import sklearn.ensemble ^
+          --hidden-import sklearn.calibration ^
+          --hidden-import sklearn.preprocessing ^
+          --hidden-import matplotlib.backends.backend_tkagg ^
+          main.py
+
+  (On Windows, use ^ for line continuation; on macOS/Linux use \)
+
+  Full single-line version:
+
+      pyinstaller --onefile --windowed --name "ApexForex" --hidden-import sklearn.ensemble --hidden-import sklearn.calibration --hidden-import sklearn.preprocessing --hidden-import matplotlib.backends.backend_tkagg main.py
+
+─── Step 3: Find the .EXE ───────────────────────────────────────────────────
+
+  After building, the executable is located at:
+
+      apex_forex\dist\ApexForex.exe
+
+  The dist\ folder also contains any required data files.
+
+─── Step 4: Run the .EXE ────────────────────────────────────────────────────
+
+  Double-click ApexForex.exe to launch the application.
+  On first run, config.json, logs/, and reports/ are created
+  in the same folder as the .EXE.
+
+─── Notes ───────────────────────────────────────────────────────────────────
+
+  • First launch may take 5–10 seconds as the bundled Python unpacks.
+  • Windows Defender or SmartScreen may warn about an unknown publisher –
+    click "More info → Run anyway" to proceed.
+  • For a faster startup, use --onedir instead of --onefile (creates a
+    folder rather than a single .EXE but loads faster).
+  • Total .EXE size is typically 80–150 MB due to included NumPy/SciKit.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 12 – BUILDING FOR macOS (.app BUNDLE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  pip install pyinstaller
+
+  pyinstaller --onefile --windowed --name "ApexForex" \
+      --hidden-import sklearn.ensemble \
+      --hidden-import sklearn.calibration \
+      --hidden-import sklearn.preprocessing \
+      --hidden-import matplotlib.backends.backend_tkagg \
+      main.py
+
+  The .app bundle is at:  dist/ApexForex.app
+
+  To run:  open dist/ApexForex.app
+
+  macOS Gatekeeper note:
+  If macOS blocks the app ("unidentified developer"), right-click the .app
+  and choose Open, then confirm in the dialog.
+
+  For Apple Silicon (M1/M2):
+  Ensure your Python is the ARM64 native version. If you get architecture
+  warnings, install Python from python.org (not Homebrew's Intel version).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 13 – BUILDING FOR LINUX (AppImage / Debian Package)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─── AppImage (portable, runs on any Linux distro) ────────────────────────────
+
+  pip install pyinstaller
+
+  pyinstaller --onefile --name "ApexForex" \
+      --hidden-import sklearn.ensemble \
+      --hidden-import sklearn.calibration \
+      --hidden-import matplotlib.backends.backend_tkagg \
+      main.py
+
+  # The binary is at dist/ApexForex
+  chmod +x dist/ApexForex
+  ./dist/ApexForex
+
+─── Systemd service (headless, run at boot) ──────────────────────────────────
+
+  Create /etc/systemd/system/apexforex.service:
+
+      [Unit]
+      Description=Apex Forex Signal System
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      User=youruser
+      WorkingDirectory=/home/youruser/apex_forex
+      ExecStart=/home/youruser/apex_forex/venv/bin/python main.py --headless
+      Restart=always
+      RestartSec=10
+
+      [Install]
+      WantedBy=multi-user.target
+
+  Then:
+      sudo systemctl daemon-reload
+      sudo systemctl enable apexforex
+      sudo systemctl start apexforex
+      sudo systemctl status apexforex
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 14 – COMMAND-LINE OPTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  python main.py [OPTIONS]
+
+  --debug             Enable verbose DEBUG logging to console and file.
+                      Use when troubleshooting indicator or stream issues.
+
+  --headless          Run without GUI. Signals logged to file and CSV only.
+                      Suitable for VPS / server deployment.
+
+  --config FILE       Specify a custom JSON configuration file.
+                      Default: config.json in the current directory.
+                      Example: --config my_scalping_config.json
+
+  --version           Print version number and exit.
+
+  --help              Show this help message and exit.
+
+  ENVIRONMENT VARIABLES (override config.json)
+  ─────────────────────────────────────────────
+  APEX_API_KEY        Override data_source.api_key
+  APEX_PROVIDER       Override data_source.provider
+  APEX_BALANCE        Override risk.account_balance
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 15 – TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: "No module named 'tkinter'"
+  FIX (Ubuntu/Debian): sudo apt-get install python3-tk
+  FIX (Fedora/RHEL)  : sudo dnf install python3-tkinter
+  FIX (macOS)        : Reinstall Python from python.org (includes Tcl/Tk)
+
+PROBLEM: App window opens but prices show "—" and never update
+  CAUSES:
+    1. API key is missing or invalid
+    2. Network / firewall blocking WebSocket connections
+    3. WebSocket port 443 blocked by corporate proxy
+  FIX:
+    1. Verify api_key in config.json; try switching provider to "demo"
+    2. Check logs/apex_forex.log for WebSocket error messages
+    3. Use --debug mode to see detailed connection logs
+    4. Try running: python -c "import requests; print(requests.get('https://api.twelvedata.com').status_code)"
+
+PROBLEM: "Not enough data" – signals never appear
+  CAUSE: Historical bootstrap may have failed or the timeframe needs more bars.
+  FIX:
+    1. Wait 5–10 minutes after startup (bars accumulate from ticks)
+    2. Check logs/ for historical loading errors
+    3. If using a paid API, verify your credits haven't been exhausted
+    4. In config.json, reduce min_confluence from 3 to 2 temporarily
+
+PROBLEM: Signals appear but are very frequent (spam)
+  FIX:
+    1. Increase signal_cooldown in config.json (e.g., from 300 to 600)
+    2. Increase min_confluence from 3 to 4 or 5
+    3. Increase ml.confidence_thresh from 0.60 to 0.70
+
+PROBLEM: Application crashes on startup with ImportError
+  FIX:
+    1. Ensure virtual environment is activated
+    2. Re-run: pip install -r requirements.txt
+    3. Check Python version: python --version (must be 3.10+)
+
+PROBLEM: Chart is blank or shows "Loading market data…" indefinitely
+  CAUSE: Signal engine hasn't received enough bars (needs 50 minimum).
+  FIX:
+    1. Wait for the historical bootstrap to complete (watch the Log tab)
+    2. Check the status in the header bar
+    3. Click a different pair in the watchlist and back again
+
+PROBLEM: PyInstaller .EXE fails with "Failed to execute script main"
+  FIX:
+    1. Build with --onedir first to see error messages in the terminal
+    2. Add any missing --hidden-import flags (check error for module names)
+    3. Common missing imports:
+         --hidden-import sklearn.tree._utils
+         --hidden-import sklearn.neighbors._partition_nodes
+         --hidden-import scipy.special.cython_special
+
+PROBLEM: High CPU usage (> 50%)
+  CAUSE: Too many pairs + short timeframe + ML retraining.
+  FIX:
+    1. Reduce pairs list in config.json to 5–6 pairs
+    2. Change primary_tf to "15min" or "1h" (fewer bars processed)
+    3. Set ml.retrain_interval to 7200 (retrain every 2 hours)
+
+PROBLEM: macOS – "App is damaged and can't be opened"
+  FIX: xattr -cr /path/to/ApexForex.app
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 16 – FREQUENTLY ASKED QUESTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: Does this software place trades automatically?
+A: No. Apex Forex Signal System is a SIGNAL TOOL only. It analyses the market
+   and displays BUY/SELL recommendations. You must manually execute trades in
+   your own brokerage account. The system does not connect to any broker or
+   place orders.
+
+Q: Is it possible to connect it to MetaTrader 4 / MetaTrader 5?
+A: Not natively. However, you can read the signals from reports/trades.csv
+   using an MT4/MT5 Expert Advisor (EA) file reader, or implement a webhook
+   bridge using the headless mode + a custom script.
+
+Q: How accurate are the signals?
+A: Signal accuracy depends on market conditions, your configuration, and the
+   timeframe used. No signal system achieves 100% accuracy. The system is
+   designed for a positive expectancy over many trades, not for every single
+   trade to be profitable. Always use the provided stop losses.
+
+Q: Can I add my own indicators?
+A: Yes. Add new indicator logic to core/signal_engine.py in the _analyse()
+   method. Create a new IndicatorVote and append it to the votes list.
+   Assign a weight based on your confidence in the indicator's reliability.
+
+Q: What happens during weekends when the forex market is closed?
+A: In demo mode the simulator continues running. With a live data provider
+   the stream will return no price updates; the last known prices remain
+   displayed. Signals will not fire as no new bars close.
+
+Q: Where are signals saved?
+A: reports/trades.csv is updated automatically. This file opens in Excel,
+   Google Sheets, or any CSV reader. Each signal occupies one row with
+   all key parameters.
+
+Q: Can I run multiple instances for different strategies?
+A: Yes. Copy the apex_forex folder, create a separate config file for each
+   strategy (e.g., scalping.json, swing.json), and run:
+       python main.py --config scalping.json
+       python main.py --config swing.json
+
+Q: How much RAM does the ML retraining use?
+A: Each model is small (~5–10 MB per pair). For 12 pairs with Random Forest
+   (200 trees), expect ~150–300 MB total for ML models during retraining.
+   Between retrains, memory usage is minimal.
+
+Q: The demo prices look random. Is that expected?
+A: Yes, demo prices are simulated using Geometric Brownian Motion with a
+   trend bias and mean reversion. They are designed to look realistic but
+   are NOT actual market prices. Use a real API key for live data.
+
+Q: Does the system work with crypto (Bitcoin, Ethereum)?
+A: The core engine is currency-agnostic. However, crypto pairs are not
+   in the default configuration. You can add them if your data provider
+   supports them, but you may need to adjust pip_size values in the
+   SignalEngine._get_pip_size() method accordingly.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 17 – GLOSSARY OF FINANCIAL & TECHNICAL TERMS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ADX         Average Directional Index. Measures trend strength 0–100.
+ATR         Average True Range. Measures volatility over N periods.
+BB          Bollinger Bands. Volatility bands around a moving average.
+Bid/Ask     Bid = price a broker buys; Ask = price a broker sells.
+            The difference is the spread.
+CCI         Commodity Channel Index. Momentum oscillator.
+Confluence  Multiple indicators agreeing on the same direction.
+CVaR        Conditional Value-at-Risk. Expected loss in the worst X%.
+Divergence  When price and an oscillator disagree on trend direction.
+Drawdown    Decline from equity peak to trough, expressed as %.
+EMA         Exponential Moving Average. Weights recent data more.
+Expectancy  Average expected profit per trade over many trades.
+Fibonacci   Retracement levels based on the Fibonacci sequence.
+GBM         Geometric Brownian Motion. Stochastic process for asset prices.
+HMA         Hull Moving Average. Reduces lag while preserving smoothness.
+Hurst Exp.  Statistical measure of long-term memory in a time series.
+Ichimoku    Japanese chart system with 5 components for trend analysis.
+Kalman      Recursive Bayesian filter for adaptive signal smoothing.
+Kelly       Mathematical formula for optimal bet sizing.
+KAMA        Kaufman Adaptive Moving Average. Adjusts speed to volatility.
+Keltner     Volatility channel using EMA and ATR.
+Lot         Standard forex unit = 100,000 units of base currency.
+MACD        Moving Average Convergence Divergence. Momentum indicator.
+MFI         Money Flow Index. Volume-weighted RSI.
+Momentum    Rate of change of price. How fast price is moving.
+OBV         On-Balance Volume. Cumulative volume trend indicator.
+Pip         Smallest standard price move. 0.0001 for most pairs; 0.01 for JPY.
+Pivot       Mathematical support and resistance levels from prior bar H/L/C.
+R:R         Risk-to-reward ratio. 1:2 means win 2× what you risk.
+RSI         Relative Strength Index. Momentum oscillator 0–100.
+Sharpe      Annualised return adjusted for total volatility.
+Sortino     Like Sharpe but penalises only downside volatility.
+Spread      Difference between bid and ask price (broker's cost).
+SL          Stop Loss. Price level where a losing trade is closed.
+SMA         Simple Moving Average.
+Squeeze     When Bollinger Bands narrow inside Keltner Channels.
+SuperTrend  Adaptive trend indicator based on ATR and midpoint.
+TEMA        Triple Exponential Moving Average. Very low lag.
+TP          Take Profit. Price level where a winning trade is closed.
+VaR         Value-at-Risk. Maximum expected loss at a confidence level.
+VWAP        Volume Weighted Average Price. Intraday institutional benchmark.
+WMA         Weighted Moving Average. Linear decay weights.
+Williams %R Williams Percent Range. Momentum oscillator.
+Z-Score     Number of standard deviations from the rolling mean.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 18 – DISCLAIMER & RISK WARNING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANT – PLEASE READ CAREFULLY BEFORE USING THIS SOFTWARE
+
+Apex Forex Signal System is provided for EDUCATIONAL AND INFORMATIONAL
+PURPOSES ONLY. It is NOT financial advice, investment advice, or a
+recommendation to buy or sell any financial instrument.
+
+TRADING FOREIGN EXCHANGE (FOREX) AND PRECIOUS METALS CARRIES A HIGH LEVEL
+OF RISK AND IS NOT SUITABLE FOR ALL INVESTORS. The high degree of leverage
+available in forex trading can work against you as well as for you.
+
+  • Past performance of the signal system does not guarantee future results.
+  • No trading system can predict market movements with certainty.
+  • You may lose some or all of your invested capital.
+  • Never trade with money you cannot afford to lose.
+  • Leverage amplifies both gains and losses.
+
+BEFORE TRADING WITH REAL MONEY:
+  1. Test thoroughly with a broker demo account.
+  2. Understand all signals and the indicators that generate them.
+  3. Set appropriate stop losses on every trade.
+  4. Consult a qualified financial advisor if in doubt.
+  5. Familiarise yourself with your broker's margin requirements.
+
+The developers of Apex Forex Signal System are not registered financial
+advisers, brokers, or dealers. By using this software you agree that you
+are solely responsible for any trading decisions you make. The developers
+accept no liability for any financial losses incurred as a result of using
+this software.
+
+This software does not execute trades. It is your sole responsibility to
+execute, manage, and close any positions in your trading account.
+
+Regulatory note: In many jurisdictions, retail forex trading is regulated.
+Ensure that your broker is regulated in your country and that you comply
+with all applicable laws and regulations regarding foreign exchange trading.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF DOCUMENT  –  Apex Forex Signal System  v3.0  User Manual
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,0 +1,61 @@
+%% ============================================================================
+%% architecture.mermaid
+%% System Architecture — CFD Pipe Flow Expert
+%% ============================================================================
+
+graph TB
+    subgraph Browser["🌐 Browser (Frontend)"]
+        direction TB
+        HTML["index.html\nSPA Shell"]
+        CSS["main.css\nDesign System"]
+        API_JS["api.js\nREST Client"]
+        CANVAS["canvas.js\nCanvas Editor"]
+        NET["network.js\nState Manager"]
+        UI_JS["ui.js\nUI Components"]
+        SOLVER_JS["solver.js\nSolve + Render"]
+        MOODY["moody.js\nMoody Chart"]
+        CALC["calculators.js\nEngineering Calc"]
+        DOCS["docs.js\nDocumentation"]
+        APP["app.js\nBoot + Routing"]
+
+        HTML --> CSS
+        APP --> API_JS
+        APP --> CANVAS
+        APP --> NET
+        APP --> UI_JS
+        APP --> SOLVER_JS
+        APP --> MOODY
+        APP --> CALC
+        APP --> DOCS
+        SOLVER_JS --> API_JS
+        SOLVER_JS --> CANVAS
+        CANVAS --> NET
+    end
+
+    subgraph Backend["⚙️ Backend (Python / FastAPI)"]
+        direction TB
+        MAIN["main.py\nFastAPI App"]
+        ROUTES["api/routes.py\n11 Routers · 30+ Endpoints"]
+        SOLVER_PY["cfd/solver.py\nCFD Engine (2450 lines)"]
+        CPP["cfd/cfd_solver_ext.cpp\nC++ pybind11 Extension"]
+        DB_PY["models/database.py\nAsync SQLAlchemy"]
+        SCHEMAS["models/schemas.py\nPydantic v2"]
+        CONFIG["utils/config.py\nSettings"]
+        LOGGER["utils/logger.py\nLoguru"]
+
+        MAIN --> ROUTES
+        MAIN --> CONFIG
+        MAIN --> LOGGER
+        ROUTES --> SOLVER_PY
+        ROUTES --> DB_PY
+        ROUTES --> SCHEMAS
+        SOLVER_PY --> CPP
+    end
+
+    subgraph Database["🗄️ Database"]
+        SQLITE["SQLite\n(development)"]
+        POSTGRES["PostgreSQL 15\n(production)"]
+    end
+
+    Browser <-->|"HTTP / REST JSON\nlocalhost:8000/api/v1"| Backend
+    Backend <-->|"async SQLAlchemy"| Database

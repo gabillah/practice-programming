@@ -1,0 +1,372 @@
+════════════════════════════════════════════════════════════════════
+  APEX FOREX SIGNAL SYSTEM
+  File Documentation: app_controller.py  &  logger.py
+════════════════════════════════════════════════════════════════════
+
+These two files live in the  core\  folder:
+
+    apex_forex_signal_system\
+        core\
+            app_controller.py   ← documented in Part 1 below
+            logger.py           ← documented in Part 2 below
+            config_manager.py
+            signal_engine.py
+
+
+════════════════════════════════════════════════════════════════════
+PART 1 — core\app_controller.py
+════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────────────
+WHAT THIS FILE DOES
+────────────────────────────────────────────────────────────────────
+
+app_controller.py is the central coordinator of the application.
+Think of it as the "glue" that connects every other module.
+
+It does NOT do any trading logic itself. Instead it:
+  • Receives references to every subsystem on startup
+  • Wires them together (e.g. tells the signal engine to notify
+    the trade logger whenever a new signal fires)
+  • Provides one simple start() method to launch everything
+  • Provides one simple stop() method to shut everything down cleanly
+  • Runs a background heartbeat that logs health info every 60 seconds
+  • Provides a headless mode (no GUI) for server deployment
+
+
+────────────────────────────────────────────────────────────────────
+CLASS: AppController
+────────────────────────────────────────────────────────────────────
+
+Location : core/app_controller.py
+Imported : in main.py
+
+    from core.app_controller import AppController
+
+
+CONSTRUCTOR  __init__(...)
+──────────────────────────
+Receives these six objects (all created in main.py before
+AppController is instantiated):
+
+  config          ConfigManager    Loaded settings from config.json
+  stream_mgr      StreamManager    Manages the live WebSocket feed
+  signal_engine   SignalEngine     Runs indicators and emits signals
+  risk_mgr        RiskManager      Calculates position sizes & risk
+  trade_logger    TradeLogger      Writes signals to CSV log file
+  pattern_engine  PatternEngine    Machine learning filter
+
+On creation it immediately connects:
+  signal_engine.on_new_signal  →  self._on_signal
+
+This means: every time the signal engine fires a BUY or SELL signal,
+_on_signal() is automatically called, which forwards it to the
+trade logger so it gets saved to reports/trades.csv.
+
+
+METHOD  start()
+───────────────
+Call this once to launch all subsystems.
+
+What it does in order:
+  1. Sets self._running = True
+  2. Calls stream_mgr.start()
+       - Downloads historical bars for all pairs (REST API or synthetic)
+       - Opens the live WebSocket connection
+       - Starts feeding ticks to the signal engine
+  3. Starts the background heartbeat thread
+
+After start() returns, the application is fully live.
+If start() is called a second time it does nothing (safe to call
+multiple times).
+
+
+METHOD  stop()
+──────────────
+Call this to shut everything down cleanly (called automatically
+when the user closes the GUI window).
+
+What it does in order:
+  1. Sets self._running = False  (stops heartbeat loop)
+  2. Calls stream_mgr.stop()     (closes WebSocket connection)
+  3. Calls trade_logger.flush()  (writes any unsaved signals to disk)
+
+If stop() is called before start(), it does nothing (safe).
+
+
+METHOD  start_headless()
+────────────────────────
+Used when running WITHOUT a GUI (e.g. on a server or VPS).
+
+  python main.py --headless
+
+Internally it calls start() and then blocks indefinitely,
+keeping the process alive until you press Ctrl+C.
+On Ctrl+C it calls stop() automatically.
+
+All signals in headless mode are saved to:
+  logs/apex_forex.log
+  reports/trades.csv
+
+
+PRIVATE METHOD  _on_signal(signal)
+───────────────────────────────────
+Called automatically every time the signal engine emits a signal.
+Forwards the signal to trade_logger.log_signal().
+Wrapped in try/except so a log-write failure never crashes the app.
+
+
+PRIVATE METHOD  _heartbeat_loop()
+──────────────────────────────────
+Runs in a background daemon thread.
+Every 60 seconds it logs a one-line health summary:
+
+  Heartbeat — ticks: 14823 | open trades: 2 | daily P&L: $47.50 | balance: $10047.50
+
+This lets you confirm the stream is still alive when running
+headlessly or overnight.
+
+
+PROPERTY  is_running
+─────────────────────
+Returns True if the application is currently running.
+Used by the GUI and headless loop to check app state.
+
+
+────────────────────────────────────────────────────────────────────
+HOW IT FITS INTO THE STARTUP SEQUENCE (main.py)
+────────────────────────────────────────────────────────────────────
+
+In main.py, the bootstrap() function creates all subsystems
+and then wires them into AppController in this order:
+
+  config         = ConfigManager("config.json")
+  trade_logger   = TradeLogger(config)
+  risk_mgr       = RiskManager(config)
+  pattern_engine = PatternEngine(config)
+  signal_engine  = SignalEngine(config, risk_mgr, pattern_engine)
+  stream_mgr     = StreamManager(config, signal_engine)
+
+  controller     = AppController(          ← AppController created last
+      config         = config,             ← because it needs all of the above
+      stream_mgr     = stream_mgr,
+      signal_engine  = signal_engine,
+      risk_mgr       = risk_mgr,
+      trade_logger   = trade_logger,
+      pattern_engine = pattern_engine,
+  )
+
+  # GUI mode:
+  window = MainWindow(controller)
+  window.run()          # calls controller.start() internally
+
+  # Headless mode:
+  controller.start_headless()
+
+
+════════════════════════════════════════════════════════════════════
+PART 2 — core\logger.py
+════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────────────
+WHAT THIS FILE DOES
+────────────────────────────────────────────────────────────────────
+
+logger.py configures Python's built-in logging system for the
+entire application.
+
+It sets up two output destinations:
+
+  1. CONSOLE (your terminal window)
+     - Shows INFO and above by default (or DEBUG with --debug flag)
+     - Colour-coded by severity for easy reading
+
+  2. LOG FILE  (logs/apex_forex.log)
+     - Always captures DEBUG and above (everything)
+     - Rotating: max 5 files × 10 MB = 50 MB total on disk
+     - Old files are automatically renamed and deleted
+
+After setup_logging() is called once in main.py, every other
+module can use the standard Python logging pattern:
+
+  import logging
+  logger = logging.getLogger(__name__)
+
+  logger.debug("Detailed debug info")
+  logger.info("Normal operation message")
+  logger.warning("Something unexpected but not fatal")
+  logger.error("Something went wrong")
+  logger.critical("Application cannot continue")
+
+
+────────────────────────────────────────────────────────────────────
+FUNCTION: setup_logging(level, log_file)
+────────────────────────────────────────────────────────────────────
+
+Location : core/logger.py
+Imported : in main.py
+
+  from core.logger import setup_logging
+  setup_logging(level=logging.INFO, log_file="logs/apex_forex.log")
+
+PARAMETERS
+  level     int     Minimum severity level for the console output.
+                    logging.DEBUG  = show everything (use with --debug)
+                    logging.INFO   = show INFO, WARNING, ERROR, CRITICAL
+                    Default: logging.INFO
+
+  log_file  str     Path to the rotating log file.
+                    Default: "logs/apex_forex.log"
+                    The logs/ directory is created automatically
+                    if it does not already exist.
+
+WHAT IT CREATES
+
+  Console handler
+    - Writes to stdout (your terminal)
+    - Uses _ColourFormatter for colour-coded output
+    - Level: whatever you pass in (INFO by default)
+
+  File handler (RotatingFileHandler)
+    - Writes to logs/apex_forex.log
+    - Level: always DEBUG (captures everything)
+    - Max size per file: 10 MB
+    - Max number of files: 5
+    - When the log file reaches 10 MB, it is renamed to
+      apex_forex.log.1 and a new apex_forex.log is started.
+      Up to .5 backup files are kept before the oldest is deleted.
+
+  Silenced noisy libraries
+    - matplotlib, PIL, urllib3, websocket, requests are set to
+      WARNING level so their verbose debug output does not pollute
+      your terminal.
+
+RETURN VALUE
+  None.  The root logger is configured globally.
+
+
+────────────────────────────────────────────────────────────────────
+CLASS: _ColourFormatter  (private, used internally)
+────────────────────────────────────────────────────────────────────
+
+Subclass of logging.Formatter.
+Adds ANSI escape codes to colour-code log lines in the terminal.
+
+  Level       Colour
+  ──────────  ──────────────
+  DEBUG       Grey
+  INFO        Cyan
+  WARNING     Yellow
+  ERROR       Red
+  CRITICAL    Bold Red
+
+These colours work automatically in:
+  - Windows Terminal
+  - PowerShell (Windows 10+)
+  - macOS Terminal
+  - Linux terminals (bash, zsh, etc.)
+
+If you are using a very old Command Prompt that does not support
+ANSI colours, the escape codes will appear as garbled characters.
+In that case, switch to Windows Terminal (free from Microsoft Store).
+
+
+────────────────────────────────────────────────────────────────────
+LOG FILE LOCATION AND READING
+────────────────────────────────────────────────────────────────────
+
+The log file is created at:
+
+    apex_forex_signal_system\logs\apex_forex.log
+
+This directory and file are created automatically the first time
+the application runs. You do NOT need to create them manually.
+
+TO READ THE LOG FILE
+
+  Option 1 — Open in any text editor (Notepad, VS Code, etc.)
+
+  Option 2 — Tail in PowerShell (live view, updates in real time):
+      Get-Content logs\apex_forex.log -Wait -Tail 50
+
+  Option 3 — In Command Prompt:
+      type logs\apex_forex.log | more
+
+SAMPLE LOG OUTPUT
+
+  2026-03-07 14:32:01  INFO      main                            Starting up...
+  2026-03-07 14:32:01  INFO      app_controller                  Starting subsystems...
+  2026-03-07 14:32:02  INFO      stream_manager                  Loading historical data...
+  2026-03-07 14:32:05  INFO      stream_manager                  Historical: EUR/USD (300 bars)
+  2026-03-07 14:32:08  INFO      stream_manager                  Demo simulator running
+  2026-03-07 14:32:09  INFO      app_controller                  All systems running
+  2026-03-07 14:47:03  INFO      signal_engine                   SIGNAL: EUR/USD BUY | Entry: 1.08542 | SL: 1.08401 | TP: 1.08824 | Conf: 78% | London
+  2026-03-07 14:47:03  INFO      app_controller                  Heartbeat — ticks: 14823 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+
+
+────────────────────────────────────────────────────────────────────
+COMMON QUESTIONS
+────────────────────────────────────────────────────────────────────
+
+Q: Can I change the log file location?
+A: Yes. Edit config.json and change:
+       "reporting": { "csv_path": "reports/trades.csv" }
+   Or pass a different path when calling setup_logging() in main.py.
+
+Q: How do I enable DEBUG logging to see more detail?
+A: Start the app with the --debug flag:
+       python main.py --debug
+   This passes logging.DEBUG to setup_logging(), making the
+   console show all DEBUG messages in addition to INFO+.
+   The log file always captures DEBUG regardless.
+
+Q: The log file is getting large. Can I delete it?
+A: Yes. Close the application first, then delete or rename the
+   file. A new apex_forex.log will be created on next startup.
+   The rotating file handler also manages size automatically
+   (deletes the oldest backup when 5 files × 10 MB are reached).
+
+Q: I see garbled characters like "[96m" in my terminal.
+A: Your terminal does not support ANSI colours. Switch to
+   Windows Terminal (free from the Microsoft Store) or run
+   with output redirected to a file:
+       python main.py > output.txt 2>&1
+
+Q: Can I add logging to my own custom indicators?
+A: Yes. In any Python file inside the project, add:
+       import logging
+       logger = logging.getLogger(__name__)
+   Then use logger.info(), logger.debug() etc. as normal.
+   The messages will appear in both the console and the log file.
+
+
+════════════════════════════════════════════════════════════════════
+INSTALLATION CHECKLIST FOR THESE TWO FILES
+════════════════════════════════════════════════════════════════════
+
+Both files must be placed here (exactly):
+
+    apex_forex_signal_system\
+        core\
+            app_controller.py    <-- this file
+            logger.py            <-- this file
+            __init__.py          <-- must also exist (can be empty)
+            config_manager.py
+            signal_engine.py
+
+The  core\__init__.py  file makes the folder a Python package.
+Without it, the imports in main.py will fail.
+
+To verify the files are in the right place, open PowerShell,
+navigate to your apex_forex_signal_system folder, and run:
+
+    Test-Path "core\app_controller.py"
+    Test-Path "core\logger.py"
+    Test-Path "core\__init__.py"
+
+All three should print:  True
+
+Then run:
+    python main.py
+
+════════════════════════════════════════════════════════════════════

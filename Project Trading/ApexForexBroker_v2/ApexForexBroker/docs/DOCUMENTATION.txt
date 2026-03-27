@@ -1,0 +1,698 @@
+APEX FOREX BROKER v2.0 — COMPLETE PROJECT DOCUMENTATION
+=========================================================
+C++ + Python Hybrid Desktop Trading Platform
+
+
+═══════════════════════════════════════════════════════════════════════
+TABLE OF CONTENTS
+═══════════════════════════════════════════════════════════════════════
+
+  1.  Project Overview
+  2.  Architecture
+  3.  Folder Structure
+  4.  C++ Math Engine
+  5.  Python Modules
+  6.  Data Flow Pipeline
+  7.  Signal System (22 Strategies)
+  8.  Risk Management
+  9.  Financial Mathematics
+  10. Database Schema
+  11. Configuration Reference
+  12. Build Instructions (C++)
+  13. Run Instructions (Python)
+  14. Flowchart Guide
+
+
+═══════════════════════════════════════════════════════════════════════
+1. PROJECT OVERVIEW
+═══════════════════════════════════════════════════════════════════════
+
+Apex Forex Broker is a self-hosted desktop forex trading simulation
+platform written in C++ and Python. It combines a high-performance
+C++ indicator engine with a full Python trading application featuring:
+
+  - Live price feeds (WebSocket: TwelveData, Polygon, OANDA, or demo)
+  - 22-indicator signal fusion engine with ML filter
+  - Full manual trading: market orders, limit orders, stop orders
+  - Automatic SL/TP execution, trailing stops, margin call protection
+  - Kelly-criterion position sizing with VaR/CVaR risk metrics
+  - SQLite-backed persistence (positions, history, signals, equity curve)
+  - Professional Tkinter GUI with candlestick charts and analytics
+  - C++ shared library for O3-optimised indicator math via ctypes
+
+Language split:
+  C++    — math_engine.dll/.so  (indicators, financial math, statistics)
+  Python — everything else      (trading logic, GUI, database, feed)
+
+Platform: Windows 10/11 (primary), macOS 11+, Ubuntu 20.04+
+Python  : 3.10, 3.11, or 3.12
+C++     : C++17 (MSVC 2019+, GCC 10+, Clang 12+)
+
+
+═══════════════════════════════════════════════════════════════════════
+2. ARCHITECTURE
+═══════════════════════════════════════════════════════════════════════
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │                        GUI LAYER (Python/Tkinter)               │
+  │  app.py  chart.py  trading_panel.py  signals_panel.py          │
+  │  positions_panel.py  orders_panel.py  analytics_panel.py       │
+  │  history_panel.py    risk_panel.py                             │
+  └────────────────────────┬────────────────────────────────────────┘
+                           │
+  ┌────────────────────────▼────────────────────────────────────────┐
+  │                    TRADING LAYER (Python)                       │
+  │  trading/engine.py  — order execution, SL/TP, margin monitor   │
+  │  signals/engine.py  — 22-strategy fusion, ML filter            │
+  │  risk/manager.py    — Kelly sizing, VaR, circuit breakers      │
+  └───────────┬────────────────────────────────────────────────────┘
+              │
+  ┌───────────▼────────────────┐  ┌──────────────────────────────┐
+  │   DATA LAYER (Python)      │  │   C++ MATH ENGINE            │
+  │  data/feed.py  (WebSocket) │  │  cpp/src/math_engine.cpp     │
+  │  data/bars.py  (OHLCV)     │◄─►  EMA, RSI, MACD, ATR        │
+  │  signals/indicators.py     │  │  Bollinger, SuperTrend       │
+  └───────────┬────────────────┘  │  ADX, Ichimoku, Stochastic   │
+              │                   │  VaR, CVaR, Sharpe, Sortino  │
+  ┌───────────▼────────────────┐  └──────────────────────────────┘
+  │   PERSISTENCE (Python)     │
+  │  db/database.py (SQLite)   │
+  │  auth/account.py (margin)  │
+  │  reports/reporter.py (CSV) │
+  └────────────────────────────┘
+
+The C++ engine is loaded at runtime via ctypes (cpp/bridge.py).
+If the compiled library is not found, Python/NumPy fallback
+implementations are used automatically — no crash, just slower.
+
+
+═══════════════════════════════════════════════════════════════════════
+3. FOLDER STRUCTURE
+═══════════════════════════════════════════════════════════════════════
+
+  ApexForexBroker/
+  │
+  ├── main.py                    Entry point — run this
+  ├── requirements.txt           Python package dependencies
+  │
+  ├── cpp/                       ── C++ Math Engine ──
+  │   ├── include/
+  │   │   └── math_engine.h      Public C API header
+  │   ├── src/
+  │   │   └── math_engine.cpp    Full C++ implementation
+  │   └── CMakeLists.txt         CMake build configuration
+  │
+  ├── python/                    ── Python Application ──
+  │   │
+  │   ├── cpp/
+  │   │   ├── __init__.py
+  │   │   └── bridge.py          ctypes wrapper for C++ library
+  │   │
+  │   ├── core/
+  │   │   ├── __init__.py
+  │   │   ├── config.py          JSON config with deep-merge + env overrides
+  │   │   └── logger.py          Rotating log, ANSI colour, JSON format
+  │   │
+  │   ├── db/
+  │   │   ├── __init__.py
+  │   │   └── database.py        SQLite layer (8 tables, WAL mode)
+  │   │
+  │   ├── auth/
+  │   │   ├── __init__.py
+  │   │   └── account.py         Balance, margin, equity, swap, commission
+  │   │
+  │   ├── data/
+  │   │   ├── __init__.py
+  │   │   ├── feed.py            WebSocket feeds (demo/TwelveData/Polygon/OANDA)
+  │   │   └── bars.py            Tick → OHLCV bar aggregator (6 timeframes)
+  │   │
+  │   ├── signals/
+  │   │   ├── __init__.py
+  │   │   ├── indicators.py      30+ NumPy indicators (fallback library)
+  │   │   └── engine.py          22-strategy weighted-vote fusion + ML filter
+  │   │
+  │   ├── risk/
+  │   │   ├── __init__.py
+  │   │   └── manager.py         Kelly criterion, VaR, CVaR, drawdown, daily breaker
+  │   │
+  │   ├── trading/
+  │   │   ├── __init__.py
+  │   │   └── engine.py          Market/pending orders, SL/TP, trailing, margin call
+  │   │
+  │   ├── reports/
+  │   │   ├── __init__.py
+  │   │   └── reporter.py        CSV export, trade journaling
+  │   │
+  │   └── ui/
+  │       ├── __init__.py
+  │       ├── theme.py           Light-mode colour palette + fonts
+  │       ├── app.py             Root window, tab layout, header, watchlist
+  │       ├── chart.py           Candlestick chart + EMA/BB/ST/VWAP overlays
+  │       ├── trading_panel.py   Market order + pending order entry forms
+  │       ├── positions_panel.py Open positions table
+  │       ├── orders_panel.py    Pending orders table
+  │       ├── signals_panel.py   Live signal cards feed
+  │       ├── history_panel.py   Closed trade history + CSV export
+  │       ├── analytics_panel.py 16-metric grid + 3 charts
+  │       ├── risk_panel.py      Risk settings + live metrics + margin gauge
+  │       └── panels.py          (legacy — kept for compatibility)
+  │
+  ├── scripts/
+  │   ├── build_cpp.bat          Compile C++ on Windows
+  │   └── build_cpp.sh           Compile C++ on Linux/macOS
+  │
+  └── docs/
+      ├── DOCUMENTATION.txt      This file
+      └── flowchart.mermaid      System flowchart (Mermaid syntax)
+
+
+═══════════════════════════════════════════════════════════════════════
+4. C++ MATH ENGINE
+═══════════════════════════════════════════════════════════════════════
+
+Files:
+  cpp/include/math_engine.h     — Public C API (pure C extern "C")
+  cpp/src/math_engine.cpp       — Implementation (~450 lines)
+  cpp/bridge.py                 — Python ctypes wrapper
+
+Why C++?
+  Indicator calculations run on every completed price bar for every
+  pair and timeframe. With 12 pairs × 6 timeframes × 22 strategies,
+  this happens hundreds of times per second. C++ with -O3 optimisation
+  is 5–20× faster than equivalent NumPy code for these inner loops.
+
+Exported functions (all use raw double* arrays):
+
+  Moving Averages:
+    apex_ema(src, dst, n, period)          Exponential Moving Average
+    apex_sma(src, dst, n, period)          Simple Moving Average
+    apex_wma(src, dst, n, period)          Weighted Moving Average
+    apex_hma(src, dst, n, period)          Hull Moving Average
+    apex_wilder(src, dst, n, period)       Wilder Smoothing
+
+  Oscillators:
+    apex_rsi(close, dst, n, period)        RSI (Wilder smoothing)
+    apex_macd(close, macd, sig, hist, ...) MACD + signal + histogram
+    apex_stochastic(h,l,c, k,d, ...)       Stochastic %K and %D
+
+  Volatility:
+    apex_atr(h, l, c, dst, n, period)     Average True Range
+    apex_bollinger(c, upper, mid, lower, ..)  Bollinger Bands
+    apex_supertrend(h,l,c, st, dir, ...)   SuperTrend indicator
+
+  Trend:
+    apex_adx(h,l,c, adx, pdi, mdi, ...)   ADX + DI lines
+    apex_ichimoku(h,l,c, tenkan, kijun, ..) Ichimoku Cloud (5 lines)
+
+  Financial Math:
+    apex_pnl_buy(open, close, lots, ps, pv)   BUY P&L in USD
+    apex_pnl_sell(open, close, lots, ps, pv)  SELL P&L in USD
+    apex_margin(lots, price, contract, lev)   Required margin
+
+  Statistics:
+    apex_var95(returns, n, balance)        VaR at 95% confidence
+    apex_cvar95(returns, n, balance)       CVaR / Expected Shortfall
+    apex_max_drawdown(cum_pnl, n)          Peak-to-trough drawdown
+    apex_sharpe(returns, n)               Annualised Sharpe ratio
+    apex_sortino(returns, n)              Annualised Sortino ratio
+
+NaN handling: All output arrays are pre-filled with NaN. Output is
+only written for indices where sufficient data exists — exactly
+matching NumPy indicator behaviour.
+
+Fallback: If math_engine.dll/so is not found at runtime, bridge.py
+automatically uses pure NumPy implementations with identical results.
+
+Build commands:
+  Windows (MSVC):
+    cl /O2 /LD /EHsc /std:c++17 /Icpp\include
+       /Fe:python\cpp\math_engine.dll cpp\src\math_engine.cpp
+
+  Windows (MinGW):
+    g++ -std=c++17 -O3 -shared -fPIC -Icpp/include
+        -o python/cpp/math_engine.dll cpp/src/math_engine.cpp -lm
+
+  Linux:
+    g++ -std=c++17 -O3 -shared -fPIC -Icpp/include
+        -o python/cpp/math_engine.so cpp/src/math_engine.cpp -lm
+
+  macOS:
+    g++ -std=c++17 -O3 -dynamiclib -Icpp/include
+        -o python/cpp/math_engine.dylib cpp/src/math_engine.cpp -lm
+
+  Or use the build scripts:
+    Windows : double-click scripts\build_cpp.bat
+    Linux   : bash scripts/build_cpp.sh
+
+
+═══════════════════════════════════════════════════════════════════════
+5. PYTHON MODULES
+═══════════════════════════════════════════════════════════════════════
+
+main.py
+  Entry point. Parses CLI args, checks dependencies, constructs every
+  subsystem in dependency order, wires the data pipeline, and launches
+  the GUI (or runs headless).
+  CLI: --debug  --headless  --reset-db  --config <path>  --version
+
+core/config.py  — class Config
+  Loads config.json with deep-merge against defaults. Saves on every
+  .set() call. Supports environment variable overrides:
+    APEX_API_KEY    → data_source.api_key
+    APEX_PROVIDER   → data_source.provider
+    APEX_BALANCE    → account.initial_balance
+  Properties: .pairs  .provider  .api_key  .primary_tf  .account_cfg
+              .trading_cfg  .signal_cfg  .risk_cfg  .ind_cfg  .ml_cfg
+
+core/logger.py  — functions: setup_logging(), get_logger(), set_level()
+  Rotating file handler (10 MB × 5 backups). ANSI colour console.
+  Optional JSON log format. Silences noisy third-party libraries.
+
+db/database.py  — class Database
+  SQLite connection (WAL mode, row_factory=Row, RLock).
+  Tables: accounts, positions, orders, trade_history, signals,
+          price_cache, daily_stats, equity_curve
+  Key methods: get_positions(), insert_position(), close_position(),
+               get_history(), get_history_stats(), insert_signal(),
+               snapshot_equity(), get_equity_curve()
+
+auth/account.py  — class AccountManager
+  Tracks live prices (bid/ask dict). Computes equity/margin/PnL
+  on demand from DB positions. Applies daily swap rollover.
+  Key constants: PIP_SIZE, PIP_VALUE, SWAP_RATES, CONTRACT=100,000
+  Key methods: update_price(), get_price(), pnl(), margin_req(),
+               commission(), snapshot(), apply_swaps(), ticket()
+
+data/feed.py  — class PriceFeed
+  Routes ticks from the chosen provider to registered callbacks.
+  Providers:
+    _DemoSimulator   — GBM + OU mean reversion + trend injection
+    _TwelveDataStream — WebSocket wss://ws.twelvedata.com/...
+    _PolygonStream    — WebSocket wss://socket.polygon.io/forex
+    _OandaStream      — REST streaming (HTTPS chunked)
+  All providers auto-reconnect with exponential backoff.
+
+data/bars.py  — class BarAggregator, class _TFBuffer, dataclass Bar
+  Converts tick stream into OHLCV bars for 6 timeframes simultaneously.
+  Bar properties: .body  .range  .bullish  .upper_wick  .lower_wick
+  Max 600 bars per (pair, timeframe) combination.
+
+signals/indicators.py  — class Ind (static methods)
+  Pure NumPy indicator library used as fallback when C++ is absent.
+  Implements all indicators that math_engine.cpp exports, plus:
+  CCI, Williams %R, MFI, Donchian, Keltner, VWAP, OBV, Squeeze,
+  Pivot Points, Hurst Exponent, Z-Score, RSI Divergence, MACD
+  Divergence, Kalman Filter, Parabolic SAR, Candlestick Patterns.
+
+signals/engine.py  — class SignalEngine
+  Subscribes to bar completions. For each bar runs all 22 strategies,
+  collects weighted votes, checks filters, calculates SL/TP/lot size,
+  saves to DB, and emits callbacks.
+
+risk/manager.py  — class RiskManager
+  suggest_lot(): fixed-fraction + fractional Kelly lot sizing
+  _kelly_from_history(): computes Kelly f* from trade history
+  daily_loss_breaker_tripped(): returns True if daily loss > max_pct
+  compute_metrics(): 19 performance metrics using C++ stats functions
+  risk_summary(): combined account snapshot + metrics dict
+
+trading/engine.py  — class TradingEngine
+  open_market(): place BUY/SELL at current ask/bid ± slippage
+  place_pending(): BUY_LIMIT / SELL_LIMIT / BUY_STOP / SELL_STOP
+  close_position(): close by ticket, record to history, update balance
+  modify_sl_tp(): change SL/TP on open position
+  on_price_update(): called every tick — checks SL/TP hits + trailing
+  _monitor_loop(): background thread (1s) — pending triggers + margin
+  Callbacks: on_trade(), on_close(), on_error(), on_alert()
+
+reports/reporter.py  — class Reporter
+  export_history(): writes timestamped CSV to exports/ folder
+  append_trade(): auto-appends every closed trade to reports/trades.csv
+
+ui/app.py  — class BrokerApp
+  Root Tkinter window. Header bar with live account stats. Left
+  watchlist. Right candlestick chart. Bottom 8-tab panel bar.
+  Tabs: Trading · Positions · Orders · Signals · History · Analytics
+        · Risk · Log
+
+ui/chart.py  — class ChartPanel
+  matplotlib TkAgg canvas with candlestick rendering, EMA/BB/ST/VWAP
+  overlays, volume sub-chart, RSI sub-chart, signal markers (▲/▼).
+  Refreshes every 2 seconds (configurable via ui.refresh_ms).
+
+
+═══════════════════════════════════════════════════════════════════════
+6. DATA FLOW PIPELINE
+═══════════════════════════════════════════════════════════════════════
+
+  [Price Provider] ──tick(pair, bid, ask)──► [AccountManager.update_price]
+                                          └──► [BarAggregator.on_tick]
+                                                      │
+                                              bar completed
+                                                      │
+                                                      ▼
+                                           [SignalEngine.on_bar]
+                                                      │
+                                           Run 22 strategies
+                                           (C++ or NumPy math)
+                                                      │
+                                           Weighted vote fusion
+                                                      │
+                                           Filters: confidence,
+                                           cooldown, spread, session
+                                                      │
+                                           Signal emitted
+                                                      │
+                                       ┌───────────── ▼ ─────────────┐
+                                       │      [TradingEngine]        │
+                                       │   handle_signal (auto)      │
+                                       └─────────────────────────────┘
+
+  Every tick also calls:
+    TradingEngine.on_price_update(pair, bid, ask)
+      → for each open position on this pair:
+        → recalculate live P&L
+        → check SL hit → close_position("sl")
+        → check TP hit → close_position("tp")
+        → advance trailing stop if profitable
+
+  Background monitor thread (1 s):
+    → trigger pending orders when price reaches entry level
+    → cancel expired pending orders
+    → check margin level → margin call / stop-out
+    → apply overnight swap charges (once per day at midnight UTC)
+
+
+═══════════════════════════════════════════════════════════════════════
+7. SIGNAL SYSTEM (22 STRATEGIES)
+═══════════════════════════════════════════════════════════════════════
+
+Each strategy votes BUY, SELL, or ABSTAIN. Votes are weighted.
+The side with the higher total weight wins if it meets min_confluence.
+
+  #   Strategy                 Weight  Votes on
+  ─── ──────────────────────── ──────  ──────────────────────────────
+   1  EMA Cross (9/21)           2.5   EMA9 crosses above/below EMA21
+   2  EMA-200 Trend Filter       2.0   Price above/below EMA200
+   3  MACD Histogram Cross       2.0   Histogram crosses zero
+   4  RSI Oversold/Overbought    1.5   RSI < 30 or RSI > 70
+   5  RSI Divergence             2.0   Price/RSI divergence
+   6  Stochastic Cross           1.0   %K/%D cross in OB/OS zone
+   7  CCI ±100                   1.0   CCI outside ±100 band
+   8  Williams %R                1.0   %R outside ±80/−20
+   9  MFI                        1.0   MFI < 20 or > 80
+  10  Bollinger Bands %B         1.5   Price at outer band
+  11  SuperTrend Flip            2.5   Direction change
+  12  Ichimoku Cloud             2.5   Price vs cloud + TK cross
+  13  ADX Trend Strength         1.5   ADX > 25 with DI alignment
+  14  Squeeze Momentum           1.5   BB inside KC squeeze release
+  15  Donchian Breakout          1.5   Price breaks 20-bar high/low
+  16  Keltner Channel            1.0   Price outside KC bands
+  17  VWAP Position              1.0   Price vs VWAP
+  18  OBV vs EMA                 1.0   OBV above/below its EMA
+  19  Candlestick Patterns       2.0   10 pattern types
+  20  Pivot Point S/R            1.5   Price at pivot level
+  21  Hurst + Z-Score Regime     1.0   Hurst > 0.55 = trending
+  22  ML Pattern Filter          3.0   Random Forest (200 trees)
+
+  Total max weight: ~36.0
+  Signal emitted when: winning_weight / total_weight ≥ min_confidence
+  Default min_confluence: 3 votes  (configurable)
+  Default min_confidence: 55%      (configurable)
+  Cooldown: 300 s between signals per pair (configurable)
+
+Signal strength levels:
+  WEAK         52–60%   (1 dot  ●○○○)
+  MODERATE     60–70%   (2 dots ●●○○)
+  STRONG       70–80%   (3 dots ●●●○)
+  VERY STRONG  ≥ 80%    (4 dots ●●●●)
+
+SL/TP calculation:
+  SL = entry ± ATR(14) × sl_atr_mult  (default 2.0)
+  TP1 = entry ± SL_dist × tp_rr       (default 2:1)
+  TP2 = entry ± SL_dist × 3.0
+  TP3 = entry ± SL_dist × 4.0
+
+
+═══════════════════════════════════════════════════════════════════════
+8. RISK MANAGEMENT
+═══════════════════════════════════════════════════════════════════════
+
+Position Sizing (Kelly-Adjusted Fixed Fraction):
+  risk_usd  = balance × risk_per_trade_pct / 100
+  sl_pips   = |entry − stop_loss| / pip_size
+  raw_lots  = risk_usd / (sl_pips × pip_value_per_lot)
+  kelly_f*  = (b×p − q) / b   where b=avg_win/avg_loss, p=win_rate
+  final_lots = raw_lots × (kelly_f* × kelly_fraction)
+  Clamped to: [min_lot=0.01, max_lot=100.0], rounded to lot_step=0.01
+
+Protective Mechanisms:
+  Daily Loss Breaker   — blocks trading when daily loss > max_daily_loss_pct
+  Margin Call Warning  — alert + trade block when margin level < 50%
+  Stop-Out             — force-close all positions when margin level < 20%
+  Trailing Stop        — SL advances as price moves in profit direction
+  Spread Filter        — signals blocked when spread > spread_filter_pips
+  Max Open Trades      — hard limit of 20 simultaneous positions
+
+Risk Metrics computed by RiskManager.compute_metrics():
+  Total Trades, Win Rate, Profit Factor, Net P&L
+  Gross Profit, Gross Loss, Avg Win, Avg Loss
+  Expectancy, Sharpe Ratio, Sortino Ratio, Calmar Ratio
+  Max Drawdown, Max DD %, VaR 95%, CVaR 95%
+
+
+═══════════════════════════════════════════════════════════════════════
+9. FINANCIAL MATHEMATICS REFERENCE
+═══════════════════════════════════════════════════════════════════════
+
+Account:
+  Margin Required = (Lots × ContractSize × Price) / Leverage
+  Equity          = Balance + Floating_PnL
+  Free Margin     = Equity − Margin_Used
+  Margin Level    = (Equity / Margin_Used) × 100%
+  PnL BUY         = (Close − Open) / PipSize × PipValue × Lots
+  PnL SELL        = (Open − Close) / PipSize × PipValue × Lots
+  Daily Swap      = Lots × SwapRate_pips/night × PipValue
+  Commission      = Lots × CommissionPerLot  (default $7/lot)
+
+Statistics:
+  Sharpe  = (μ_r − r_f) / σ_r × √252
+  Sortino = (μ_r − r_f) / σ_down × √252   (downside std only)
+  Calmar  = AnnualisedReturn / MaxDrawdownFraction
+  VaR_95  = −(μ − 1.645×σ) × Balance      (parametric, normal)
+  CVaR_95 = −(μ − σ×φ(Φ⁻¹(0.05))/0.05) × Balance
+            where φ ≈ 0.10313 (PDF of standard normal at z=-1.645)
+
+Instrument specs:
+  EUR/USD  pip=0.0001  pip_value=$10.00/lot   contract=100,000 units
+  GBP/USD  pip=0.0001  pip_value=$10.00/lot
+  USD/JPY  pip=0.01    pip_value=$9.09/lot
+  USD/CHF  pip=0.0001  pip_value=$10.20/lot
+  AUD/USD  pip=0.0001  pip_value=$10.00/lot
+  NZD/USD  pip=0.0001  pip_value=$10.00/lot
+  USD/CAD  pip=0.0001  pip_value=$7.60/lot
+  EUR/GBP  pip=0.0001  pip_value=$12.50/lot
+  EUR/JPY  pip=0.01    pip_value=$9.09/lot
+  GBP/JPY  pip=0.01    pip_value=$9.09/lot
+  XAU/USD  pip=0.1     pip_value=$1.00/lot    contract=100 oz
+  XAG/USD  pip=0.001   pip_value=$50.00/lot   contract=5,000 oz
+
+
+═══════════════════════════════════════════════════════════════════════
+10. DATABASE SCHEMA
+═══════════════════════════════════════════════════════════════════════
+
+File: db/broker.db  (SQLite 3, WAL mode, foreign keys ON)
+
+Table: accounts
+  id balance equity margin_used free_margin margin_level
+  profit currency leverage created_at
+
+Table: positions  (open trades)
+  ticket pair direction lot_size open_price stop_loss take_profit
+  current_price swap commission pnl pnl_pips margin_used
+  opened_at comment is_signal
+
+Table: orders  (pending orders)
+  ticket pair order_type lot_size price stop_loss take_profit
+  created_at expires_at comment
+
+Table: trade_history  (closed trades)
+  ticket pair direction lot_size open_price close_price
+  stop_loss take_profit pnl pnl_pips swap commission
+  opened_at closed_at close_reason
+
+Table: signals
+  pair direction strength entry_price stop_loss take_profit
+  take_profit_2 take_profit_3 confidence votes_bull votes_bear
+  atr spread_pips session timeframe risk_reward position_size
+  notes acted_on created_at
+
+Table: price_cache
+  pair bid ask mid spread updated_at
+
+Table: daily_stats
+  date trades_total trades_won trades_lost gross_profit
+  gross_loss net_pnl max_drawdown start_bal end_bal
+
+Table: equity_curve
+  ts balance equity margin
+  (sampled every 60 seconds while app is running)
+
+Indexes: positions(pair), positions(ticket), trade_history(closed_at),
+         signals(pair), equity_curve(ts)
+
+
+═══════════════════════════════════════════════════════════════════════
+11. CONFIGURATION REFERENCE
+═══════════════════════════════════════════════════════════════════════
+
+File: config.json  (auto-created on first run)
+
+Section: data_source
+  provider          "demo" | "twelvedata" | "polygon" | "oanda"
+  api_key           API key string (blank for demo)
+  reconnect_delay   Seconds between reconnect attempts (default 5)
+  max_reconnects    Max reconnect attempts (default 20)
+  websocket_url     Custom endpoint (used for OANDA)
+
+Section: pairs
+  List of 12 instruments: EUR/USD GBP/USD USD/JPY USD/CHF
+  AUD/USD NZD/USD USD/CAD EUR/GBP EUR/JPY GBP/JPY XAU/USD XAG/USD
+
+Section: account
+  initial_balance   10000.0
+  leverage          100
+  margin_call_pct   50.0
+  stop_out_pct      20.0
+
+Section: trading
+  default_lot, min_lot, max_lot, lot_step
+  max_open_trades   20
+  slippage_pips     1.0
+  commission_per_lot 7.0
+
+Section: signal_engine
+  min_confluence    3      (minimum votes needed)
+  signal_cooldown   300    (seconds between signals per pair)
+  use_ml_filter     true
+  auto_trade        false
+  auto_lot          0.01
+  min_confidence    0.55
+
+Section: risk
+  risk_per_trade_pct   1.5
+  max_daily_loss_pct   5.0
+  default_sl_atr_mult  2.0
+  default_tp_rr        2.0
+  trailing_stop        true
+  kelly_fraction       0.25
+
+Section: ml
+  model_type         "random_forest" | "gradient_boost"
+  n_estimators       200
+  min_samples        200   (bars needed before ML activates)
+  retrain_interval   3600  (seconds between retraining)
+  confidence_thresh  0.60
+
+Section: ui
+  refresh_ms    2000
+  max_candles   200
+
+
+═══════════════════════════════════════════════════════════════════════
+12. BUILD INSTRUCTIONS (C++)
+═══════════════════════════════════════════════════════════════════════
+
+The C++ build is optional. The app runs without it using NumPy.
+
+WINDOWS — Option 1: batch script
+  cd ApexForexBroker
+  scripts\build_cpp.bat
+
+WINDOWS — Option 2: MSVC manually
+  cd cpp
+  cl /O2 /LD /EHsc /std:c++17 /Iinclude
+     /Fe:..\python\cpp\math_engine.dll src\math_engine.cpp
+
+WINDOWS — Option 3: MinGW
+  cd cpp
+  g++ -std=c++17 -O3 -shared -fPIC -Iinclude
+      -o ..\python\cpp\math_engine.dll src\math_engine.cpp -lm
+
+LINUX
+  cd ApexForexBroker
+  bash scripts/build_cpp.sh
+  # or manually:
+  g++ -std=c++17 -O3 -shared -fPIC -Icpp/include
+      -o python/cpp/math_engine.so cpp/src/math_engine.cpp -lm
+
+macOS
+  g++ -std=c++17 -O3 -dynamiclib -Icpp/include
+      -o python/cpp/math_engine.dylib cpp/src/math_engine.cpp -lm
+
+CMAKE (all platforms)
+  cd cpp
+  cmake -B build -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
+  cmake --install build --prefix ..
+
+
+═══════════════════════════════════════════════════════════════════════
+13. RUN INSTRUCTIONS (PYTHON)
+═══════════════════════════════════════════════════════════════════════
+
+Step 1 — Install Python 3.10+
+  https://www.python.org/downloads/
+  Check "Add Python to PATH" during installation.
+
+Step 2 — Install packages
+  pip install -r requirements.txt
+
+Step 3 — Run
+  cd ApexForexBroker
+  python main.py                  Normal launch (demo data)
+  python main.py --debug          Verbose logging
+  python main.py --headless       No GUI
+  python main.py --reset-db       Wipe database and restart
+  python main.py --config my.json Use alternate config file
+
+Step 4 — Live data (optional)
+  Edit config.json:
+    TwelveData: "provider": "twelvedata", "api_key": "YOUR_KEY"
+    Polygon:    "provider": "polygon",    "api_key": "YOUR_KEY"
+    OANDA:      "provider": "oanda",      "api_key": "YOUR_TOKEN"
+
+
+═══════════════════════════════════════════════════════════════════════
+14. FLOWCHART GUIDE
+═══════════════════════════════════════════════════════════════════════
+
+File: docs/flowchart.mermaid
+
+To view the flowchart:
+  Option 1 — VS Code:
+    Install "Mermaid Preview" extension.
+    Open flowchart.mermaid and press Ctrl+Shift+P → "Mermaid: Preview".
+
+  Option 2 — Online:
+    Go to https://mermaid.live
+    Paste the contents of flowchart.mermaid into the editor.
+    The diagram renders live in the browser.
+
+  Option 3 — GitHub/GitLab:
+    Rename to flowchart.md and wrap in a code block:
+      ```mermaid
+      ... paste contents ...
+      ```
+    GitHub renders Mermaid diagrams natively.
+
+The flowchart covers:
+  - Startup sequence and subsystem construction
+  - Live tick → bar → signal data pipeline
+  - C++ acceleration path (bridge.py → math_engine)
+  - Signal fusion, filtering, and auto-trade branch
+  - Tick-level SL/TP monitoring and trailing stop
+  - Background monitor thread (pending orders, margin, swaps)
+  - Manual trading path through the GUI
+  - Database persistence and CSV reporting

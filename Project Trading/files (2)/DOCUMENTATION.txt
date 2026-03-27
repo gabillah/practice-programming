@@ -1,0 +1,1072 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║          APEX FOREX BROKER  v2.0  —  Complete User Documentation             ║
+║                                                                              ║
+║          Self-Hosted Desktop Forex Trading Platform                          ║
+║          Manual Trading + Automatic Signal System                            ║
+║          Live Streamed Global Market Prices                                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Document version : 2.0
+Last updated     : 2026
+Platform         : Windows 10 / 11 (also macOS, Linux)
+Python           : 3.10 or later
+License          : Personal use / self-hosted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TABLE OF CONTENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1.  Overview
+  2.  Requirements
+  3.  Installation — Running from Python source
+  4.  Installation — Building the Windows EXE
+  5.  Running with Live Market Data
+  6.  GUI Layout and Navigation
+  7.  Watchlist Panel
+  8.  Candlestick Chart
+  9.  Manual Trading — Market Orders
+  10. Manual Trading — Pending Orders
+  11. Positions Manager
+  12. Orders Manager
+  13. Signal System — How It Works
+  14. Signal Indicator Reference (22 strategies)
+  15. Signal Panel
+  16. Risk Management System
+  17. Trade History and Analytics
+  18. Risk Dashboard
+  19. Configuration Reference (config.json)
+  20. Data Provider Setup
+  21. Financial Mathematics Reference
+  22. Troubleshooting
+  23. FAQ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1  —  OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Apex Forex Broker is a fully self-hosted desktop forex trading platform.
+You are the broker. All order execution, position management, margin
+calculation, and trade journaling happen locally on your machine.
+No third-party broker, no cloud dependency, no subscription.
+
+Key capabilities:
+
+  ► 12 forex pairs + Gold + Silver  streamed live via WebSocket
+  ► Full manual trading: market orders, limit orders, stop orders
+  ► Modify stop-loss / take-profit on open positions
+  ► Trailing stop system (ATR-based)
+  ► Automatic signal system: 22 indicators fused into BUY/SELL signals
+  ► Machine-learning filter (Random Forest / Gradient Boosting)
+  ► Risk management: Kelly criterion, VaR, CVaR, Sharpe, Sortino, Calmar
+  ► Margin monitoring with margin call and stop-out protection
+  ► Full trade history with CSV export
+  ► Performance analytics with equity curve, win-rate, profit factor
+  ► 30+ technical indicators: EMA, MACD, RSI, Ichimoku, SuperTrend, BB...
+  ► Light-mode professional GUI
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2  —  REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Operating System : Windows 10 or 11 (64-bit recommended)
+                     macOS 11+ and Ubuntu 20.04+ also work
+  Python           : 3.10, 3.11, or 3.12
+  RAM              : 512 MB minimum, 2 GB recommended
+  Disk             : 500 MB (includes ML libraries)
+  Internet         : Required only for live price data
+                     Demo mode works fully offline
+
+Python packages required (all free, open-source):
+
+  Package           Version     Purpose
+  ───────────────   ─────────   ──────────────────────────────────────────────
+  numpy             ≥ 1.24      Indicator calculations, array math
+  pandas            ≥ 2.0       Data manipulation
+  matplotlib        ≥ 3.7       Candlestick chart rendering
+  scipy             ≥ 1.10      Statistics: VaR, normal distribution
+  scikit-learn      ≥ 1.3       ML pattern filter (Random Forest)
+  websocket-client  ≥ 1.6       Live WebSocket price feed
+  requests          ≥ 2.31      OANDA REST streaming
+  Pillow            ≥ 9.5       Image utilities
+  tkinter           built-in    GUI framework (included with Python)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3  —  INSTALLATION: RUNNING FROM PYTHON SOURCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1 — Install Python
+  Download Python 3.11 from https://www.python.org/downloads/
+  During installation, check "Add Python to PATH"
+
+Step 2 — Extract the project
+  Unzip or copy the ApexForexBroker folder to any location, e.g.:
+    C:\ApexForexBroker\
+
+Step 3 — Open a terminal in the project folder
+  Windows: Right-click in the folder → "Open in Terminal"
+           or press Win+R, type cmd, press Enter,
+           then: cd C:\ApexForexBroker
+
+Step 4 — Install dependencies
+  pip install -r requirements.txt
+
+  If pip is not found:
+    python -m pip install -r requirements.txt
+
+  On some systems with multiple Python versions:
+    py -3.11 -m pip install -r requirements.txt
+
+Step 5 — Run the application
+  python main.py
+
+  With debug logging:
+    python main.py --debug
+
+  Headless mode (no GUI, signals only to log):
+    python main.py --headless
+
+  Reset database (clear all trades):
+    python main.py --reset-db
+
+The application will start in DEMO mode by default.
+Demo mode uses a built-in price simulator (no API key needed).
+Prices update every second and the candlestick chart refreshes every 2 seconds.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4  —  INSTALLATION: BUILDING THE WINDOWS EXE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+To create a standalone .exe that runs without Python installed:
+
+Method A — Double-click build script (easiest)
+  1. Make sure Python 3.10+ is installed and on PATH
+  2. Double-click build_exe.bat in the project folder
+  3. Wait 2–5 minutes while PyInstaller packages everything
+  4. Find your EXE at: dist\ApexForexBroker.exe
+
+Method B — Manual build
+  Open a terminal in the project folder, then run:
+
+    pip install pyinstaller
+    pyinstaller --onefile --windowed --name "ApexForexBroker"       ^
+        --hidden-import sklearn.ensemble                              ^
+        --hidden-import sklearn.calibration                          ^
+        --hidden-import matplotlib.backends.backend_tkagg            ^
+        --hidden-import scipy.stats                                  ^
+        --collect-all sklearn                                        ^
+        main.py
+
+  Output: dist\ApexForexBroker.exe  (typically 60–120 MB)
+
+Distributing the EXE:
+  Copy dist\ApexForexBroker.exe to any Windows 10/11 machine.
+  The exe is self-contained — no Python, no packages needed on target machine.
+  On first run, it creates config.json and db\broker.db in the same folder.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5  —  RUNNING WITH LIVE MARKET DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Apex Forex Broker supports four price feed modes. Choose one.
+
+──────────────────────────────────────────────────────────────────────────────
+MODE 1: DEMO (Default — No API key required)
+──────────────────────────────────────────────────────────────────────────────
+  The built-in simulator generates realistic synthetic prices using:
+    • Geometric Brownian Motion (GBM) — realistic random walk
+    • Ornstein-Uhlenbeck mean reversion — prices drift back to fair value
+    • Trend injection — random trending periods of 50–300 ticks
+    • News spike simulation — rare random spikes in volatility
+  Tick rate: 1 tick per second per pair (12 pairs = 12 ticks/sec total)
+  Config: "provider": "demo"  (this is the default)
+
+  To use demo mode:
+    python main.py
+    (or just double-click the EXE)
+
+──────────────────────────────────────────────────────────────────────────────
+MODE 2: TWELVE DATA (WebSocket — Free tier available)
+──────────────────────────────────────────────────────────────────────────────
+  Twelve Data provides real-time forex prices via WebSocket.
+  Free plan: 8 symbols, 1 WebSocket connection.
+  Paid plans: all symbols.
+
+  Sign up: https://twelvedata.com/
+  After signing up, copy your API key.
+
+  Configure config.json:
+    "data_source": {
+      "provider": "twelvedata",
+      "api_key":  "YOUR_API_KEY_HERE"
+    }
+
+  Or set environment variable:
+    set APEX_API_KEY=YOUR_API_KEY_HERE
+    set APEX_PROVIDER=twelvedata
+    python main.py
+
+  Connection: wss://ws.twelvedata.com/v1/quotes/price?apikey=KEY
+  Reconnect:  Automatic with exponential backoff (5s, 10s, 20s…)
+
+──────────────────────────────────────────────────────────────────────────────
+MODE 3: POLYGON.IO (WebSocket — Free tier available)
+──────────────────────────────────────────────────────────────────────────────
+  Polygon.io offers real-time forex data including all major pairs.
+  Free plan: End-of-day data only. Starter plan: Real-time.
+
+  Sign up: https://polygon.io/
+  After signing up, copy your API key.
+
+  Configure config.json:
+    "data_source": {
+      "provider": "polygon",
+      "api_key":  "YOUR_API_KEY_HERE"
+    }
+
+  Connection: wss://socket.polygon.io/forex
+  Authentication: Handled automatically on connection.
+
+──────────────────────────────────────────────────────────────────────────────
+MODE 4: OANDA (REST Streaming — Requires funded account)
+──────────────────────────────────────────────────────────────────────────────
+  OANDA is a major retail forex broker with an open REST API.
+  You need an OANDA account (demo or live).
+
+  Steps:
+  1. Create account at https://www.oanda.com/
+  2. Go to Manage API access in your account settings
+  3. Generate a personal access token
+  4. Find your Account ID in the account overview
+
+  Configure config.json:
+    "data_source": {
+      "provider":      "oanda",
+      "api_key":       "YOUR_OANDA_TOKEN",
+      "websocket_url": "https://stream-fxtrade.oanda.com"
+    }
+
+  For OANDA practice (demo) accounts:
+    "websocket_url": "https://stream-fxpractice.oanda.com"
+
+──────────────────────────────────────────────────────────────────────────────
+KEEPING PRICES LIVE STREAMED WHILE RUNNING LOCALLY
+──────────────────────────────────────────────────────────────────────────────
+  As long as the application is running (Python script or EXE), the price
+  feed runs in a background thread continuously receiving WebSocket data.
+  No web server, no cloud, no VPS required. The market data flows directly
+  from your chosen provider to your desktop, in real time.
+
+  The chart refreshes every 2 seconds by default.
+  The watchlist updates every 2 seconds.
+  The account panel updates every 2 seconds.
+
+  To change the refresh rate, edit config.json:
+    "ui": { "refresh_ms": 1000 }   ← 1 second refresh (higher CPU usage)
+    "ui": { "refresh_ms": 5000 }   ← 5 second refresh (lower CPU usage)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6  —  GUI LAYOUT AND NAVIGATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │  HEADER BAR  [Logo] [Balance] [Equity] [Free Margin] [Level] [P&L]  │
+  │              [Alert bar — margin call / stop out warnings]           │
+  ├──────────────┬───────────────────────────────────────────────────────┤
+  │  WATCHLIST   │  TOOLBAR  [Pair] [Price] [TF buttons] [Overlays]     │
+  │              ├───────────────────────────────────────────────────────┤
+  │  EUR/USD     │                                                       │
+  │  GBP/USD     │  CANDLESTICK CHART  (OHLC bars + EMA + BB + ST)      │
+  │  USD/JPY     │  ─────────────────────────────────────────────────── │
+  │  USD/CHF     │  VOLUME BARS                                          │
+  │  AUD/USD     │  ─────────────────────────────────────────────────── │
+  │  NZD/USD     │  RSI (14)                                             │
+  │  USD/CAD     ├───────────────────────────────────────────────────────┤
+  │  EUR/GBP     │  TABS:                                                │
+  │  EUR/JPY     │  📈Trading │ 📂Positions │ 📋Orders │ ⚡Signals │    │
+  │  GBP/JPY     │  📊History │ 📐Analytics │ 🛡Risk   │ 📄Log     │    │
+  │  XAU/USD     │                                                       │
+  │  XAG/USD     │  [Active tab content]                                 │
+  └──────────────┴───────────────────────────────────────────────────────┘
+
+  Header bar      — Live account balance, equity, free margin, margin
+                    level, open P&L, UTC clock, active trading session
+  Alert bar       — Red/orange banner for margin calls, stop-outs, errors
+  Watchlist       — Click any pair to select it and load its chart
+  Chart           — Candlestick chart with selectable overlays and timeframe
+  Tab bar         — All panels accessible as tabs at the bottom
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7  —  WATCHLIST PANEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The watchlist on the left side shows all 12 instruments:
+    EUR/USD  GBP/USD  USD/JPY  USD/CHF
+    AUD/USD  NZD/USD  USD/CAD  EUR/GBP
+    EUR/JPY  GBP/JPY  XAU/USD  XAG/USD
+
+  Each row displays:
+    Pair name | Change % | Bid price | Ask price
+
+  Colour coding:
+    Green change  — price moved up since last refresh
+    Red change    — price moved down since last refresh
+    Blue highlight— currently selected pair
+    Green flash   — new BUY signal on this pair
+    Red flash     — new SELL signal on this pair
+
+  Click any row to select that pair and load its chart.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8  —  CANDLESTICK CHART
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The chart shows up to 150 candlesticks for the selected pair and timeframe.
+
+  Timeframe buttons (top toolbar):
+    1min  5min  15min  1h  4h  1day
+
+  Overlay toggles (checkboxes in toolbar):
+    EMA   — Shows EMA9 (blue), EMA21 (amber), EMA200 (purple dashed)
+    BB    — Bollinger Bands (20, 2σ) with shaded fill between bands
+    ST    — SuperTrend (10, 3.0 ATR mult) — green=bull, red=bear line
+    VWAP  — Volume-Weighted Average Price (orange dotted line)
+
+  Sub-charts:
+    Volume bars — green for bullish candle, red for bearish candle
+    RSI (14)    — with 70 (overbought) and 30 (oversold) reference lines,
+                  shaded fill in extreme zones
+
+  Signal markers:
+    Green triangle (▲) below candle  — BUY signal at that price level
+    Red triangle (▼) above candle    — SELL signal at that price level
+    Dotted line                       — Stop Loss level
+    Dashed line                       — Take Profit level
+
+  Live candle behaviour:
+    The rightmost candle updates its close price every second as new
+    ticks arrive. Its body grows or shrinks in real time. When the
+    timeframe period ends, the bar is finalised and a new candle opens.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9  —  MANUAL TRADING — MARKET ORDERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Go to the "📈 Trading" tab. The left column is the Market Order panel.
+
+  Fields:
+    Instrument   — Select the forex pair from the dropdown
+    Bid / Ask    — Live current bid and ask prices (updates every second)
+    Lot Size     — Size of the trade in lots. Use the spinner (up/down arrows)
+                   or type directly. Min: 0.01. Step: 0.01
+    Stop Loss    — Enter the stop-loss price level. Enter 0 to have no SL.
+    Take Profit  — Enter the take-profit price level. Enter 0 for no TP.
+    Comment      — Optional text label for this trade (up to ~50 chars)
+    Margin req.  — Calculated margin requirement for this lot size (shown live)
+
+  Buttons:
+    ▲ BUY   — Opens a long position at current ASK price + slippage
+    ▼ SELL  — Opens a short position at current BID price - slippage
+
+  What happens when you click BUY or SELL:
+    1. Pre-trade checks: lot size, max positions, margin level, daily loss
+    2. Slippage applied: 1 pip by default (configurable)
+    3. Margin requirement calculated and checked against free margin
+    4. Commission deducted: $7.00 per standard lot (configurable)
+    5. Position opened and stored in database
+    6. Entry appears in the Positions tab immediately
+    7. Confirmation message appears in the Log tab
+
+  Lot size reference:
+    0.01 lots (1 micro lot)  = $0.10 per pip  on major pairs
+    0.10 lots (1 mini lot)   = $1.00 per pip  on major pairs
+    1.00 lots (1 standard)   = $10.00 per pip on major pairs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 10  —  MANUAL TRADING — PENDING ORDERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The middle column of the Trading tab handles pending orders.
+
+  Order types:
+    BUY_LIMIT    — Buy when price falls to your specified price
+                   (must be below current ask)
+    SELL_LIMIT   — Sell when price rises to your specified price
+                   (must be above current bid)
+    BUY_STOP     — Buy when price rises to your specified price
+                   (must be above current ask)
+    SELL_STOP    — Sell when price falls to your specified price
+                   (must be below current bid)
+
+  Fields:
+    Instrument   — Select the pair
+    Order Type   — Select from the 4 types above
+    Lot Size     — Trade size in lots
+    Price        — Trigger price for the order
+    Stop Loss    — SL for when the order executes (0 = no SL)
+    Take Profit  — TP for when the order executes (0 = no TP)
+    Expire (sec) — Seconds until the order expires (0 = GTC = never)
+
+  The system monitors pending orders every second.
+  When the price reaches the trigger level, the order executes automatically
+  as a market order at the current price.
+  Expired orders are cancelled automatically.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 11  —  POSITIONS MANAGER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The "📂 Positions" tab shows all currently open trades.
+
+  Columns:
+    Ticket   — Unique trade identifier (e.g. T123456ABCD)
+    Pair     — Instrument (e.g. EUR/USD)
+    Dir      — BUY or SELL
+    Lots     — Position size
+    Open     — Entry price
+    Current  — Current bid/ask price (updates every 2 seconds)
+    SL       — Stop loss level (— if no SL)
+    TP       — Take profit level (— if no TP)
+    P&L      — Floating profit/loss in USD (includes swap)
+    Pips     — Floating profit/loss in pips
+    Swap     — Overnight swap cost/income accrued so far
+    Margin   — Margin in use for this position
+    Opened   — Date and time the position was opened
+
+  Colour coding:
+    Green rows   — Profitable positions
+    Red rows     — Losing positions
+    Blue highlight — BUY positions
+    Orange/red   — SELL positions
+
+  Buttons:
+    Close Selected   — Closes the highlighted position(s) at market price
+    Modify SL/TP     — Opens a dialog to change the SL and/or TP
+                       on the selected position
+    Close All        — Closes all open positions (with confirmation)
+    Refresh          — Manually refresh the table
+
+  Automatic events:
+    Stop Loss hit    — Position closes automatically when bid/ask crosses SL
+    Take Profit hit  — Position closes automatically when bid/ask crosses TP
+    Trailing stop    — SL moves automatically to lock in profits as the
+                       price moves in your favour (if enabled in config)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 12  —  ORDERS MANAGER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The "📋 Orders" tab lists all pending orders waiting to be triggered.
+
+  Columns:
+    Ticket   — Unique order identifier
+    Pair     — Instrument
+    Type     — BUY_LIMIT / SELL_LIMIT / BUY_STOP / SELL_STOP
+    Lots     — Trade size
+    Price    — Trigger price
+    SL       — Stop loss after execution
+    TP       — Take profit after execution
+    Created  — When the order was placed
+    Expires  — When it expires (or GTC = Good Till Cancelled)
+
+  Buttons:
+    Cancel Selected — Cancels highlighted order(s)
+    Cancel All      — Cancels all pending orders (with confirmation)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 13  —  SIGNAL SYSTEM — HOW IT WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The signal engine runs continuously in the background, analysing price
+  bars for every pair on the primary timeframe (default: 15min).
+
+  Pipeline:
+    1. Price ticks → BarAggregator → OHLCV bars (per timeframe)
+    2. On each completed bar → SignalEngine.on_bar()
+    3. 22 indicator strategies each cast a VOTE (BUY, SELL, or ABSTAIN)
+    4. Each vote has a WEIGHT (see Section 14)
+    5. Bull weight and bear weight are summed
+    6. If bull_weight > bear_weight AND bull_votes ≥ min_confluence (3):
+         direction = BUY, confidence = bull_weight / total_weight
+    7. If bear_weight > bull_weight AND bear_votes ≥ min_confluence:
+         direction = SELL, confidence = bear_weight / total_weight
+    8. If confidence < 0.52 → signal discarded (too weak)
+    9. Cooldown check: minimum 300 seconds between signals per pair
+   10. Spread filter: signal blocked if spread > 3 pips (configurable)
+   11. Stop Loss = entry ± 2.0 × ATR(14)
+       Take Profit 1 = entry ± 4.0 × ATR(14)  (2:1 risk:reward)
+       Take Profit 2 = entry ± 6.0 × ATR(14)
+       Take Profit 3 = entry ± 8.0 × ATR(14)
+   12. Position size calculated by Kelly-adjusted fixed-fraction sizing
+   13. Signal saved to database and displayed in the Signals panel
+   14. If auto-trade is ON: trade is opened automatically
+
+  Signal strength levels:
+    WEAK         — confidence 52–60%   (1 dot)
+    MODERATE     — confidence 60–70%   (2 dots)
+    STRONG       — confidence 70–80%   (3 dots)
+    VERY STRONG  — confidence ≥ 80%    (4 dots)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 14  —  SIGNAL INDICATOR REFERENCE (22 STRATEGIES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  #   Strategy                    Weight  Signal condition
+  ─── ─────────────────────────── ──────  ─────────────────────────────────
+   1  EMA Crossover (9/21)         2.5   EMA9 crosses above/below EMA21
+   2  EMA-200 Trend Filter          2.0   Price above/below EMA200
+   3  MACD Histogram Cross          2.0   Histogram crosses zero line
+   4  RSI Oversold/Overbought       1.5   RSI < 30 (buy) or > 70 (sell)
+   5  RSI Divergence                2.0   Price makes new extreme but RSI
+                                         does not confirm (bull/bear div)
+   6  Stochastic Cross              1.0   %K crosses %D in OB/OS zone
+   7  CCI ±100                      1.0   CCI below -100 or above +100
+   8  Williams %R                   1.0   %R below -80 or above -20
+   9  MFI                           1.0   MFI below 20 or above 80
+  10  Bollinger Bands %B            1.5   Price at lower (buy) or
+                                         upper (sell) band
+  11  SuperTrend Flip               2.5   SuperTrend changes direction
+                                         (10 period, 3.0 ATR multiplier)
+  12  Ichimoku Cloud                2.5   Price above/below cloud AND
+                                         Tenkan > / < Kijun
+  13  ADX Trend Strength            1.5   ADX > 25 with DI+ / DI- alignment
+  14  Squeeze Momentum              1.5   Bollinger inside Keltner squeeze
+                                         releases with positive/negative mom
+  15  Donchian Channel Breakout     1.5   Price breaks above/below 20-period
+                                         high or low
+  16  Keltner Channel               1.0   Price outside Keltner bands
+  17  VWAP Position                 1.0   Price above or below VWAP
+  18  OBV vs EMA                    1.0   OBV above/below its 20-period EMA
+  19  Candlestick Patterns          2.0   Hammer, engulfing, pin bar,
+                                         morning/evening star, marubozu,
+                                         three soldiers/crows, doji, etc.
+  20  Pivot Point S/R               1.5   Price within tolerance of classic
+                                         pivot support or resistance levels
+  21  Hurst + Z-Score Regime        1.0   Hurst > 0.55 → trending signal
+                                         Hurst < 0.45 → mean-reversion signal
+                                         (via Z-Score)
+  22  ML Pattern Filter             3.0   Random Forest trained on 23 features
+                                         from price, momentum, volatility data
+
+  Total maximum weight: ~36.0 units
+  Minimum confluence votes: 3 (configurable)
+  Minimum confidence: 52% (configurable)
+
+  Note: Weight 3.0 for ML means a strong machine-learning prediction
+  contributes as much as EMA+SuperTrend+Ichimoku combined. The ML model
+  is trained on your live data and improves over time.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 15  —  SIGNAL PANEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Click the "⚡ Signals" tab to see all recent trading signals.
+
+  Each signal card shows:
+    • Pair name and direction (▲ BUY / ▼ SELL) with strength dots
+    • Trading session active at signal time (London / New York / Tokyo)
+    • Timeframe and exact time of signal
+    • Entry price, Stop Loss, TP1, TP2, TP3 prices
+    • Confidence bar (visual fill showing signal strength)
+    • Confidence percentage, Risk:Reward ratio
+    • Suggested lot size (from risk management sizing)
+    • ATR value (volatility measure)
+    • Vote count: bull votes ↑ and bear votes ↓
+    • Up to 4 indicator notes explaining WHY the signal was generated
+    • "BUY" or "SELL" button to act on the signal immediately
+
+  Colour coding:
+    Green card border  — BUY signal
+    Red card border    — SELL signal
+    4-dot strength indicator — more dots = stronger signal
+
+  Acting on a signal manually:
+    Click the BUY or SELL button on any signal card.
+    This opens a market order at the signal's suggested lot size,
+    stop loss, and take profit.
+
+  Auto-trade:
+    In the Trading tab, check "Auto-trade signals" to have the system
+    open trades automatically for every generated signal.
+    Set the "Auto lot" size (default 0.01 lots).
+    WARNING: Auto-trade requires careful risk management.
+    Use small lot sizes and ensure the daily loss breaker is configured.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 16  —  RISK MANAGEMENT SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The risk system runs several protective mechanisms simultaneously:
+
+POSITION SIZING (Kelly-Adjusted Fixed Fraction)
+  ──────────────────────────────────────────────
+  The system sizes every trade using the formula:
+
+    risk_usd  = Balance × risk_per_trade_pct / 100
+    sl_pips   = |entry_price - stop_loss| / pip_size
+    raw_lots  = risk_usd / (sl_pips × pip_value_per_lot)
+    final_lots = raw_lots × kelly_fraction
+
+  where kelly_fraction is further adjusted by the historical Kelly criterion:
+
+    Kelly f* = (b × p − q) / b
+
+    p = historical win rate
+    q = 1 − p
+    b = average_win / average_loss
+
+  This ensures position sizes automatically shrink after a losing streak
+  and grow (conservatively) during winning periods.
+
+STOP LOSS / TAKE PROFIT
+  ─────────────────────
+  Automatic SL and TP levels are calculated using ATR (Average True Range):
+    SL distance = ATR(14) × sl_atr_multiplier  (default: 2.0)
+    TP distance = SL distance × tp_risk_reward  (default: 2.0)
+  This means TP is always at least 2× the distance of SL by default,
+  giving a minimum 2:1 risk-to-reward ratio on every signal.
+
+TRAILING STOP
+  ────────────
+  When trailing stop is enabled (default: on), the stop loss automatically
+  moves in the direction of the trade as profit increases.
+  The trail preserves the original SL distance from the current price.
+  This means once the price moves 1× your SL distance in your favour,
+  the trade is essentially risk-free (SL is at breakeven).
+
+DAILY LOSS BREAKER
+  ─────────────────
+  If total closed losses for the day exceed max_daily_loss_pct of balance,
+  all new trade entries are blocked (including auto-trades).
+  This protects against a cascade of losses in a single session.
+  The breaker resets at midnight UTC.
+
+MARGIN CALL WARNING
+  ──────────────────
+  Default trigger: Margin Level falls below 50%
+  Warning appears in the alert bar and in the Log tab.
+  New trades are blocked when margin level < margin_call_pct.
+
+STOP-OUT (FORCED CLOSE)
+  ──────────────────────
+  Default trigger: Margin Level falls below 20%
+  ALL open positions are automatically closed to prevent the account
+  from going negative. This is your last line of protection.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 17  —  TRADE HISTORY AND ANALYTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HISTORY TAB (📊)
+  Shows all closed trades. Columns include ticket, pair, direction, lot size,
+  entry and exit prices, SL, TP, P&L in USD and pips, swap, commission,
+  open time, close time, and close reason (manual / sl / tp / margin_call).
+  Click any column header to sort. Green rows = profitable, red = loss.
+  Export button saves all history to a timestamped CSV in the exports/ folder.
+
+ANALYTICS TAB (📐)
+  Shows 16 performance metrics in a grid:
+    Total Trades    Win Rate        Profit Factor   Net P&L
+    Gross Profit    Gross Loss      Avg Win         Avg Loss
+    Expectancy      Sharpe Ratio    Sortino Ratio   Calmar Ratio
+    Max Drawdown    Max DD %        VaR 95%         CVaR 95%
+
+  Charts (3 panels):
+    Cumulative P&L curve   — equity curve showing all closed trade P&L
+    P&L per Trade          — bar chart with green/red bars per trade
+    Win / Loss Pie         — pie chart with win and loss split
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 18  —  RISK DASHBOARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The "🛡 Risk" tab shows:
+
+  Risk Settings (editable):
+    • Risk per trade (%) — percentage of balance risked per trade
+    • Max daily loss (%) — stops trading after this daily loss
+    • SL ATR multiplier  — stop loss distance in ATR units
+    • TP Risk:Reward     — take profit to stop loss ratio
+    • Kelly fraction     — scaling factor for Kelly position sizing
+    • Trailing Stop      — enable/disable automatic trailing stop
+
+  Live Risk Metrics (updates every 2 seconds):
+    Balance, Equity, Free Margin, Margin Used, Floating P&L,
+    Margin Level, Daily P&L, Open Trades,
+    Sharpe Ratio, Sortino Ratio, Max Drawdown, Win Rate,
+    Profit Factor, Expectancy, VaR 95%, CVaR 95%
+
+  Margin Level Gauge:
+    Visual bar showing current margin level.
+    Orange dashed line = Margin Call threshold (default 50%)
+    Red dashed line    = Stop Out threshold (default 20%)
+    Bar fills green when healthy, turns orange near margin call,
+    turns red near stop-out.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 19  —  CONFIGURATION REFERENCE (config.json)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  config.json is created automatically on first run.
+  Edit it with any text editor while the application is stopped.
+
+  Section: data_source
+    provider          "demo" | "twelvedata" | "polygon" | "oanda"
+    api_key           Your API key (leave blank for demo)
+    reconnect_delay   Seconds between reconnect attempts (default: 5)
+    max_reconnects    Max reconnect attempts before giving up (default: 20)
+    websocket_url     Custom WebSocket URL (used for OANDA endpoint)
+
+  Section: pairs
+    List of instruments to stream and analyse.
+    Default: ["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD",
+               "NZD/USD","USD/CAD","EUR/GBP","EUR/JPY","GBP/JPY",
+               "XAU/USD","XAG/USD"]
+
+  Section: account
+    initial_balance   Starting account balance in USD (default: 10000.0)
+    currency          Account currency (default: "USD")
+    leverage          Leverage ratio (default: 100 = 1:100)
+    margin_call_pct   Margin level % that triggers margin call (default: 50)
+    stop_out_pct      Margin level % that triggers stop-out (default: 20)
+
+  Section: trading
+    default_lot       Default lot size shown in the trading panel (0.10)
+    min_lot           Minimum allowed lot size (0.01)
+    max_lot           Maximum allowed lot size (100.0)
+    lot_step          Lot size increment step (0.01)
+    max_open_trades   Maximum simultaneous open positions (20)
+    allow_hedging     Allow BUY and SELL on same pair simultaneously (true)
+    slippage_pips     Simulated execution slippage in pips (1.0)
+    commission_per_lot Commission charged per standard lot (7.0 USD)
+
+  Section: signal_engine
+    min_confluence    Minimum indicator votes needed for a signal (3)
+    signal_cooldown   Minimum seconds between signals per pair (300)
+    use_ml_filter     Enable Random Forest ML filter (true)
+    use_session_filter Filter signals to active sessions (true)
+    auto_trade        Automatically open trades on signals (false)
+    auto_lot          Lot size to use for auto-trades (0.01)
+    min_confidence    Minimum confidence to emit a signal (0.55)
+
+  Section: risk
+    risk_per_trade_pct  Percentage of balance to risk per trade (1.5)
+    max_daily_loss_pct  Daily loss limit as % of balance (5.0)
+    default_sl_atr_mult ATR multiplier for stop loss distance (2.0)
+    default_tp_rr       Risk:Reward ratio for take profit (2.0)
+    trailing_stop       Enable trailing stop (true)
+    trailing_atr_mult   ATR multiplier for trailing stop distance (1.5)
+    kelly_fraction      Fraction of Kelly criterion to apply (0.25)
+    spread_filter_pips  Block signals when spread exceeds this (3.0)
+
+  Section: ml
+    model_type        "random_forest" | "gradient_boost"
+    n_estimators      Number of trees in the forest (200)
+    lookback          Bar lookback window for features (20)
+    retrain_interval  Seconds between model retraining (3600)
+    min_samples       Minimum training samples before ML activates (200)
+    confidence_thresh ML probability threshold to cast a vote (0.60)
+
+  Section: ui
+    theme             "light" (only light mode currently)
+    refresh_ms        Refresh interval for chart and panels in ms (2000)
+    max_candles       Maximum candles to display on chart (150)
+    window_width      Initial window width in pixels (1820)
+    window_height     Initial window height in pixels (1000)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 20  —  DATA PROVIDER SETUP (DETAILED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TWELVE DATA — Step by step
+  1. Go to https://twelvedata.com/
+  2. Click "Sign Up Free"
+  3. Verify your email
+  4. Go to Dashboard → API Keys
+  5. Copy the key (looks like: abc123def456...)
+  6. Open config.json in a text editor
+  7. Change:
+       "provider": "twelvedata",
+       "api_key":  "abc123def456..."
+  8. Save config.json and start the application
+  Free plan limitations:
+    • 8 WebSocket connections (symbols) per minute
+    • You may need to reduce the pairs list to 8 items
+
+POLYGON.IO — Step by step
+  1. Go to https://polygon.io/
+  2. Create a free account
+  3. Navigate to Dashboard → API Keys
+  4. Copy your key
+  5. Edit config.json: "provider": "polygon", "api_key": "YOUR_KEY"
+  Free plan limitation: delayed data only. For real-time, upgrade to Starter.
+
+OANDA — Step by step
+  1. Go to https://www.oanda.com/ and open a practice account (free)
+  2. Log in → My Account → Manage API Access
+  3. Click "Generate" to create a Personal Access Token
+  4. Copy the token (it is shown only once — save it)
+  5. Find your Account ID: shown on the dashboard as a number
+  6. Edit config.json:
+       "provider":      "oanda",
+       "api_key":       "YOUR_PERSONAL_ACCESS_TOKEN",
+       "websocket_url": "https://stream-fxpractice.oanda.com"
+  For a live OANDA account:
+       "websocket_url": "https://stream-fxtrade.oanda.com"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 21  —  FINANCIAL MATHEMATICS REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All calculations are performed locally. No external calculation service.
+
+ACCOUNT CALCULATIONS
+  Margin Required  = (Lots × Contract_size × Price) / Leverage
+                     Contract size = 100,000 units for forex
+                     XAU = 100 oz per lot, XAG = 5,000 oz per lot
+  Equity           = Balance + Floating_PnL
+  Free Margin      = Equity − Margin_Used
+  Margin Level     = (Equity / Margin_Used) × 100 %
+  PnL (BUY)        = (Close − Open) / Pip_size × Pip_value × Lots
+  PnL (SELL)       = (Open − Close) / Pip_size × Pip_value × Lots
+  Pip value (USD)  = varies by pair (EUR/USD: $10/pip/lot; USD/JPY: ~$9.09)
+  Daily swap        = Lots × Swap_rate_pips/night × Pip_value
+  Commission        = Lots × Commission_per_lot  (default $7/lot)
+
+POSITION SIZING
+  Risk USD          = Balance × Risk_pct / 100
+  SL pips           = |entry − stop_loss| / pip_size
+  Raw lots          = Risk_USD / (SL_pips × pip_value_per_lot)
+  Kelly f*          = (b × p − q) / b
+    where  b = avg_win / avg_loss, p = win_rate, q = 1 − win_rate
+  Final lots        = Raw_lots × (Kelly_f* × kelly_fraction)
+  Clamped to        [min_lot, max_lot] with lot_step rounding
+
+PERFORMANCE METRICS
+  Sharpe Ratio      = (μ_r − r_f) / σ_r × √252
+    μ_r = mean return per trade, r_f = risk-free rate (0), σ_r = std dev
+  Sortino Ratio     = (μ_r − r_f) / σ_down × √252
+    σ_down = downside deviation (negative returns only)
+  Calmar Ratio      = Annualised_return / Max_drawdown_fraction
+  Profit Factor     = Gross_profit / Gross_loss
+  Expectancy        = Win_rate × Avg_win − Loss_rate × Avg_loss
+  Max Drawdown      = Maximum peak-to-trough decline in cumulative P&L
+
+VALUE AT RISK (Parametric, 95% confidence, normal distribution)
+  VaR_95            = −(μ − 1.645 × σ) × Balance
+    where μ, σ are mean and std dev of returns per trade
+  CVaR_95 (ES)      = −(μ − σ × φ(Φ⁻¹(0.05)) / (1 − 0.05)) × Balance
+    = Expected Shortfall: average loss in the worst 5% of cases
+    φ = PDF of standard normal ≈ 0.10313
+
+INDICATOR MATHEMATICS
+  EMA(n)          = (price − prev_EMA) × k + prev_EMA   k = 2/(n+1)
+  SMA(n)          = mean of last n closes
+  WMA(n)          = weighted mean, weights = 1, 2, …, n
+  HMA(n)          = WMA(2×WMA(n/2) − WMA(n), √n)
+  KAMA            = Adaptive MA using Efficiency Ratio
+  Kalman          = Optimal linear state estimator (noise reduction)
+  RSI(n)          = 100 − 100/(1 + avg_gain/avg_loss)  over n periods
+  MACD            = EMA(fast) − EMA(slow),  Signal = EMA(MACD, sig)
+  BB              = SMA(n) ± std × σ(n)
+  ATR             = EMA(True_Range, n)
+  ADX             = Smoothed(DX), DX = |DI+ − DI−| / (DI+ + DI−)
+  Stochastic %K   = 100 × (Close − Low_n) / (High_n − Low_n)
+  CCI             = (TP − SMA(TP)) / (0.015 × MAD)
+  Williams %R     = −100 × (High_n − Close) / (High_n − Low_n)
+  SuperTrend      = (High+Low)/2 ± ATR × multiplier  with flip logic
+  Ichimoku        = Tenkan=(H+L)/9, Kijun=(H+L)/26, Senkou=(H+L)/52
+  VWAP            = Σ(TP×V) / Σ(V)  (cumulative from bar open)
+  OBV             = Σ (volume if up, −volume if down)
+  Squeeze         = Bollinger inside Keltner detection
+  Hurst Exponent  = R/S analysis  (> 0.5 = trending, < 0.5 = reverting)
+  Z-Score         = (price − mean_n) / std_n
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 22  —  TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: "ModuleNotFoundError: No module named 'numpy'"
+SOLUTION: Run from the correct folder and install packages.
+  Open terminal IN the project folder (where main.py lives), then:
+    pip install -r requirements.txt
+  Make sure you are using the same Python that pip installed to:
+    python --version
+    pip --version
+
+PROBLEM: "ModuleNotFoundError: No module named 'core'"
+SOLUTION: You are not running from the project root directory.
+  The terminal must be in the folder that contains main.py.
+    cd C:\ApexForexBroker      ← change to YOUR actual folder path
+    python main.py
+
+PROBLEM: GUI window is blank / chart doesn't appear
+SOLUTION: matplotlib may not have the TkAgg backend.
+  Try: pip install --upgrade matplotlib Pillow
+  If on Linux: sudo apt-get install python3-tk
+
+PROBLEM: "No price available for EUR/USD"
+SOLUTION: Price feed hasn't started yet. Wait 3–5 seconds for the
+  first ticks to arrive. In demo mode this happens automatically.
+  In live mode, check your API key in config.json.
+
+PROBLEM: WebSocket keeps disconnecting
+SOLUTION: Normal behaviour on unstable connections — auto-reconnect
+  handles it. Check your internet connection. In config.json you can
+  increase "reconnect_delay" to 10 seconds to avoid hammering the server.
+
+PROBLEM: Signals never appear
+SOLUTION: Need at least 50 completed bars before analysis begins.
+  On 15min chart in demo mode: wait at least 50 minutes.
+  For faster testing, change "primary_tf" to "1min" in config.json.
+  Then signals may appear within 50 minutes of starting.
+
+PROBLEM: ML filter never votes
+SOLUTION: The ML model requires min_samples (default 200) completed
+  bars before it trains. On 15min timeframe this takes ~50 hours.
+  Reduce "primary_tf" to "1min" and "min_samples" to 100 for faster ML.
+
+PROBLEM: The EXE shows a Windows security warning
+SOLUTION: This is normal for unsigned executables.
+  Click "More info" → "Run anyway" on the SmartScreen dialog.
+  Or right-click the EXE → Properties → Unblock.
+
+PROBLEM: EXE crashes immediately / black window appears and closes
+SOLUTION: A startup error occurred. Run from Python source instead
+  to see the error message:
+    python main.py --debug
+  Check the logs/ folder for broker.log with error details.
+
+PROBLEM: Very high CPU usage
+SOLUTION: Reduce refresh rate. In config.json:
+    "ui": { "refresh_ms": 5000 }
+  Also reduce the number of pairs:
+    "pairs": ["EUR/USD", "GBP/USD", "USD/JPY"]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 23  —  FAQ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: Is this real trading with real money?
+A: No. Apex Forex Broker is a self-hosted simulation/paper trading system.
+   All orders are executed internally against the price feed. No real broker
+   is involved, no real money moves, no real trades are placed.
+   It is a decision support and training tool.
+
+Q: Can I connect it to a real broker?
+A: The OANDA price feed provides real market prices, but the order execution
+   is still local. To place real orders you would need to integrate the
+   OANDA v20 REST API order endpoints into the trading engine.
+
+Q: Where is my data stored?
+A: Everything is local. The SQLite database is at db/broker.db.
+   Trade history CSV is at reports/trades.csv.
+   Log files are at logs/broker.log.
+   No data leaves your machine.
+
+Q: How do I reset my account balance?
+A: Option 1: Run with --reset-db flag. This wipes ALL data.
+   Option 2: Edit the database directly with SQLite Browser:
+     UPDATE accounts SET balance=10000, equity=10000, free_margin=10000;
+   Option 3: Delete db/broker.db and restart.
+
+Q: How do I change my starting balance?
+A: In config.json, set:
+     "account": { "initial_balance": 50000 }
+   This only takes effect the FIRST time you run (when the DB is created).
+   To apply to an existing database, use --reset-db.
+
+Q: What happens to my positions if I close the app?
+A: Open positions are saved in the database. When you restart, they are
+   still there. However, any P&L changes while the app was closed are not
+   tracked. The prices will update to current levels on restart.
+
+Q: The signals look too frequent / not frequent enough. How do I tune this?
+A: In config.json:
+   • Increase "min_confluence" to 4 or 5 for fewer, higher-quality signals
+   • Increase "signal_cooldown" to 600 or 900 for signals spaced further apart
+   • Increase "min_confidence" to 0.65 for only strong signals
+   • Change "primary_tf" to a higher timeframe (e.g. "1h" or "4h")
+
+Q: Why does the last candlestick keep changing shape?
+A: This is normal and correct. The rightmost candle is the "live" candle
+   for the current period. Its close price updates with every tick. When
+   the period ends, the candle is finalised and a new one begins.
+
+Q: How do I add more currency pairs?
+A: In config.json, add pairs to the "pairs" list:
+     "pairs": ["EUR/USD", "GBP/USD", ..., "USD/SGD"]
+   Make sure your data provider supports those pairs.
+   The demo simulator supports only the 12 default pairs.
+
+Q: Can I run multiple instances?
+A: Yes, but they must use different database files.
+   Run with: python main.py --config my_second_account.json
+   And in that config, change the db path settings.
+
+Q: How do I increase leverage?
+A: In config.json: "account": { "leverage": 500 }
+   Higher leverage means higher profit potential but also higher risk.
+   The margin requirement and risk calculations adjust automatically.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ApexForexBroker/
+  ├── main.py                   ← Entry point — run this
+  ├── config.json               ← Auto-generated configuration
+  ├── requirements.txt          ← Python package list
+  ├── build_exe.bat             ← Windows EXE build script
+  ├── DOCUMENTATION.txt         ← This file
+  │
+  ├── core/
+  │   ├── config.py             ← Configuration manager
+  │   └── logger.py             ← Logging setup
+  │
+  ├── db/
+  │   └── database.py           ← SQLite database layer
+  │
+  ├── auth/
+  │   └── account.py            ← Account: margin, PnL, swap calculations
+  │
+  ├── data/
+  │   ├── feed.py               ← WebSocket price feed (4 providers)
+  │   └── bars.py               ← Tick → OHLCV bar aggregator
+  │
+  ├── signals/
+  │   ├── indicators.py         ← 30+ technical indicators (pure NumPy)
+  │   └── engine.py             ← 22-strategy signal fusion + ML filter
+  │
+  ├── risk/
+  │   └── manager.py            ← Kelly, VaR, CVaR, Sharpe, drawdown
+  │
+  ├── trading/
+  │   └── engine.py             ← Order execution, SL/TP, margin monitoring
+  │
+  ├── reports/
+  │   └── reporter.py           ← CSV export, performance reporting
+  │
+  ├── ui/
+  │   ├── app.py                ← Root window, layout, header, watchlist
+  │   ├── chart.py              ← Candlestick chart with overlays
+  │   ├── theme.py              ← Light-mode colour palette
+  │   ├── trading_panel.py      ← Market and pending order entry forms
+  │   ├── positions_panel.py    ← Open positions table
+  │   ├── orders_panel.py       ← Pending orders table
+  │   └── panels.py             ← Signals, history, analytics, risk panels
+  │
+  ├── db/
+  │   └── broker.db             ← SQLite database (auto-created)
+  ├── logs/
+  │   └── broker.log            ← Application log (auto-created)
+  ├── reports/
+  │   └── trades.csv            ← Trade history CSV (auto-created)
+  └── exports/
+      └── trades_TIMESTAMP.csv  ← Manual CSV exports
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

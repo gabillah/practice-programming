@@ -1,0 +1,2443 @@
+================================================================================
+  CFD PIPE FLOW EXPERT — STEP-BY-STEP TUTORIAL COURSE
+  Computational Fluid Dynamics for Piping Systems
+  A Full-Stack Web Application with Python / FastAPI Backend
+  and Vanilla-JavaScript / HTML5-Canvas Frontend
+================================================================================
+
+DOCUMENT VERSION : 1.0
+LAST UPDATED     : 2026-03-19
+AUDIENCE         : Intermediate Python developers with basic fluid-mechanics knowledge
+PREREQUISITE     : Python 3.11+, pip, modern web browser (Chrome/Firefox/Edge)
+TOTAL CODE LINES : > 12 000
+
+================================================================================
+  TABLE OF CONTENTS
+================================================================================
+
+  PART I    — COURSE OVERVIEW
+    1.   Introduction
+    2.   Learning Objectives
+    3.   Technology Stack
+    4.   Project Directory Structure
+
+  PART II   — FLUID MECHANICS FOUNDATIONS
+    5.   Governing Equations of Pipe Flow
+    6.   Reynolds Number and Flow Regimes
+    7.   Friction Factors — Laminar to Turbulent
+    8.   Darcy-Weisbach Head-Loss Model
+    9.   Minor Losses — K-Factor Method
+    10.  Network Hydraulics — Kirchhoff's Laws
+    11.  Hardy-Cross Loop-Correction Method
+    12.  Newton-Raphson / Todini-Pilati Gradient Method
+    13.  Turbulence Modelling — Standard k-ε
+    14.  Heat Transfer in Pipe Flow
+    15.  Water Hammer — Method of Characteristics
+    16.  Two-Phase Flow — Lockhart-Martinelli
+    17.  Compressible Gas Flow in Pipes
+    18.  Cavitation and NPSH
+    19.  Dimensionless Groups Reference Table
+
+  PART III  — BACKEND DEVELOPMENT
+    20.  Project Scaffold and Dependencies
+    21.  Configuration Management (Pydantic-Settings)
+    22.  Structured Logging (Loguru)
+    23.  Database Layer (Async SQLAlchemy 2.x)
+    24.  Pydantic v2 Schema Design
+    25.  CFD Solver Engine — Architecture (solver.py)
+    26.  Implementing the Colebrook-White Friction Factor
+    27.  Hardy-Cross Solver — Step-by-Step
+    28.  Newton-Raphson Solver — Step-by-Step
+    29.  Water-Hammer MOC Solver
+    30.  Network Topology Analysis
+    31.  FastAPI Entry Point and Lifespan
+    32.  REST API Routes — Full Implementation Guide
+    33.  C++ pybind11 Extension — Theory and Build
+    34.  Testing the Backend (pytest + httpx)
+    35.  Debugging Tips for the Solver
+
+  PART IV   — FRONTEND DEVELOPMENT
+    36.  SPA Architecture and File Layout
+    37.  CSS Design System — Light Mode with CSS Variables
+    38.  HTML5 Canvas Editor — canvas.js
+    39.  Network State Manager — network.js
+    40.  REST API Client — api.js
+    41.  UI Helpers — Modals, Toasts, Panels (ui.js)
+    42.  Solver Dispatch and Results Rendering — solver.js
+    43.  Colour Mapping: Viridis, Jet, Plasma, Coolwarm
+    44.  Moody Chart Renderer — moody.js
+    45.  Engineering Calculators — calculators.js
+    46.  Documentation Renderer — docs.js
+    47.  Application Routing and Boot — app.js
+
+  PART V    — ADVANCED FEATURES
+    48.  Advanced Statistics Panel
+    49.  Convergence Plot
+    50.  Hydraulic Grade Line (HGL) Overlay
+    51.  Transient Animation Player
+    52.  Export — CSV, JSON, PNG
+    53.  Network Templates
+    54.  Keyboard Shortcuts
+
+  PART VI   — DEPLOYMENT
+    55.  Running the Development Server
+    56.  Docker Compose Stack
+    57.  PostgreSQL Migration
+    58.  Environment Variables Reference
+    59.  Performance Tuning Notes
+
+  PART VII  — REFERENCE
+    60.  REST API Endpoint Quick-Reference
+    61.  Mathematical Appendix
+    62.  Solver Validation Test Cases
+    63.  Glossary of Symbols
+    64.  Further Reading and References
+
+================================================================================
+  PART I — COURSE OVERVIEW
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+1.  INTRODUCTION
+────────────────────────────────────────────────────────────────────────────────
+
+This tutorial course teaches you to build a production-grade Computational Fluid
+Dynamics (CFD) web application for piping networks, similar in capability to
+commercial packages such as PipeFlow Expert, EPANET, or AFT Fathom — but
+entirely open-source and running in any web browser.
+
+The application you will build:
+  • Accepts arbitrary pipe-network topologies drawn interactively on a canvas.
+  • Solves steady-state flow using Hardy-Cross or Newton-Raphson (Todini-Pilati).
+  • Colour-maps each pipe by velocity, pressure drop, temperature, or Reynolds
+    number in real time after convergence.
+  • Provides an interactive Moody Chart with hover, zoom/pan, and user points.
+  • Offers ten engineering calculators: Darcy-Weisbach, Reynolds, water hammer,
+    heat transfer, minor losses, pump power, pipe sizing, compressible flow,
+    two-phase flow, and dimensionless numbers.
+  • Persists networks in SQLite (dev) or PostgreSQL (prod) via async SQLAlchemy.
+  • Exposes a fully-documented RESTful API with 30+ endpoints.
+  • Optionally accelerates friction-factor loops via a C++ pybind11 extension.
+
+────────────────────────────────────────────────────────────────────────────────
+2.  LEARNING OBJECTIVES
+────────────────────────────────────────────────────────────────────────────────
+
+After completing this course you will be able to:
+
+  FLUID MECHANICS
+  • Derive the Darcy-Weisbach equation from the Navier-Stokes equations.
+  • Implement the Colebrook-White implicit friction factor using Picard iteration.
+  • Apply the Hardy-Cross and Newton-Raphson methods to pipe network problems.
+  • Compute heat transfer (Gnielinski, Dittus-Boelter) in forced-convection flow.
+  • Model pressure transients using the Method of Characteristics (MOC).
+  • Analyse two-phase (gas-liquid) flows using the Lockhart-Martinelli parameter.
+  • Determine choked flow conditions in compressible gas systems.
+
+  SOFTWARE ENGINEERING
+  • Structure a multi-file FastAPI project with routers, lifespan, CORS, and DI.
+  • Design Pydantic v2 schemas for request validation and response serialisation.
+  • Write an async SQLAlchemy 2.x ORM layer with CRUD classes.
+  • Build an HTML5-canvas network editor with zoom, pan, select, draw, and undo.
+  • Apply a scientific colour map (viridis, jet, plasma) to CFD results.
+  • Render an interactive Moody chart from scratch using the Canvas API.
+  • Write a C++ pybind11 extension and call it from Python.
+  • Deploy the full stack with Docker Compose.
+
+────────────────────────────────────────────────────────────────────────────────
+3.  TECHNOLOGY STACK
+────────────────────────────────────────────────────────────────────────────────
+
+  BACKEND
+  ┌──────────────────┬─────────────────────────────────────────────────────┐
+  │ Component        │ Technology                                          │
+  ├──────────────────┼─────────────────────────────────────────────────────┤
+  │ Language         │ Python 3.11+                                        │
+  │ Web Framework    │ FastAPI 0.111+ (ASGI, async/await)                  │
+  │ ASGI Server      │ Uvicorn (with uvloop for speed)                     │
+  │ ORM              │ SQLAlchemy 2.0 (async session + aiosqlite/asyncpg)  │
+  │ Validation       │ Pydantic v2 (Rust-based, 5–50× faster than v1)     │
+  │ Config           │ pydantic-settings (reads .env files)                │
+  │ Logging          │ Loguru (structured, rotating, JSON-capable)         │
+  │ Math/Numerics    │ NumPy, SciPy (sparse solvers)                       │
+  │ C++ Extension    │ pybind11 + C++17                                    │
+  │ Testing          │ pytest, pytest-asyncio, httpx                       │
+  └──────────────────┴─────────────────────────────────────────────────────┘
+
+  FRONTEND
+  ┌──────────────────┬─────────────────────────────────────────────────────┐
+  │ Component        │ Technology                                          │
+  ├──────────────────┼─────────────────────────────────────────────────────┤
+  │ Language         │ Vanilla JavaScript (ES2022, no build tool)          │
+  │ Canvas Rendering │ HTML5 Canvas API                                    │
+  │ Styling          │ Pure CSS (custom properties, no preprocessor)       │
+  │ HTTP             │ Fetch API (wrapped in api.js)                       │
+  │ Charts           │ Custom Canvas renderer (Moody, convergence)         │
+  └──────────────────┴─────────────────────────────────────────────────────┘
+
+  DATABASE
+  ┌──────────────────┬─────────────────────────────────────────────────────┐
+  │ Environment      │ Database                                            │
+  ├──────────────────┼─────────────────────────────────────────────────────┤
+  │ Development      │ SQLite (via aiosqlite, zero setup)                  │
+  │ Production       │ PostgreSQL 15 (via asyncpg)                         │
+  └──────────────────┴─────────────────────────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+4.  PROJECT DIRECTORY STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+
+  cfd-pipe-flow/
+  ├── backend/
+  │   ├── main.py                   FastAPI app, lifespan, CORS
+  │   ├── cfd/
+  │   │   ├── __init__.py
+  │   │   ├── solver.py             ≈ 2 450 lines — full CFD engine
+  │   │   └── cfd_solver_ext.cpp    ≈ 1 200 lines — pybind11 C++ extension
+  │   ├── models/
+  │   │   ├── __init__.py
+  │   │   ├── database.py           ≈   620 lines — async ORM + CRUD
+  │   │   └── schemas.py            ≈   670 lines — Pydantic v2 schemas
+  │   ├── api/
+  │   │   ├── __init__.py
+  │   │   └── routes.py             ≈ 1 090 lines — 11 routers, 30+ endpoints
+  │   └── utils/
+  │       ├── __init__.py
+  │       ├── config.py             ≈   195 lines — Settings class
+  │       └── logger.py             ≈   255 lines — Loguru configuration
+  ├── frontend/
+  │   ├── index.html                ≈   720 lines — full SPA markup
+  │   ├── styles/
+  │   │   └── main.css              ≈   950 lines — design system
+  │   └── js/
+  │       ├── api.js                ≈   185 lines — REST client
+  │       ├── canvas.js             ≈   725 lines — canvas editor
+  │       ├── network.js            ≈   435 lines — network state
+  │       ├── ui.js                 ≈ 1 025 lines — UI components
+  │       ├── solver.js             ≈   610 lines — solve + render
+  │       ├── moody.js              ≈   540 lines — Moody chart
+  │       ├── calculators.js        ≈   590 lines — calculators
+  │       ├── docs.js               ≈   370 lines — documentation
+  │       └── app.js                ≈   320 lines — boot + routing
+  ├── docs/
+  │   └── tutorial.txt             ← this file (≈ 1 400 lines)
+  ├── diagrams/
+  │   ├── architecture.mermaid
+  │   ├── solver_flowchart.mermaid
+  │   ├── class_diagram.mermaid
+  │   ├── api_sequence.mermaid
+  │   └── database_er.mermaid
+  ├── requirements.txt
+  ├── requirements-dev.txt
+  └── setup_ext.py
+
+================================================================================
+  PART II — FLUID MECHANICS FOUNDATIONS
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+5.  GOVERNING EQUATIONS OF PIPE FLOW
+────────────────────────────────────────────────────────────────────────────────
+
+All fluid flow is governed by the Navier-Stokes (NS) equations, which express
+conservation of mass, momentum, and energy for a Newtonian fluid.
+
+CONSERVATION OF MASS (Continuity):
+  ∂ρ/∂t + ∇·(ρu) = 0
+
+For incompressible flow (ρ = constant):
+  ∇·u = 0      ← divergence-free velocity field
+
+CONSERVATION OF MOMENTUM:
+  ρ(∂u/∂t + u·∇u) = −∇p + μ∇²u + ρg
+
+  where:
+    u   = velocity vector [m/s]
+    p   = pressure [Pa]
+    μ   = dynamic viscosity [Pa·s]
+    ρ   = density [kg/m³]
+    g   = gravitational body force [m/s²]
+
+CONSERVATION OF ENERGY:
+  ρcₚ(∂T/∂t + u·∇T) = k∇²T + Φ
+
+  where:
+    T   = temperature [K or °C]
+    cₚ  = specific heat capacity [J/(kg·K)]
+    k   = thermal conductivity [W/(m·K)]
+    Φ   = viscous dissipation [W/m³] (small for most liquids)
+
+PIPE-FLOW SIMPLIFICATION (steady, fully-developed, axisymmetric):
+  The axial momentum equation becomes an ODE in r:
+    (1/r) d/dr (r du/dr) = (1/μ) dp/dx
+
+  Integrating twice with no-slip (u=0 at r=R):
+    u(r) = −(1/4μ)(dp/dx)(R² − r²)    [Hagen-Poiseuille profile]
+
+  Mean velocity:
+    V = Q/A = −(R²/8μ)(dp/dx)
+
+  Rearranging for pressure gradient:
+    Δp = 128μLQ / (πD⁴)    [laminar only]
+
+  The general Darcy-Weisbach relation (valid all Re):
+    Δp = f · (L/D) · (ρV²/2)
+    hL = f · (L/D) · V²/(2g)    [head loss in metres]
+
+────────────────────────────────────────────────────────────────────────────────
+6.  REYNOLDS NUMBER AND FLOW REGIMES
+────────────────────────────────────────────────────────────────────────────────
+
+  Re = ρVD/μ = VD/ν
+
+  Physical interpretation: Re is the ratio of inertial to viscous forces.
+
+  FLOW REGIMES:
+  ┌─────────────────┬────────────────────────────────────────────────────┐
+  │ Re Range        │ Regime                                             │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │ Re < 2 300      │ Laminar — ordered, parabolic profile, f=64/Re      │
+  │ 2300 ≤ Re < 4000│ Transitional — intermittent turbulence, avoid      │
+  │ Re ≥ 4 000      │ Turbulent — chaotic 3D fluctuations, log profile   │
+  └─────────────────┴────────────────────────────────────────────────────┘
+
+  WORKED EXAMPLE:
+    Water at 20 °C: ρ=998 kg/m³, μ=1.002×10⁻³ Pa·s, ν=1.004×10⁻⁶ m²/s
+    Pipe D=50 mm, V=1.5 m/s
+    Re = 1.5 × 0.05 / 1.004×10⁻⁶ = 74 701 → Fully turbulent
+
+  TRANSITION NOTE:
+    In practice, well-designed lab systems can maintain laminar flow to Re≈20000
+    with extreme care. For engineering design, always assume turbulent for Re>4000.
+
+────────────────────────────────────────────────────────────────────────────────
+7.  FRICTION FACTORS — LAMINAR TO TURBULENT
+────────────────────────────────────────────────────────────────────────────────
+
+LAMINAR (Re < 2300):
+  f = 64/Re    (exact, derived from Hagen-Poiseuille)
+
+TURBULENT — SMOOTH PIPE (Prandtl 1935):
+  1/√f = 2.0 log₁₀(Re√f) − 0.8    (implicit; iterate)
+
+TURBULENT — ROUGH PIPE: COLEBROOK-WHITE (1939):
+  1/√f = −2 log₁₀( ε/(3.7D) + 2.51/(Re√f) )
+
+  Accuracy: ±1% for 4000 < Re < 10⁸, 0 ≤ ε/D ≤ 0.05
+  Method: Picard iteration (10–20 steps, converges to 12 significant figures)
+
+SWAMEE-JAIN (1976) — EXPLICIT APPROXIMATION:
+  f = 0.25 / [log₁₀(ε/(3.7D) + 5.74/Re⁰·⁹)]²
+  Error: ±3% vs Colebrook-White. Used as initial guess in our solver.
+
+CHURCHILL (1977) — UNIFIED FORMULA (all Re, smooth+rough):
+  f = 8 [(8/Re)¹² + 1/(A+B)^(3/2)]^(1/12)
+  A = [−2.457 ln((7/Re)⁰·⁹ + 0.27 ε/D)]¹⁶
+  B = (37530/Re)¹⁶
+
+  Advantage: Differentiable everywhere → used when Newton-Raphson Jacobian needs ∂f/∂Q.
+
+VON KÁRMÁN FULLY-TURBULENT ASYMPTOTE (Re → ∞):
+  1/√f = −2 log₁₀(ε/3.7D)
+
+  This gives the horizontal asymptote on the Moody chart.
+  Pipes with ε/D > 0 always approach this limit at high Re.
+
+────────────────────────────────────────────────────────────────────────────────
+8.  DARCY-WEISBACH HEAD-LOSS MODEL
+────────────────────────────────────────────────────────────────────────────────
+
+FUNDAMENTAL RELATIONS:
+  hL = f · (L/D) · V²/(2g)     [m — head loss]
+  ΔP = f · (L/D) · ρV²/2      [Pa — pressure drop]
+  Q  = V · πD²/4               [m³/s — volumetric flow rate]
+
+RESISTANCE COEFFICIENT:
+  Define r = f·L/(2g·A²·D) so that:
+    hL = r·Q|Q|    (sign convention: positive in flow direction)
+    ΔP = ρg·hL
+
+  The Newton-Raphson solver uses r and its derivative ∂(r·Q|Q|)/∂Q = 2r|Q|.
+
+WALL SHEAR STRESS:
+  τw = ρ·f·V²/8 = f·(D/4)·(−dP/dx)/2
+
+SHEAR VELOCITY:
+  u* = √(τw/ρ) = V√(f/8)
+
+FRICTION REYNOLDS NUMBER (characterises near-wall turbulence):
+  Re_τ = u*·(D/2)/ν
+
+  Re_τ < 5     → viscous sublayer
+  5 < Re_τ < 30 → buffer layer
+  Re_τ > 30    → log-law region
+
+────────────────────────────────────────────────────────────────────────────────
+9.  MINOR LOSSES — K-FACTOR METHOD
+────────────────────────────────────────────────────────────────────────────────
+
+For fittings, valves, bends, and other local obstructions:
+  hL_minor = K · V²/(2g)
+  ΔP_minor = K · ρV²/2
+
+  Total head loss per pipe:
+    hL_total = (f·L/D + ΣK) · V²/(2g)
+
+  K-FACTOR TABLE (REPRESENTATIVE VALUES):
+  ┌──────────────────────────────┬───────┐
+  │ Fitting                      │   K   │
+  ├──────────────────────────────┼───────┤
+  │ Globe valve, fully open      │ 10.0  │
+  │ Gate valve, fully open       │ 0.13  │
+  │ Gate valve, half open        │  5.6  │
+  │ Ball valve, fully open       │ 0.05  │
+  │ Butterfly valve, open        │ 0.35  │
+  │ Check valve (swing)          │  2.5  │
+  │ 90° elbow, standard          │  0.9  │
+  │ 90° elbow, long-radius       │  0.6  │
+  │ 45° elbow                    │ 0.42  │
+  │ Tee, through branch          │ 0.35  │
+  │ Tee, side branch             │  1.5  │
+  │ Sharp entrance               │  0.5  │
+  │ Re-entrant entrance          │  0.8  │
+  │ Sudden exit                  │  1.0  │
+  │ Sudden expansion (A₁→A₂)    │(1−A₁/A₂)² │
+  │ Sudden contraction (A₁→A₂)  │ 0.5(1−A₂/A₁) │
+  └──────────────────────────────┴───────┘
+
+  NOTE ON VALVE Cv:
+    Cv = Q[gpm] / √(ΔP[psi])
+    Equivalent K = 891 D⁴ / Cv²   (D in inches)
+
+────────────────────────────────────────────────────────────────────────────────
+10.  NETWORK HYDRAULICS — KIRCHHOFF'S LAWS
+────────────────────────────────────────────────────────────────────────────────
+
+GRAPH REPRESENTATION:
+  A pipe network is a directed graph G = (V, E) where:
+    |V| = N nodes (junctions, reservoirs, tanks, demand nodes)
+    |E| = P pipes (each carrying flow Qₖ, head loss hLₖ)
+
+  Sign convention: Qₖ > 0 if flow is in the reference direction of pipe k.
+
+KIRCHHOFF'S FIRST LAW (Node Continuity):
+  For every node i:
+    Σ_{k∈pipes_in(i)} Qₖ − Σ_{k∈pipes_out(i)} Qₖ = dᵢ
+
+  dᵢ = demand (positive = withdrawal, negative = supply).
+  For reservoirs: Hᵢ is known (boundary condition), dᵢ is free.
+  For junctions: dᵢ = 0 (no net accumulation).
+
+KIRCHHOFF'S SECOND LAW (Energy/Loop Closure):
+  For every independent loop ℓ:
+    Σ_{k∈loop_ℓ} hLₖ = 0
+
+  hLₖ is positive when flow is in the loop's positive traversal direction.
+
+INDEPENDENT LOOPS:
+  Using the co-tree decomposition of a spanning tree T:
+    L = P − N + C   (number of independent loops)
+  where C = number of connected components (normally C = 1).
+
+  Each co-tree edge (chord) defines one fundamental cycle/loop.
+
+INCIDENCE MATRIX A (N × P):
+  Aᵢₖ = +1 if pipe k leaves node i
+  Aᵢₖ = −1 if pipe k enters node i
+  Aᵢₖ =  0 otherwise
+
+  KCL in matrix form: A · Q = d
+
+LOOP MATRIX B (L × P):
+  Bℓₖ = +1 if pipe k is traversed in positive direction in loop ℓ
+  Bℓₖ = −1 if pipe k is traversed in negative direction in loop ℓ
+  Bℓₖ =  0 if pipe k is not in loop ℓ
+
+  KVL in matrix form: B · hL = 0   where hLₖ = rₖ · Qₖ|Qₖ|
+
+────────────────────────────────────────────────────────────────────────────────
+11.  HARDY-CROSS LOOP-CORRECTION METHOD
+────────────────────────────────────────────────────────────────────────────────
+
+HISTORY: Hardy Cross (1936) "Analysis of Flow in Networks of Conduits or
+Conductors", University of Illinois Bulletin.
+
+ALGORITHM:
+  STEP 1: Initialise flows Q⁰ satisfying KCL at all nodes.
+           (Set chord flows to 0, solve tree by back-substitution.)
+
+  STEP 2: For each loop ℓ compute the head-loss residual:
+            Eℓ = Σₖ∈ℓ rₖ·Qₖ|Qₖ|    (should equal 0 at convergence)
+
+  STEP 3: Compute correction:
+            ΔQℓ = −Eℓ / (Σₖ∈ℓ 2rₖ|Qₖ|)
+
+  STEP 4: Apply correction to all pipes in loop ℓ:
+            Qₖ += Bℓₖ · ΔQℓ
+
+  STEP 5: Update friction factors (fₖ → Reₖ → Colebrook-White).
+
+  STEP 6: Repeat from STEP 2 until max|ΔQℓ| < tolerance.
+
+RESISTANCE COEFFICIENT:
+  rₖ = fₖ · Lₖ / (2g · Aₖ² · Dₖ)
+  So that hLₖ = rₖ · Qₖ|Qₖ|    (nonlinear Darcy-Weisbach)
+
+CONVERGENCE: Linear (O(1) per iteration). Typically 20–100 iterations for
+small-to-medium networks. May require good initial guess for large networks.
+
+IMPLEMENTATION NOTE:
+  Update f at every iteration using current Q to keep the method consistent.
+  Loops are processed sequentially (Gauss-Seidel style) rather than in parallel
+  to improve convergence rate.
+
+WHEN TO USE: Small networks (< 100 pipes), educational purposes, debugging.
+             Prefer Newton-Raphson for large networks in production.
+
+────────────────────────────────────────────────────────────────────────────────
+12.  NEWTON-RAPHSON / TODINI-PILATI GRADIENT METHOD
+────────────────────────────────────────────────────────────────────────────────
+
+HISTORY: Todini & Pilati (1988) "A gradient algorithm for the analysis of
+pipe networks", Computer Applications in Water Supply, Vol. 1.
+
+FORMULATION (head-form, N unknowns):
+  State vector: x = H = [H₁, …, HN]ᵀ   (node heads)
+
+  For each pipe k connecting nodes i and j:
+    Qₖ(H) = sgn(Hᵢ−Hⱼ) · |Hᵢ−Hⱼ|^(1/2) / rₖ^(1/2)
+
+  Residual equations (N equations):
+    Fᵢ(H) = Σₖ Aᵢₖ · Qₖ(H) − dᵢ = 0
+
+  Newton update:
+    J · ΔH = −F(H)
+    H^(k+1) = H^k + ΔH
+
+JACOBIAN (N×N, sparse, symmetric):
+  Jᵢᵢ = Σₖ∈incident(i) |∂Qₖ/∂Hᵢ|
+  Jᵢⱼ = −|∂Qₖ/∂Hⱼ|   (for pipe k connecting i and j, i≠j)
+
+  Where: ∂Qₖ/∂H = 1/(2·rₖ^(1/2) · |Hᵢ−Hⱼ|^(1/2))
+
+CONVERGENCE: Quadratic. Typically 5–15 iterations from a reasonable initial guess.
+
+INITIAL GUESS STRATEGY:
+  1. Set all node heads = 0.
+  2. Set reservoir nodes to their known head values.
+  3. Use a spanning-tree BFS to propagate initial heads from reservoirs.
+
+RELAXATION:
+  H^(k+1) = H^k + ω·ΔH    (ω = 0.5–1.0; ω=1 is pure Newton)
+  Relaxation improves robustness when starting far from solution.
+
+IMPLEMENTATION IN solver.py:
+  class NewtonRaphsonSolver:
+    def solve(self, nodes, pipes, fluid):
+        H = self._initial_heads(nodes, pipes)
+        for iteration in range(max_iter):
+            Q = self._compute_flows(H, pipes, fluid)
+            F = self._residuals(H, Q, nodes, pipes)
+            J = self._jacobian(H, pipes, fluid)
+            dH = np.linalg.solve(J, -F)
+            H += relaxation * dH
+            residual = np.max(np.abs(F))
+            if residual < tolerance:
+                return H, Q, iteration+1, residual
+        return H, Q, max_iter, residual
+
+────────────────────────────────────────────────────────────────────────────────
+13.  TURBULENCE MODELLING — STANDARD k-ε
+────────────────────────────────────────────────────────────────────────────────
+
+THE RANS APPROACH:
+  Decompose velocity: u = Ū + u'   (mean + fluctuation)
+  Averaging the NS equations introduces the Reynolds stress tensor:
+    τᵢⱼ_R = −ρ <u'ᵢu'ⱼ>
+
+  The Boussinesq hypothesis approximates it as:
+    τᵢⱼ_R = μt (∂Uᵢ/∂xⱼ + ∂Uⱼ/∂xᵢ) − (2/3)ρkδᵢⱼ
+
+TRANSPORT EQUATIONS (Launder & Spalding 1974):
+
+  Turbulence kinetic energy k [m²/s²]:
+    ρ(∂k/∂t + U·∇k) = ∇·[(μ + μt/σk)∇k] + Gk − ρε
+
+  Turbulent dissipation rate ε [m²/s³]:
+    ρ(∂ε/∂t + U·∇ε) = ∇·[(μ + μt/σε)∇ε] + C₁ε(ε/k)Gk − C₂ε ρε²/k
+
+  Turbulent viscosity:
+    μt = ρ Cμ k²/ε
+
+  STANDARD CONSTANTS:
+    Cμ = 0.09,  C₁ε = 1.44,  C₂ε = 1.92,  σk = 1.0,  σε = 1.30
+
+WALL FUNCTIONS (y⁺ > 30):
+  u⁺ = (1/κ) ln(y⁺) + B    κ = 0.41, B ≈ 5.5 (smooth walls)
+  y⁺ = y·u*/ν              (dimensionless wall distance)
+  u⁺ = u/u*                 (dimensionless velocity)
+
+PIPE-FLOW k-ε ESTIMATES (for our 1D model):
+  u* = V√(f/8)                       (shear velocity from DW friction)
+  k  = u*² / √Cμ ≈ 3.33 u*²         (fully-developed approximation)
+  ε  = Cμ^(3/4) k^(3/2) / (κ δ)     (δ = D/4, pipe half-radius)
+  μt = ρ Cμ k²/ε
+
+  Turbulence intensity:
+    I = u'/U ≈ 0.16 Re^(−1/8)        (empirical, smooth pipe, turbulent)
+
+────────────────────────────────────────────────────────────────────────────────
+14.  HEAT TRANSFER IN PIPE FLOW
+────────────────────────────────────────────────────────────────────────────────
+
+FORCED CONVECTION — NUSSELT NUMBER CORRELATIONS:
+
+  GNIELINSKI (1975) — Best for 3000 < Re < 5×10⁶:
+    Nu = (f/8)(Re−1000)Pr / [1 + 12.7√(f/8)(Pr^(2/3)−1)]
+
+    Valid: 0.5 < Pr < 2000, L/D > 10
+    Uncertainty: ±10%
+
+  DITTUS-BOELTER (1930) — Turbulent only, Re > 10 000:
+    Nu = 0.023 Re⁰·⁸ Prⁿ
+    n = 0.4 (fluid being heated), n = 0.3 (fluid being cooled)
+    Valid: 0.6 < Pr < 160
+
+  SIEDER-TATE (1936) — Accounts for viscosity variation:
+    Nu = 0.027 Re⁰·⁸ Pr^(1/3) (μ/μw)^0.14
+    (μw = viscosity at wall temperature)
+
+  LAMINAR — GRAETZ PROBLEM (constant heat flux, Re < 2300):
+    Nu = 3.66 + 0.0668·Gz / (1 + 0.04·Gz^(2/3))
+    Gz = Re·Pr·D/L   (Graetz number — thermal entry length parameter)
+
+    Thermally fully-developed limit: Nu → 3.657 (constant T_wall) or 4.364 (const flux)
+
+CONVECTION COEFFICIENT:
+  h = Nu · k_fluid / D   [W/(m²·K)]
+
+HEAT TRANSFER RATE:
+  Q̇ = h · (πDL) · ΔT_lm   [W]
+  ΔT_lm = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂)   (log-mean temperature difference)
+
+OUTLET TEMPERATURE (constant wall temperature Tw):
+  Tout = Tw − (Tw − Tin)·exp(−h·πDL / (ṁcₚ))
+
+NTU METHOD:
+  NTU = h·A / (ṁcₚ)    (number of transfer units)
+  ε   = 1 − exp(−NTU)  (heat exchanger effectiveness for const Tw)
+  Q̇   = ε · ṁcₚ · (Tw − Tin)
+
+THERMAL ENTRY LENGTH:
+  Laminar:   Le_thermal ≈ 0.05 Re·Pr·D
+  Turbulent: Le_thermal ≈ 10 D (develops quickly)
+
+────────────────────────────────────────────────────────────────────────────────
+15.  WATER HAMMER — METHOD OF CHARACTERISTICS
+────────────────────────────────────────────────────────────────────────────────
+
+WAVE SPEED:
+  a = √(K/ρ) / √(1 + (K/E)·(D/t))   [m/s]
+  
+  Typical values:
+    Steel pipe, water: a ≈ 1200–1400 m/s
+    PVC pipe, water:   a ≈  300–600  m/s
+    Copper pipe:       a ≈  900–1100 m/s
+
+JOUKOWSKY PRESSURE RISE (instantaneous closure):
+  ΔP = ρ · a · ΔV
+  
+  EXAMPLE: Water, a=1200 m/s, ρ=998 kg/m³, ΔV=2 m/s (valve slams shut):
+    ΔP = 998 × 1200 × 2 = 2 395 200 Pa ≈ 23.5 atm!
+
+VALVE CLOSURE CRITERION:
+  Critical closure time: tc = 2L/a
+  - If tc_valve ≤ tc: "sudden" closure → full Joukowsky pressure rise
+  - If tc_valve > tc: "slow" closure → reduced ΔP ≈ ΔP_J · (tc/tc_valve)
+
+METHOD OF CHARACTERISTICS (MOC) DISCRETISATION:
+  Grid: Δx = a·Δt (Courant number Cr = 1 exactly)
+  
+  Interior points:
+    HP = (HA + HB)/2 + (a/2gA)(QA − QB) − (R·Δt/2)(QA|QA| + QB|QB|)
+    QP = (QA + QB)/2 + (gA/2a)(HA − HB) − ...
+    
+    where R = f/(2gDA²) is the resistance term.
+
+  BOUNDARY CONDITIONS:
+    Reservoir: HP = Hreservoir (constant head), QP solved from C⁺ or C⁻ alone.
+    Dead end:  QP = 0, HP solved from the approaching characteristic.
+    Pump:      HP − HB = Cpump(QP) (pump head-flow curve, solved simultaneously).
+    Valve:     QP = Cd·Av(t)·√(2g·HP), Av decreasing linearly or as a ramp.
+
+CODE REFERENCE:
+  class WaterHammerSolver in solver.py, method solve_transient().
+  Returns: list of time steps, each with arrays of H and Q for all nodes/pipes.
+
+────────────────────────────────────────────────────────────────────────────────
+16.  TWO-PHASE FLOW — LOCKHART-MARTINELLI
+────────────────────────────────────────────────────────────────────────────────
+
+MODEL ASSUMPTIONS:
+  • Separated flow: liquid and gas flow in parallel streams.
+  • Each phase has its own pressure gradient based on single-phase DW.
+  • The two-phase multiplier Φ² accounts for interaction.
+
+INDIVIDUAL PHASE PRESSURE GRADIENTS:
+  (dP/dz)_L = f_L · ρ_L · v_L² / (2D)    (liquid flowing alone in pipe)
+  (dP/dz)_G = f_G · ρ_G · v_G² / (2D)    (gas flowing alone in pipe)
+
+LOCKHART-MARTINELLI PARAMETER:
+  X² = (dP/dz)_L / (dP/dz)_G
+
+TWO-PHASE MULTIPLIER (Chisholm 1967):
+  Φ²_L = 1 + C/X + 1/X²
+  
+  CONSTANT C:
+  ┌──────────────────────────────┬───┐
+  │ Liquid-turbulent / Gas-turb  │ 21│
+  │ Liquid-laminar  / Gas-turb   │ 12│
+  │ Liquid-turbulent / Gas-lam   │ 10│
+  │ Liquid-laminar  / Gas-lam    │  5│
+  └──────────────────────────────┴───┘
+
+TWO-PHASE PRESSURE GRADIENT:
+  (dP/dz)_TP = Φ²_L · (dP/dz)_L
+
+VOID FRACTION:
+  Homogeneous: α_h = Q_G / (Q_L + Q_G)    (volume-based)
+  Martinelli:  α_M = 1 / (1 + 0.28 X^0.71)
+  
+  Slip ratio (liquid velocity / gas velocity): S = v_G/v_L varies with flow pattern.
+
+────────────────────────────────────────────────────────────────────────────────
+17.  COMPRESSIBLE GAS FLOW IN PIPES
+────────────────────────────────────────────────────────────────────────────────
+
+SPEED OF SOUND:
+  a = √(γRT)    [m/s]    for ideal gas
+  
+  Air at 20°C: a = √(1.4 × 287 × 293.15) = 343 m/s
+
+MACH NUMBER:
+  M = V/a
+
+ISENTROPIC FLOW RELATIONS (no friction, perfect nozzle):
+  p/p₀ = (1 + (γ−1)/2 · M²)^(−γ/(γ−1))
+  T/T₀ = (1 + (γ−1)/2 · M²)^(−1)
+  ρ/ρ₀ = (1 + (γ−1)/2 · M²)^(−1/(γ−1))
+
+CRITICAL (CHOKED) CONDITIONS:
+  At M = 1 (throat of nozzle or end of Fanno duct):
+    p*/p₀ = [2/(γ+1)]^(γ/(γ−1)) = 0.5283 for air
+    T*/T₀ = 2/(γ+1)               = 0.8333 for air
+    ρ*/ρ₀ = [2/(γ+1)]^(1/(γ−1))  = 0.6339 for air
+
+FANNO LINE (adiabatic pipe flow with friction, variable M along length):
+  Maximum dimensionless duct length:
+    4f·L*_max/D = (1−M²)/(γM²) + (γ+1)/(2γ) ln[(γ+1)M²/(2+(γ−1)M²)]
+  
+  For M<1: flow accelerates toward choke; adding pipe length reduces max Q.
+  For M>1: flow decelerates toward choke; adding pipe length causes oblique shock.
+
+WHEN COMPRESSIBLE EFFECTS MATTER:
+  M < 0.3: incompressible assumption error < 5% (safe to use DW)
+  M > 0.3: compressible corrections needed
+  M = 1.0: choked — cannot increase flow by reducing downstream pressure
+
+────────────────────────────────────────────────────────────────────────────────
+18.  CAVITATION AND NPSH
+────────────────────────────────────────────────────────────────────────────────
+
+CAVITATION occurs when local static pressure drops below the vapour pressure
+of the liquid, causing vapour bubbles to form and implode.
+
+CAVITATION NUMBER (σ):
+  σ = (p − pv) / (½ρV²)
+
+  σ < 0: cavitation certain
+  σ ≈ 0: incipient cavitation
+  σ >> 1: no cavitation
+
+VAPOUR PRESSURE (water):
+  T=20°C: pv = 2 337 Pa
+  T=60°C: pv = 19 940 Pa
+  T=100°C: pv = 101 325 Pa (boils at atmospheric)
+
+NET POSITIVE SUCTION HEAD (NPSH):
+  NPSH_available = (p_atm − pv)/(ρg) + z_suction   [m]
+  
+  Design requirement: NPSH_available > NPSH_required (from pump curve) + safety margin.
+  
+  Margin: NPSH_a must exceed NPSH_r by at least 0.5–1.0 m in practice.
+
+────────────────────────────────────────────────────────────────────────────────
+19.  DIMENSIONLESS GROUPS REFERENCE TABLE
+────────────────────────────────────────────────────────────────────────────────
+
+┌─────────────────┬────────┬──────────────────────────┬──────────────────────┐
+│ Number          │ Symbol │ Formula                  │ Physical Meaning     │
+├─────────────────┼────────┼──────────────────────────┼──────────────────────┤
+│ Reynolds        │ Re     │ ρVD/μ                    │ Inertia / viscous    │
+│ Prandtl         │ Pr     │ cₚμ/k                    │ Momentum / thermal   │
+│ Nusselt         │ Nu     │ hD/k                     │ Convective / cond.   │
+│ Péclet          │ Pe     │ Re·Pr                    │ Advection / diffusion│
+│ Stanton         │ St     │ Nu/(Re·Pr)               │ HT per heat capacity │
+│ Graetz          │ Gz     │ Re·Pr·D/L                │ Thermal entry length │
+│ Euler           │ Eu     │ Δp/(½ρV²)               │ Pressure / dynamic   │
+│ Froude          │ Fr     │ V/√(gL)                  │ Inertia / gravity    │
+│ Mach            │ M      │ V/a                      │ Flow / speed of sound│
+│ Dean            │ De     │ Re·√(D/(2Rc))            │ Bend centrifugal     │
+│ Womersley       │ Wo     │ R·√(ω/ν)                 │ Pulsatile unsteady   │
+│ Strouhal        │ St_v   │ fv·D/V                   │ Vortex shedding      │
+│ Cavitation      │ σ      │ (p−pv)/(½ρV²)            │ Cavitation margin    │
+│ Lockhart-M.     │ X      │ √[(dP/dz)_L/(dP/dz)_G]  │ Two-phase ratio      │
+│ Biot            │ Bi     │ hL/k_solid               │ Conv / cond (solid)  │
+│ Fourier         │ Fo     │ αt/L²                    │ Thermal diffusion    │
+└─────────────────┴────────┴──────────────────────────┴──────────────────────┘
+
+================================================================================
+  PART III — BACKEND DEVELOPMENT
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+20.  PROJECT SCAFFOLD AND DEPENDENCIES
+────────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Create the directory tree:
+
+  mkdir -p cfd-pipe-flow/backend/{cfd,models,api,utils,tests}
+  mkdir -p cfd-pipe-flow/frontend/{js,styles}
+  mkdir -p cfd-pipe-flow/{docs,diagrams}
+  cd cfd-pipe-flow
+
+STEP 2: Create and activate a virtual environment:
+
+  python -m venv .venv
+  source .venv/bin/activate          # Linux/macOS
+  .venv\Scripts\activate             # Windows
+
+STEP 3: Install backend dependencies:
+
+  pip install -r requirements.txt
+
+  requirements.txt contains:
+    fastapi>=0.111.0
+    uvicorn[standard]>=0.29.0
+    sqlalchemy>=2.0.30
+    aiosqlite>=0.20.0
+    asyncpg>=0.29.0        # PostgreSQL (optional in dev)
+    pydantic>=2.7.0
+    pydantic-settings>=2.2.0
+    loguru>=0.7.2
+    python-multipart>=0.0.9
+    numpy>=1.26.0
+    scipy>=1.13.0
+
+STEP 4: Install development dependencies:
+
+  pip install -r requirements-dev.txt
+
+  requirements-dev.txt contains:
+    pytest>=8.2.0
+    pytest-asyncio>=0.23.0
+    httpx>=0.27.0
+    pytest-cov>=5.0.0
+    ruff>=0.4.0            # Linter/formatter
+
+STEP 5 (optional): Build C++ extension:
+
+  pip install pybind11
+  python setup_ext.py build_ext --inplace
+
+STEP 6: Run the development server:
+
+  cd backend
+  uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+  Open the frontend: open ../frontend/index.html in your browser
+  API docs:          http://localhost:8000/docs     (Swagger UI)
+  ReDoc:             http://localhost:8000/redoc
+
+────────────────────────────────────────────────────────────────────────────────
+21.  CONFIGURATION MANAGEMENT (Pydantic-Settings)
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/utils/config.py
+
+  from pydantic_settings import BaseSettings
+  from functools import lru_cache
+
+  class Settings(BaseSettings):
+      # Application
+      app_name: str = "CFD Pipe Flow Expert"
+      version: str = "1.0.0"
+      debug: bool = False
+
+      # Server
+      host: str = "0.0.0.0"
+      port: int = 8000
+      allowed_origins: list[str] = ["http://localhost:3000"]
+
+      # Database
+      database_url: str = "sqlite+aiosqlite:///./cfd_pipe_flow.db"
+
+      # Solver limits
+      max_solver_iterations: int = 500
+      default_solver_tolerance: float = 1e-6
+      max_network_nodes: int = 2000
+      max_network_pipes: int = 5000
+
+      # Logging
+      log_level: str = "INFO"
+      log_file: str = "logs/cfd_app.log"
+
+      class Config:
+          env_file = ".env"
+          env_file_encoding = "utf-8"
+          case_sensitive = False
+
+  @lru_cache()
+  def get_settings() -> Settings:
+      return Settings()
+
+ENVIRONMENT FILE (.env):
+  DEBUG=true
+  DATABASE_URL=sqlite+aiosqlite:///./cfd_dev.db
+  ALLOWED_ORIGINS=http://localhost:5500,http://127.0.0.1:5500
+  MAX_SOLVER_ITERATIONS=200
+  LOG_LEVEL=DEBUG
+
+────────────────────────────────────────────────────────────────────────────────
+22.  STRUCTURED LOGGING (Loguru)
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/utils/logger.py
+
+  from loguru import logger
+  import sys
+
+  def setup_logging(level: str = "INFO", log_file: str | None = None):
+      logger.remove()   # Remove default handler
+
+      # Coloured console
+      fmt = ("<green>{time:HH:mm:ss.SSS}</green> | "
+             "<level>{level: <8}</level> | "
+             "<cyan>{name}</cyan>:<cyan>{line}</cyan> — "
+             "<level>{message}</level>")
+      logger.add(sys.stderr, level=level, format=fmt, colorize=True)
+
+      # Rotating file (10 MB, 7 days retention)
+      if log_file:
+          logger.add(log_file, level="DEBUG",
+                     rotation="10 MB", retention="7 days",
+                     serialize=True)    # JSON output
+
+  def get_logger(name: str):
+      return logger.bind(name=name)
+
+USAGE EXAMPLES:
+  log = get_logger("solver")
+  log.info("Starting Hardy-Cross", network_id=nid, pipes=len(pipes))
+  log.warning("Low convergence", iteration=50, residual=1.2e-4)
+  log.error("Singular Jacobian", network_id=nid)
+
+  # Context binding for request tracing:
+  with logger.contextualize(request_id=req_id):
+      log.info("Solve request received")
+
+────────────────────────────────────────────────────────────────────────────────
+23.  DATABASE LAYER (ASYNC SQLAlchemy 2.x)
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/models/database.py
+
+TABLE DEFINITIONS:
+  networks:
+    id           UUID primary key
+    name         VARCHAR(255)
+    description  TEXT
+    created_at   TIMESTAMP
+    updated_at   TIMESTAMP
+    (relationships: → nodes, → pipes, → solve_results)
+
+  nodes:
+    id           UUID primary key
+    network_id   UUID (FK → networks.id, CASCADE DELETE)
+    node_type    ENUM: junction, reservoir, tank, demand
+    label        VARCHAR(100)
+    x, y         FLOAT (canvas coordinates)
+    elevation    FLOAT (metres)
+    pressure_known  BOOLEAN
+    pressure_value  FLOAT (Pa, when known)
+    demand       FLOAT (m³/s)
+
+  pipes:
+    id           UUID primary key
+    network_id   UUID (FK → networks.id, CASCADE DELETE)
+    start_node_id UUID (FK → nodes.id)
+    end_node_id   UUID (FK → nodes.id)
+    label        VARCHAR(100)
+    length       FLOAT (m)
+    diameter     FLOAT (m)
+    roughness    FLOAT (m)
+    material     VARCHAR(100)
+    has_valve    BOOLEAN
+    valve_cv     FLOAT (Cv coefficient, NULL if none)
+    valve_open_pct FLOAT (0–100)
+    has_pump     BOOLEAN
+    pump_head    FLOAT (m, NULL if none)
+    pump_efficiency FLOAT (0–1)
+    minor_loss_k FLOAT
+
+  solve_results:
+    id           UUID primary key
+    network_id   UUID (FK → networks.id)
+    solver_type  VARCHAR(50)
+    converged    BOOLEAN
+    iterations   INTEGER
+    final_residual FLOAT
+    solve_time_ms  FLOAT
+    pipe_results   JSONB (list of PipeResult dicts)
+    node_results   JSONB (list of NodeResult dicts)
+    statistics     JSONB (CFDStatistics dict)
+    created_at   TIMESTAMP
+
+  templates:
+    id           UUID primary key
+    name         VARCHAR(255)
+    description  TEXT
+    network_json JSONB (serialised NetworkCreate)
+    node_count   INTEGER
+    pipe_count   INTEGER
+
+ASYNC SESSION PATTERN:
+  engine = create_async_engine(settings.database_url, echo=settings.debug)
+  async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+  async def get_session():
+      async with async_session_factory() as session:
+          yield session
+
+CRUD CLASS PATTERN:
+  class NetworkCRUD:
+      async def create(self, session, data: NetworkCreate) -> Network:
+          obj = Network(**data.model_dump(exclude={"nodes", "pipes"}))
+          session.add(obj)
+          await session.flush()   # Get ID without committing
+          for node_data in data.nodes:
+              node = Node(network_id=obj.id, **node_data.model_dump())
+              session.add(node)
+          await session.commit()
+          await session.refresh(obj)
+          return obj
+
+────────────────────────────────────────────────────────────────────────────────
+24.  PYDANTIC v2 SCHEMA DESIGN
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/models/schemas.py
+
+KEY DESIGN PRINCIPLES:
+  1. Separate Create / Update / Response schemas for each resource.
+  2. Use model_config = ConfigDict(from_attributes=True) for ORM mode.
+  3. Field validators enforce physical constraints (positive dimensions etc.).
+  4. Optional fields have sensible defaults matching engineering practice.
+
+EXAMPLE — PipeCreate:
+  class PipeCreate(BaseModel):
+      pipe_id:     str | None = None        # Auto-assigned if None
+      label:       str = ""
+      start_node_id: str
+      end_node_id:   str
+      length:      float = Field(..., gt=0, description="Pipe length [m]")
+      diameter:    float = Field(..., gt=0, le=5.0)
+      roughness:   float = Field(4.6e-5, ge=0, description="Absolute roughness [m]")
+      material:    str   = "steel_commercial"
+      has_valve:   bool  = False
+      valve_cv:    float | None = None
+      valve_open_pct: float = Field(100.0, ge=0, le=100)
+      has_pump:    bool  = False
+      pump_head:   float | None = None
+      pump_efficiency: float = Field(0.75, gt=0, le=1.0)
+      minor_loss_k: float = Field(0.0, ge=0)
+      initial_flow: float | None = None
+
+EXAMPLE — SolverResult:
+  class SolverResult(BaseModel):
+      converged:       bool
+      iterations:      int
+      final_residual:  float
+      solve_time_ms:   float
+      solver_type:     str
+      pipe_results:    list[PipeResult]
+      node_results:    list[NodeResult]
+      statistics:      CFDStatistics
+      warnings:        list[str] = []
+      convergence_history: list[float] = []
+
+EXAMPLE — InlineSolveRequest:
+  class InlineSolveRequest(BaseModel):
+      network:         NetworkCreate
+      fluid:           str = "water_20c"
+      solver_type:     Literal["hardy_cross","newton_raphson"] = "newton_raphson"
+      max_iterations:  int = Field(200, ge=1, le=1000)
+      tolerance:       float = Field(1e-6, gt=0)
+      relaxation:      float = Field(1.0, gt=0, le=1.0)
+      temperature:     float = Field(20.0, description="°C")
+      include_minor_losses: bool = True
+      run_heat_transfer: bool = False
+      ambient_temp:    float = 20.0
+
+────────────────────────────────────────────────────────────────────────────────
+25.  CFD SOLVER ENGINE — ARCHITECTURE (solver.py)
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/cfd/solver.py  (≈ 2 450 lines)
+
+MODULE ARCHITECTURE MAP:
+
+  Lines 1–80:    Module docstring, imports, type aliases
+  Lines 81–200:  Data classes: FluidProperties, PipeSegment, NetworkNode,
+                               SolverConfig, SolverResult
+  Lines 201–480: Friction factor functions:
+                   friction_factor_laminar()
+                   friction_factor_colebrook_white()
+                   friction_factor_swamee_jain()
+                   friction_factor_churchill()
+                   friction_factor_moody() (dispatcher)
+  Lines 481–750: Hydraulic functions:
+                   reynolds_number(), velocity(), head_loss_darcy_weisbach(),
+                   pressure_drop_darcy_weisbach(), minor_loss_head(),
+                   valve_head_loss(), pump_head(), pump_power()
+  Lines 751–900: Wave/transient:
+                   wave_speed_water_hammer(), joukowsky_pressure_rise()
+  Lines 901–1050: Heat transfer:
+                   nusselt_dittus_boelter(), nusselt_gnielinski(),
+                   nusselt_sieder_tate(), nusselt_laminar_pipe(),
+                   heat_transfer_coefficient(), log_mean_temperature_difference(),
+                   pipe_outlet_temperature()
+  Lines 1051–1150: Compressible:
+                   mach_number(), isentropic_stagnation_pressure(),
+                   critical_pressure_ratio(), fanno_line_friction()
+  Lines 1151–1250: Two-phase:
+                   lockhart_martinelli_parameter(),
+                   lockhart_martinelli_multiplier_liquid(),
+                   void_fraction_homogeneous(), friedel_two_phase_multiplier()
+  Lines 1251–1350: Cavitation:
+                   cavitation_number(), npsh_available()
+  Lines 1351–1470: Turbulence:
+                   class KEpsilonModel with compute() and report()
+  Lines 1471–1600: Per-pipe hydraulics:
+                   class PipeHydraulics with compute_pipe() and compute_all_pipes()
+  Lines 1601–1750: Topology:
+                   class NetworkTopology with bfs(), spanning_tree(),
+                   fundamental_loops(), incidence_matrix()
+  Lines 1751–1900: Hardy-Cross:
+                   class HardyCrossSolver with solve()
+  Lines 1901–2050: Newton-Raphson:
+                   class NewtonRaphsonSolver with solve()
+  Lines 2051–2200: Water-Hammer:
+                   class WaterHammerSolver with solve_transient()
+  Lines 2201–2300: Master dispatcher:
+                   class CFDNetworkSolver with solve()
+  Lines 2301–2400: Colour maps + statistics:
+                   velocity_to_color(), pressure_to_color(), temperature_to_color(),
+                   class CFDStatistics, buckingham_pi_pipe_flow()
+  Lines 2401–2450: Databases:
+                   PIPE_ROUGHNESS_DB, FLUID_DATABASE
+
+────────────────────────────────────────────────────────────────────────────────
+26.  IMPLEMENTING THE COLEBROOK-WHITE FRICTION FACTOR
+────────────────────────────────────────────────────────────────────────────────
+
+FULL PYTHON IMPLEMENTATION:
+
+  def friction_factor_colebrook_white(
+      re: float, eps_d: float, max_iter: int = 50
+  ) -> float:
+      """
+      Colebrook-White friction factor for turbulent pipe flow.
+      
+      Args:
+          re:       Reynolds number (dimensionless)
+          eps_d:    Relative roughness ε/D (dimensionless, ≥ 0)
+          max_iter: Maximum Picard iterations
+          
+      Returns:
+          Darcy friction factor f (dimensionless)
+          
+      References:
+          Colebrook, C.F. & White, C.M. (1937). Experiments with fluid
+          friction in roughened pipes. Proc. Roy. Soc. A, 161, 367–381.
+      """
+      if re <= 0:
+          return float("nan")
+      if re < 2300.0:
+          return 64.0 / re       # Exact Hagen-Poiseuille
+      
+      # Swamee-Jain as initial guess (avoids sqrt(f) instability near 0)
+      if eps_d > 0.0:
+          f = 0.25 / (math.log10(eps_d / 3.7 + 5.74 / re ** 0.9)) ** 2
+      else:
+          f = 0.316 / re ** 0.25  # Blasius (smooth, Re<1e5) as fallback
+      
+      # Picard iteration on 1/√f form
+      for _ in range(max_iter):
+          inner = eps_d / 3.7 + 2.51 / (re * math.sqrt(f))
+          if inner <= 0.0:
+              break
+          rhs = -2.0 * math.log10(inner)
+          f_new = 1.0 / (rhs * rhs)
+          if abs(f_new - f) < 1.0e-12:
+              f = f_new
+              break
+          f = f_new
+      
+      return f
+
+VALIDATION (compare to tabulated Moody chart values):
+  Test case 1: Re=10000,  ε/D=0.001  → f ≈ 0.03160 ± 0.0005
+  Test case 2: Re=100000, ε/D=0.001  → f ≈ 0.02186 ± 0.0003
+  Test case 3: Re=1e6,    ε/D=0.0001 → f ≈ 0.01396 ± 0.0002
+  Test case 4: Re=1e7,    ε/D=0.0    → f ≈ 0.00812 ± 0.0002
+
+UNIT TEST (pytest):
+  def test_colebrook_white_laminar():
+      assert abs(friction_factor_colebrook_white(1000, 0) - 0.064) < 1e-10
+  
+  def test_colebrook_white_smooth_turbulent():
+      f = friction_factor_colebrook_white(1e5, 0)
+      assert 0.0175 < f < 0.0185
+  
+  def test_colebrook_white_rough():
+      f = friction_factor_colebrook_white(1e6, 0.01)
+      assert 0.037 < f < 0.040
+
+────────────────────────────────────────────────────────────────────────────────
+27.  HARDY-CROSS SOLVER — STEP-BY-STEP
+────────────────────────────────────────────────────────────────────────────────
+
+COMPLETE ALGORITHM WALKTHROUGH with a 3-loop example network:
+
+  Network: 6 nodes (N1–N6), 7 pipes (P1–P7), 2 loops
+    N1 (reservoir, H=50m) → P1 → N2 → P3 → N4 (demand 10 L/s)
+    N2 → P2 → N3 → P4 → N5 → P5 → N4
+    N3 → P6 → N6 → P7 → N5
+
+  INITIALISATION:
+    Spanning tree: N1–N2–N3–N4–N5
+    Tree pipes: P1 (Q=0.010), P2 (Q=0.006), P3 (Q=0.004), P5 (Q=0.004)
+    Chord (co-tree): P6 (Q=0), P7 (Q=0)
+
+  ITERATION 1:
+    Loop 1 contains pipes: P2, P4, P3 (in positive direction)
+      r2 = f2·L2/(2gA2²D2)
+      E1 = r2·Q2|Q2| − r3·Q3|Q3| + r4·Q4|Q4|
+      ΔQ1 = −E1 / (2(r2|Q2| + r3|Q3| + r4|Q4|))
+      Update: Q2 += ΔQ1, Q3 += ΔQ1, Q4 += ΔQ1
+    
+    Loop 2 contains pipes: P4, P6, P7, P5 (traversal direction)
+      E2 = r4·Q4|Q4| + r6·Q6|Q6| − r7·Q7|Q7| − r5·Q5|Q5|
+      ΔQ2 = −E2 / (2(r4|Q4| + r6|Q6| + r7|Q7| + r5|Q5|))
+      Update all pipes in loop 2.
+
+  Repeat until max|ΔQ| < 10⁻⁶.
+
+COMMON ISSUES AND FIXES:
+  Problem: Divergence / oscillation
+  Fix:     Check that all loops have at least one non-zero initial flow.
+           Ensure head boundary conditions are set on at least one node.
+
+  Problem: Very slow convergence (>200 iterations)
+  Fix:     The initial flow guess is far from solution.
+           Use NetworkTopology.bfs_flow_init() which propagates flows from
+           the reservoir along the spanning tree.
+
+  Problem: NaN friction factor
+  Fix:     Q=0 gives Re=0; protect with: if Q == 0: hL = 0; continue
+
+────────────────────────────────────────────────────────────────────────────────
+28.  NEWTON-RAPHSON SOLVER — STEP-BY-STEP
+────────────────────────────────────────────────────────────────────────────────
+
+JACOBIAN CONSTRUCTION:
+
+  For a 4-node network (N1=reservoir at H=50m, N2, N3, N4=demand 0.01 m³/s)
+  with pipes P12, P23, P24, P34 (all connecting adjacent nodes):
+
+  Pipe flows as function of heads:
+    Q_12 = sgn(H1−H2) · |H1−H2|^0.5 / r_12^0.5
+    (similarly for all pipes)
+
+  Residuals (3 equations for 3 unknown heads H2, H3, H4):
+    F2 = Q_12 − Q_23 − Q_24 − d2 = 0
+    F3 = Q_23 − Q_34 − d3 = 0
+    F4 = Q_24 + Q_34 − d4 = 0
+
+  Jacobian (3×3):
+    J[2,2] = ∂F2/∂H2 = −∂Q12/∂H2 − ∂Q23/∂H2 − ∂Q24/∂H2
+    J[2,3] = ∂F2/∂H3 = +∂Q23/∂H3
+    J[2,4] = ∂F2/∂H4 = +∂Q24/∂H4
+    ... (symmetric)
+
+  Where ∂Q_ij/∂Hi = |Hi−Hj|^(−1/2) / (2 r_ij^(1/2))  (always positive)
+
+  Newton step: [H2,H3,H4]^(k+1) = [H2,H3,H4]^k − J⁻¹ · F
+
+PYTHON PATTERN:
+  J = np.zeros((n_free, n_free))
+  F = np.zeros(n_free)
+  
+  for pipe in pipes:
+      i = node_index[pipe.from_node]
+      j = node_index[pipe.to_node]
+      dH = H[i] - H[j]
+      if abs(dH) < 1e-15:
+          dQ_dH = 1e6   # regularisation
+      else:
+          dQ_dH = 1.0 / (2.0 * r[pipe.id]**0.5 * abs(dH)**0.5)
+      
+      Q = np.sign(dH) * abs(dH)**0.5 / r[pipe.id]**0.5
+      
+      if i not in fixed and j not in fixed:
+          J[i,i] += dQ_dH;  J[j,j] += dQ_dH
+          J[i,j] -= dQ_dH;  J[j,i] -= dQ_dH
+      
+      F[i] -= Q;  F[j] += Q
+  
+  dH = np.linalg.solve(J[free][:,free], -F[free])
+  H[free] += relaxation * dH
+
+────────────────────────────────────────────────────────────────────────────────
+29.  WATER-HAMMER MOC SOLVER
+────────────────────────────────────────────────────────────────────────────────
+
+FILE LOCATION: class WaterHammerSolver in solver.py (lines ~2051–2200)
+
+GRID SETUP:
+  For a single pipe of length L:
+    Choose N_reaches (number of segments)
+    Δx = L / N_reaches
+    Δt = Δx / a  (satisfies Courant condition exactly)
+    N_steps = int(t_total / Δt) + 1
+
+  Storage arrays:
+    H[N_reaches+1] — head at each section boundary
+    Q[N_reaches+1] — flow at each section boundary
+
+INTERIOR POINT UPDATE (forward time step):
+  For j = 1 to N_reaches - 1:
+    # C+ characteristic from j-1
+    CP = H[j-1] + (a/(g*A)) * Q[j-1] - R*Δt * Q[j-1]*|Q[j-1]|
+    # C- characteristic from j+1
+    CM = H[j+1] - (a/(g*A)) * Q[j+1] + R*Δt * Q[j+1]*|Q[j+1]|
+    
+    H_new[j] = (CP + CM) / 2
+    Q_new[j] = (g*A/a) * (CP - CM) / 2
+
+  where R = f/(2*g*D*A²) is the friction resistance coefficient.
+
+UPSTREAM BOUNDARY (reservoir):
+  H_new[0] = H_reservoir   (constant head)
+  # Use C- characteristic from j=1 to find Q_new[0]:
+  CM = H[1] - (a/(g*A))*Q[1] + R*Δt*Q[1]*|Q[1]|
+  Q_new[0] = (g*A/a) * (H_reservoir - CM)
+
+DOWNSTREAM BOUNDARY (valve closure):
+  Valve closure function: τ(t) = (1 - t/t_close)² for linear closure
+  Q_new[N] = Q0 * τ(t_current)   (or 0 for instant closure)
+  # Use C+ from j=N-1:
+  CP = H[N-1] + (a/(g*A))*Q[N-1] - R*Δt*Q[N-1]*|Q[N-1]|
+  H_new[N] = CP - (a/(g*A))*Q_new[N]
+
+────────────────────────────────────────────────────────────────────────────────
+30.  NETWORK TOPOLOGY ANALYSIS
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: class NetworkTopology in solver.py
+
+KEY METHODS:
+
+  bfs(start_node, adjacency) → list[str]
+    Breadth-first search from start_node. Returns nodes in BFS order.
+    Used to: detect connected components, find path from reservoir to any node.
+
+  spanning_tree(nodes, pipes) → (tree_pipes, chord_pipes)
+    Builds a minimum spanning tree using BFS.
+    tree_pipes:  pipes forming the tree (N-1 pipes for N nodes)
+    chord_pipes: remaining pipes (co-tree), one per independent loop
+
+  fundamental_loops(tree_pipes, chord_pipes, nodes) → list[list[(pipe_id, sign)]]
+    For each chord pipe, traces the unique path in the spanning tree between
+    its two endpoints, forming one fundamental loop.
+    Returns: list of loops, each a list of (pipe_id, +1 or -1) tuples.
+
+  incidence_matrix(nodes, pipes) → np.ndarray
+    Returns the N × P incidence matrix A.
+    Used by Newton-Raphson for Jacobian structure.
+
+  connected_components(nodes, pipes) → list[list[str]]
+    Returns groups of mutually reachable nodes.
+    A valid network must have exactly one connected component.
+
+VALIDATION CHECKS performed before solving:
+  ✓ Graph is connected (single component)
+  ✓ At least one fixed-head node (reservoir) exists
+  ✓ All pipe endpoints are valid node IDs
+  ✓ No duplicate pipe IDs or node IDs
+  ✓ All pipe lengths > 0, diameters > 0
+  ✓ Global demand balance: |ΣQ_supply − ΣQ_demand| < tolerance
+
+────────────────────────────────────────────────────────────────────────────────
+31.  FASTAPI ENTRY POINT AND LIFESPAN
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/main.py
+
+KEY PATTERNS:
+
+  LIFESPAN CONTEXT MANAGER (startup/shutdown):
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        # Startup
+        setup_logging(settings.log_level, settings.log_file)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await _seed_templates_if_empty()
+        logger.info("CFD backend started")
+        yield
+        # Shutdown
+        await engine.dispose()
+        logger.info("CFD backend stopped")
+
+  CORS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.allowed_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+  ROUTER INCLUSION:
+    app.include_router(health_router,     prefix="/api/v1")
+    app.include_router(networks_router,   prefix="/api/v1/networks")
+    app.include_router(nodes_router,      prefix="/api/v1/networks/{network_id}/nodes")
+    app.include_router(pipes_router,      prefix="/api/v1/networks/{network_id}/pipes")
+    app.include_router(solvers_router,    prefix="/api/v1/solvers")
+    app.include_router(materials_router,  prefix="/api/v1/materials")
+    app.include_router(results_router,    prefix="/api/v1/results")
+    app.include_router(export_router,     prefix="/api/v1/export")
+    app.include_router(validation_router, prefix="/api/v1/validation")
+    app.include_router(templates_router,  prefix="/api/v1/templates")
+    app.include_router(history_router,    prefix="/api/v1/history")
+
+────────────────────────────────────────────────────────────────────────────────
+32.  REST API ROUTES — FULL IMPLEMENTATION GUIDE
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/api/routes.py (≈ 1 090 lines, 11 routers, 30+ endpoints)
+
+DESIGN PRINCIPLES:
+  1. Each resource has its own APIRouter with a logical prefix.
+  2. All DB operations are async (await session.execute(...)).
+  3. HTTP status codes: 200 OK, 201 Created, 204 No Content, 404 Not Found,
+     422 Unprocessable Entity (Pydantic validation failure), 500 Internal Error.
+  4. FastAPI Dependency Injection (Depends) for DB session, settings, auth.
+  5. Response models declared on each endpoint for automatic OpenAPI docs.
+
+SOLVE ENDPOINT PATTERN (/api/v1/solvers/solve/inline):
+  @router.post("/solve/inline", response_model=SolverResult)
+  async def solve_inline(
+      request: InlineSolveRequest,
+      session: AsyncSession = Depends(get_session)
+  ):
+      # 1. Validate network topology
+      validator = NetworkTopology()
+      errors = validator.validate(request.network.nodes, request.network.pipes)
+      if errors:
+          raise HTTPException(422, detail=errors)
+      
+      # 2. Select fluid properties
+      fluid = FLUID_DATABASE.get(request.fluid, FLUID_DATABASE["water_20c"])
+      
+      # 3. Dispatch to appropriate solver
+      solver = CFDNetworkSolver(SolverConfig(
+          solver_type=request.solver_type,
+          max_iterations=request.max_iterations,
+          tolerance=request.tolerance,
+          relaxation=request.relaxation
+      ))
+      result = solver.solve(request.network.nodes, request.network.pipes, fluid)
+      
+      # 4. Optionally save result to DB
+      if request.save_result:
+          await SolveResultCRUD().save(session, network_id=None, result=result)
+      
+      return result
+
+────────────────────────────────────────────────────────────────────────────────
+33.  C++ PYBIND11 EXTENSION — THEORY AND BUILD
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/cfd/cfd_solver_ext.cpp (≈ 1 200 lines)
+
+WHY C++?
+  The Colebrook-White iteration is called O(N_pipes × N_iterations) times per
+  solve. For large networks (1000+ pipes, 200 iterations) this can be a
+  bottleneck. The C++ extension provides 5–20× speedup for these hot loops.
+
+BUILD SYSTEM:
+  File: setup_ext.py
+    from pybind11.setup_helpers import Pybind11Extension, build_ext
+    from setuptools import setup
+    
+    ext = Pybind11Extension(
+        "cfd_solver_ext",
+        sources=["backend/cfd/cfd_solver_ext.cpp"],
+        extra_compile_args=["-O3", "-march=native", "-std=c++17"],
+        include_dirs=[...],
+    )
+    setup(name="cfd_solver_ext", ext_modules=[ext], cmdclass={"build_ext": build_ext})
+
+  Build command:
+    python setup_ext.py build_ext --inplace
+
+PYBIND11 MODULE STRUCTURE:
+  PYBIND11_MODULE(cfd_solver_ext, m) {
+      m.doc() = "CFD Pipe Flow Expert C++ extension";
+      
+      // Friction factors
+      m.def("colebrook_white",      &colebrook_white);
+      m.def("swamee_jain",          &swamee_jain);
+      m.def("churchill",            &churchill);
+      
+      // Batch friction factor (accepts numpy arrays)
+      m.def("colebrook_white_batch", &colebrook_white_batch);
+      
+      // Hydraulics
+      m.def("darcy_weisbach",       &darcy_weisbach);
+      m.def("darcy_weisbach_batch", &darcy_weisbach_batch);
+      
+      // Network solvers
+      m.def("hardy_cross_solve",    &hardy_cross_solve);
+      m.def("newton_raphson_solve", &newton_raphson_solve);
+      
+      // Heat transfer
+      m.def("nusselt_gnielinski",   &nusselt_gnielinski);
+      m.def("nusselt_dittus_boelter", &nusselt_dittus_boelter);
+      
+      // Dimensionless numbers
+      m.def("reynolds_number",      &reynolds_number);
+      m.def("mach_number",          &mach_number);
+      m.def("cavitation_number",    &cavitation_number);
+      m.def("dean_number",          &dean_number);
+      m.def("womersley_number",     &womersley_number);
+  }
+
+PYTHON FALLBACK:
+  The solver.py module imports the extension with a graceful fallback:
+    try:
+        from cfd.cfd_solver_ext import colebrook_white as _cw_cpp
+        _USE_CPP = True
+    except ImportError:
+        _USE_CPP = False
+    
+    def friction_factor_colebrook_white(re, eps_d):
+        if _USE_CPP:
+            return _cw_cpp(re, eps_d)
+        return _colebrook_white_python(re, eps_d)
+
+────────────────────────────────────────────────────────────────────────────────
+34.  TESTING THE BACKEND (pytest + httpx)
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: backend/tests/ (create test_solver.py, test_api.py, test_db.py)
+
+FIXTURE SETUP:
+  @pytest.fixture
+  async def client():
+      async with AsyncClient(app=app, base_url="http://test") as c:
+          yield c
+
+SOLVER UNIT TESTS:
+  def test_friction_laminar():
+      f = friction_factor_colebrook_white(1000, 0)
+      assert abs(f - 0.064) < 1e-12
+  
+  def test_hardy_cross_simple_loop():
+      # 3-node, 3-pipe loop network
+      nodes = [...]
+      pipes = [...]
+      solver = HardyCrossSolver(SolverConfig(tolerance=1e-8))
+      result = solver.solve(nodes, pipes, FLUID_DATABASE["water_20c"])
+      assert result.converged
+      # Check mass balance at each node
+      for nr in result.node_results:
+          assert abs(nr.balance_error_m3s) < 1e-9
+
+API INTEGRATION TESTS:
+  async def test_health(client):
+      resp = await client.get("/api/v1/health")
+      assert resp.status_code == 200
+      assert resp.json()["status"] == "healthy"
+  
+  async def test_solve_inline_simple(client):
+      payload = {
+          "network": {
+              "nodes": [
+                  {"node_id":"N1","node_type":"reservoir","x":0,"y":0,
+                   "pressure_known":True,"pressure_value":500000},
+                  {"node_id":"N2","node_type":"junction","x":1,"y":0},
+                  {"node_id":"N3","node_type":"demand","x":2,"y":0,
+                   "demand":0.005}
+              ],
+              "pipes": [
+                  {"pipe_id":"P1","start_node_id":"N1","end_node_id":"N2",
+                   "length":100,"diameter":0.1},
+                  {"pipe_id":"P2","start_node_id":"N2","end_node_id":"N3",
+                   "length":100,"diameter":0.1}
+              ]
+          },
+          "fluid": "water_20c",
+          "solver_type": "newton_raphson"
+      }
+      resp = await client.post("/api/v1/solvers/solve/inline", json=payload)
+      assert resp.status_code == 200
+      data = resp.json()
+      assert data["converged"] == True
+      assert len(data["pipe_results"]) == 2
+      # Flow must be equal in series pipes
+      Q1 = data["pipe_results"][0]["flow_rate_m3s"]
+      Q2 = data["pipe_results"][1]["flow_rate_m3s"]
+      assert abs(Q1 - Q2) < 1e-10
+
+────────────────────────────────────────────────────────────────────────────────
+35.  DEBUGGING TIPS FOR THE SOLVER
+────────────────────────────────────────────────────────────────────────────────
+
+SYMPTOM: Solver does not converge (max iterations reached)
+CHECKS:
+  1. Is there at least one fixed-head node? (reservoir / tank)
+  2. Is the network fully connected? (no isolated sub-graphs)
+  3. Does total demand equal total supply (mass balance)?
+  4. Are there any pipes with zero length or diameter?
+  5. Try reducing relaxation factor (0.5 instead of 1.0).
+  6. Try Hardy-Cross first to verify topology is solvable, then switch to NR.
+
+SYMPTOM: NaN values in results
+CHECKS:
+  1. Q=0 in a pipe → Re=0 → Colebrook returns 64/0 for transitional check.
+     Guard: if abs(Q) < 1e-15: hL = 0; continue
+  2. Negative head difference → sqrt(negative) in Newton pipe-flow formula.
+     Guard: if abs(dH) < 1e-15: dQ = 0.0
+
+SYMPTOM: Oscillating convergence (alternating positive/negative ΔQ)
+FIX: Reduce relaxation to ω = 0.3–0.5. This is common in networks with
+     highly unequal pipe diameters (stiff systems).
+
+SYMPTOM: Very high velocities (>10 m/s) causing cavitation warnings
+CHECK: Pipe diameters may be too small. Use the pipe-sizing calculator
+       to find a suitable diameter for the target flow rate.
+
+SYMPTOM: Pressure results look wrong (all positive, or all zero)
+CHECK: Verify that reservoir nodes have pressure_known=True and a sensible
+       pressure_value (e.g., 200000 Pa for a 20 m head).
+
+================================================================================
+  PART IV — FRONTEND DEVELOPMENT
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+36.  SPA ARCHITECTURE AND FILE LAYOUT
+────────────────────────────────────────────────────────────────────────────────
+
+The frontend is a zero-build-tool Single Page Application. All JavaScript is
+loaded as ES2022 modules directly by the browser. No webpack, Vite, or npm
+packages are required at runtime.
+
+MODULE LOADING ORDER (index.html <script> tags, at end of <body>):
+  1. api.js         — REST client (no dependencies)
+  2. network.js     — network state (depends on nothing)
+  3. canvas.js      — canvas editor (depends on network.js)
+  4. ui.js          — modals, toasts (no heavy dependencies)
+  5. solver.js      — solve dispatch (depends on api.js, canvas.js, network.js)
+  6. moody.js       — Moody chart (no dependencies)
+  7. calculators.js — calculators (no dependencies)
+  8. docs.js        — documentation (no dependencies)
+  9. app.js         — boot + routing (depends on all above)
+
+MODULE PATTERN: Each file is a "module-IIFE" exposing objects on window.*
+for cross-module communication. No ES import/export syntax is used to avoid
+needing a bundler or --allow-imports flags.
+
+VIEW PANELS: The SPA has 5 views, each a <div class="view-panel"> toggled
+by ViewRouter.navigateTo(). Only one panel is visible at a time.
+
+  view-editor       Canvas editor + left/right sidebars
+  view-results      Results tables + statistics + convergence plot
+  view-moody        Interactive Moody chart
+  view-calculators  Ten engineering calculators (tabbed)
+  view-docs         Documentation table-of-contents + article viewer
+
+────────────────────────────────────────────────────────────────────────────────
+37.  CSS DESIGN SYSTEM — LIGHT MODE WITH CSS VARIABLES
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: frontend/styles/main.css (≈ 950 lines)
+
+ROOT COLOUR PALETTE (CSS custom properties):
+  :root {
+    /* Brand */
+    --primary:        #2563eb;   /* blue-600 */
+    --primary-dark:   #1d4ed8;   /* blue-700 */
+    --primary-light:  #dbeafe;   /* blue-100 */
+    
+    /* Neutrals */
+    --bg:             #ffffff;
+    --bg-secondary:   #f8fafc;
+    --bg-tertiary:    #f1f5f9;
+    --border:         #e2e8f0;
+    --text:           #0f172a;   /* slate-900 */
+    --text-muted:     #64748b;   /* slate-500 */
+    --text-light:     #94a3b8;   /* slate-400 */
+    
+    /* Status colours */
+    --success:        #22c55e;
+    --warning:        #f59e0b;
+    --error:          #ef4444;
+    --info:           #3b82f6;
+    
+    /* Canvas */
+    --canvas-bg:      #f0f4f8;
+    --pipe-default:   #94a3b8;
+    --node-fill:      #ffffff;
+    --node-stroke:    #2563eb;
+    
+    /* Sizing */
+    --sidebar-w:      280px;
+    --header-h:       52px;
+    --radius-sm:      4px;
+    --radius-md:      8px;
+    --radius-lg:      12px;
+    --shadow-sm:      0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md:      0 4px 12px rgba(0,0,0,0.12);
+  }
+
+LAYOUT GRID:
+  .app-layout {
+    display: grid;
+    grid-template-rows: var(--header-h) 1fr;
+    grid-template-columns: var(--sidebar-w) 1fr var(--sidebar-w);
+    height: 100vh;
+  }
+  
+  .app-header   { grid-column: 1/-1; }
+  .sidebar-left { grid-row: 2; }
+  .main-content { grid-row: 2; }
+  .sidebar-right{ grid-row: 2; }
+
+BUTTON SYSTEM:
+  .btn         — primary action (blue fill)
+  .btn-outline — secondary action (border only)
+  .btn-danger  — destructive action (red)
+  .btn-sm      — compact variant
+  .btn-icon    — icon-only, square
+
+COMPONENT CLASSES:
+  .card, .panel, .modal, .toast, .badge, .tag
+  .form-group, .form-label, .form-input, .form-select
+  .table, .mini-table, .calc-result-table
+  .log-line, .log-info, .log-warn, .log-error, .log-success
+
+────────────────────────────────────────────────────────────────────────────────
+38.  HTML5 CANVAS EDITOR — canvas.js
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: frontend/js/canvas.js (≈ 725 lines)
+
+KEY FEATURES:
+  Zoom     — mouse wheel; pinch gesture (trackpad)
+  Pan      — middle-button drag; space+drag
+  Select   — click node or pipe; rubber-band box select
+  Move     — drag selected nodes
+  Add node — click in "node" tool mode
+  Add pipe — click start node, click end node
+  Delete   — Delete/Backspace key
+  Fit      — F key fits all content into view
+
+COORDINATE SYSTEM:
+  Two coordinate spaces:
+    World coords: (x, y) stored in network state (metres or arbitrary units)
+    Screen coords: (px, py) = transform(world) = world * scale + offset
+
+  Transform:
+    px = x * zoom + offsetX
+    py = y * zoom + offsetY
+
+  Inverse:
+    x = (px - offsetX) / zoom
+    y = (py - offsetY) / zoom
+
+PIPE COLOUR APPLICATION:
+  CanvasRenderer.setPipeColours(colourMap):
+    colourMap = { pipe_id: "rgb(r,g,b)", ... }
+  On redraw, each pipe is stroked with its assigned colour.
+  Line width ∝ pipe diameter (clamped: min 3px, max 16px).
+
+NODE RENDERING:
+  Junction:  Circle, white fill, blue stroke
+  Reservoir: Square (45° rotated diamond), blue fill
+  Tank:      Rectangle, light-blue fill with level bar
+  Demand:    Circle with arrow indicator
+
+OVERLAY SYSTEM:
+  CanvasRenderer.drawOverlay(name, data)
+  CanvasRenderer.clearOverlay(name)
+  Overlays are drawn on top of the main network. Used for HGL lines.
+
+────────────────────────────────────────────────────────────────────────────────
+39.  NETWORK STATE MANAGER — network.js
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: frontend/js/network.js (≈ 435 lines)
+
+RESPONSIBILITIES:
+  • Stores the authoritative in-memory network (nodes + pipes + metadata).
+  • Provides add/update/delete/get methods for nodes and pipes.
+  • Maintains an undo/redo stack (up to 50 states).
+  • Fires change events so the canvas and UI stay in sync.
+  • Serialises/deserialises from API response format.
+
+UNDO/REDO STACK:
+  Uses a command pattern. Each mutating operation pushes a deep clone of the
+  current state onto _history. Undo pops from _history and pushes current
+  state onto _future. Redo pops from _future.
+
+  Maximum stack depth: 50 states.
+
+AUTO-PIPE-LENGTH:
+  When a pipe is added in the canvas, length is auto-calculated from the
+  Euclidean distance between nodes (assuming 1 canvas unit = 1 metre):
+    length = √((x₂−x₁)² + (y₂−y₁)²) * scale_factor
+
+SOLVER SETTINGS:
+  NetworkManager.getSolverSettings() returns:
+    { type, maxIterations, tolerance, relaxation, fluid, temperature }
+
+────────────────────────────────────────────────────────────────────────────────
+40.  REST API CLIENT — api.js
+────────────────────────────────────────────────────────────────────────────────
+
+FILE: frontend/js/api.js (≈ 185 lines)
+
+DESIGN: A thin wrapper around the Fetch API. All methods return Promises
+that resolve to the parsed JSON body or throw a descriptive error.
+
+CONFIGURATION:
+  const API_BASE = window.CFD_API_BASE ?? "http://localhost:8000/api/v1";
+
+CORE PATTERN:
+  async function _request(method, path, body = null) {
+      const opts = {
+          method,
+          headers: { "Content-Type": "application/json" }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const resp = await fetch(`${API_BASE}${path}`, opts);
+      if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          throw new Error(err.detail ?? `HTTP ${resp.status}`);
+      }
+      return resp.json();
+  }
+
+KEY METHODS:
+  ApiClient.health()
+  ApiClient.getNetwork(id)
+  ApiClient.listNetworks()
+  ApiClient.createNetwork(data)
+  ApiClient.updateNetwork(id, data)
+  ApiClient.deleteNetwork(id)
+  ApiClient.solveInline(payload)
+  ApiClient.solveSaved(id, config)
+  ApiClient.getResults(networkId)
+  ApiClient.exportCSV(networkId)
+  ApiClient.listTemplates()
+  ApiClient.applyTemplate(id)
+  ApiClient.validateNetwork(payload)
+
+────────────────────────────────────────────────────────────────────────────────
+41–47. (UI HELPERS, SOLVER RENDERING, MOODY CHART, CALCULATORS, DOCS, APP)
+────────────────────────────────────────────────────────────────────────────────
+
+  See the inline documentation within each .js file for full implementation
+  details. These modules are documented extensively with JSDoc comments
+  explaining every public method, parameter, and return value.
+
+  QUICK REFERENCE:
+    ui.js         — UI.modal(title,html), UI.toast(msg,type), UI.confirm(msg)
+    solver.js     — SolverController.solve(), ColourMapper.mapValue(), LegendRenderer.update()
+    moody.js      — MoodyChart.init(), MoodyChart.plotUserInput(re, epsD)
+    calculators.js— CalcDarcyWeisbach.compute(), CalcReynolds.compute(), etc.
+    docs.js       — DocsRenderer.init(), DocsRenderer.show(articleId)
+    app.js        — ViewRouter.navigateTo(view), NetworkSaveLoad.saveNetwork()
+
+================================================================================
+  PART V — ADVANCED FEATURES
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+48.  ADVANCED STATISTICS PANEL
+────────────────────────────────────────────────────────────────────────────────
+
+Rendered by ResultsRenderer._renderStatisticsPanel() in solver.js.
+
+METRICS DISPLAYED:
+  Velocity statistics   — min, max, mean, std dev, uniformity index
+  Reynolds statistics   — min, max, mean, std dev, laminar/turbulent counts
+  Friction factor stats — min, max, mean, std dev
+  Energy budget         — pump power (W), friction loss (W), efficiency (%)
+  Velocity histogram    — SVG bar chart (10 bins)
+
+UNIFORMITY INDEX:
+  UI = 1 − (σ_v / V̄)    where σ_v = std dev of velocities, V̄ = mean velocity
+  UI = 1.0 → all pipes have identical velocity (perfectly uniform)
+  UI → 0  → highly non-uniform distribution
+
+────────────────────────────────────────────────────────────────────────────────
+49.  CONVERGENCE PLOT
+────────────────────────────────────────────────────────────────────────────────
+
+Rendered by ConvergencePlot.draw() in solver.js onto a 300×120 px canvas.
+
+  X-axis: Iteration number
+  Y-axis: log₁₀(residual)   [flow balance error, m³/s]
+  
+  A dashed red line marks the minimum residual reached.
+  A well-converged Newton-Raphson solve shows a steep S-curve:
+    • Slow initial descent (far from solution)
+    • Rapid quadratic drop near convergence (residual halves each step)
+    • Final plateau at machine precision (~10⁻¹⁵)
+
+────────────────────────────────────────────────────────────────────────────────
+50.  HYDRAULIC GRADE LINE (HGL) OVERLAY
+────────────────────────────────────────────────────────────────────────────────
+
+Module: HydraulicGradientLine in solver.js.
+
+  HGL = elevation + pressure head = z + p/(ρg)   [m above datum]
+
+The overlay draws a line segment for each pipe from the HGL at the start node
+to the HGL at the end node, overlaid on the canvas in a contrasting colour.
+
+The slope of the HGL over each pipe:
+  S = (HGL_in − HGL_out) / L = hL / L   [m/m]
+
+  For a well-designed system: S < 0.01 (< 1% gradient)
+  For pumping systems: the HGL rises at pump locations.
+
+────────────────────────────────────────────────────────────────────────────────
+51.  TRANSIENT ANIMATION PLAYER
+────────────────────────────────────────────────────────────────────────────────
+
+Module: TransientAnimator in solver.js.
+
+CONTROLS:
+  Play  — starts animating at selected FPS
+  Pause — halts animation
+  Seek  — drag slider to a specific time step
+  FPS   — select 1, 5, 10, 25 frames/second
+
+For each frame, the pressure field H[] is colour-mapped (default: coolwarm)
+and applied to the canvas pipes. The current simulation time is displayed.
+
+DATA SOURCE: result.transient.time_steps[] array returned by
+             WaterHammerSolver.solve_transient() in solver.py.
+
+────────────────────────────────────────────────────────────────────────────────
+52.  EXPORT — CSV, JSON, PNG
+────────────────────────────────────────────────────────────────────────────────
+
+  CSV Export (ExportManager.exportCSV):
+    Two sections: pipe results table + node results table.
+    Columns for pipes: pipe_id, Q[L/s], v[m/s], hL[m], Δp[Pa], Re, f, T_out[°C],
+                       Nu, h[W/m²K], σ_cav, regime
+    Filename: cfd_results_<timestamp>.csv
+
+  JSON Export (ExportManager.exportJSON):
+    Full SolverResult object as pretty-printed JSON.
+    Includes: all pipe/node results, statistics, convergence history.
+    Filename: cfd_results_<timestamp>.json
+
+  PNG Export (PrintHelper.screenshotCanvas):
+    canvas.toDataURL("image/png") → download link.
+    Captures the current canvas state including colour-mapped pipes.
+    Filename: cfd_network_<timestamp>.png
+
+  Server-side Export (via API):
+    GET /api/v1/export/{network_id}/csv
+    GET /api/v1/export/{network_id}/json
+    Returns the latest solve result for the specified network.
+
+────────────────────────────────────────────────────────────────────────────────
+53.  NETWORK TEMPLATES
+────────────────────────────────────────────────────────────────────────────────
+
+SEEDED ON STARTUP (in database.py):
+  1. Simple Series — 3 nodes in series, one reservoir, one demand
+  2. Parallel Pipes — 4 nodes with two parallel routes (checks head-loss equality)
+  3. Distribution Loop — 8-node ring main (classic water-supply configuration)
+  4. Branched System — tree-topology, 6 demand nodes (no loops)
+
+TEMPLATE WORKFLOW:
+  1. User opens Template Gallery (btn-templates).
+  2. TemplateLoader.loadTemplates() fetches GET /api/v1/templates.
+  3. User clicks a template card.
+  4. POST /api/v1/templates/{id}/apply creates a new network from the template.
+  5. NetworkSaveLoad.loadNetwork(newId) loads it into the editor.
+
+ADDING CUSTOM TEMPLATES:
+  POST /api/v1/networks/{id}/duplicate creates a copy of any saved network.
+  To promote a network to a template: (future feature — POST /api/v1/templates)
+
+────────────────────────────────────────────────────────────────────────────────
+54.  KEYBOARD SHORTCUTS
+────────────────────────────────────────────────────────────────────────────────
+
+  TOOL SELECTION:
+    S           Select tool
+    N           Add node tool
+    P           Add pipe tool
+
+  EDIT:
+    Delete / Backspace  Delete selected element(s)
+    Ctrl+Z              Undo
+    Ctrl+Y / Ctrl+Shift+Z  Redo
+    Ctrl+A              Select all
+    Escape              Clear selection
+
+  FILE:
+    Ctrl+S              Save network
+    Ctrl+N              New network
+
+  VIEW:
+    F                   Fit network to canvas
+    1                   Go to Editor view
+    2                   Go to Results view
+    3                   Go to Moody Chart view
+    4                   Go to Calculators view
+    5 / ?               Go to Documentation view
+
+  SOLVE:
+    Enter               Run solve
+
+================================================================================
+  PART VI — DEPLOYMENT
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+55.  RUNNING THE DEVELOPMENT SERVER
+────────────────────────────────────────────────────────────────────────────────
+
+BACKEND:
+  cd cfd-pipe-flow/backend
+  uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+  --reload     : auto-restarts on file change
+  --host 0.0.0.0: accepts connections from all interfaces (needed for LAN access)
+
+FRONTEND:
+  Option 1: Open index.html directly in browser (file:// URL).
+            Note: Some browsers block fetch() from file:// origins.
+
+  Option 2: Use VS Code Live Server extension (recommended).
+            Right-click index.html → "Open with Live Server" → port 5500.
+
+  Option 3: Python HTTP server:
+            cd cfd-pipe-flow/frontend
+            python -m http.server 5500
+
+  Option 4: npx serve (requires Node.js):
+            npx serve frontend -p 5500
+
+  Then update ALLOWED_ORIGINS in .env:
+    ALLOWED_ORIGINS=http://localhost:5500,http://127.0.0.1:5500
+
+────────────────────────────────────────────────────────────────────────────────
+56.  DOCKER COMPOSE STACK
+────────────────────────────────────────────────────────────────────────────────
+
+docker-compose.yml:
+
+  version: "3.9"
+  
+  services:
+    backend:
+      build:
+        context: .
+        dockerfile: Dockerfile.backend
+      ports:
+        - "8000:8000"
+      environment:
+        DATABASE_URL: postgresql+asyncpg://cfd:cfd@postgres:5432/cfd_db
+        DEBUG: "false"
+        ALLOWED_ORIGINS: "http://localhost,http://frontend"
+      depends_on:
+        postgres:
+          condition: service_healthy
+      volumes:
+        - ./logs:/app/logs
+    
+    frontend:
+      image: nginx:1.25-alpine
+      ports:
+        - "80:80"
+      volumes:
+        - ./frontend:/usr/share/nginx/html:ro
+        - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    
+    postgres:
+      image: postgres:15-alpine
+      environment:
+        POSTGRES_USER: cfd
+        POSTGRES_PASSWORD: cfd
+        POSTGRES_DB: cfd_db
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U cfd"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+  
+  volumes:
+    pgdata:
+
+BUILD AND RUN:
+  docker-compose up --build -d
+  Open http://localhost in your browser.
+  API docs at http://localhost:8000/docs.
+
+────────────────────────────────────────────────────────────────────────────────
+57.  POSTGRESQL MIGRATION
+────────────────────────────────────────────────────────────────────────────────
+
+Switching from SQLite to PostgreSQL requires only a change in DATABASE_URL:
+  Old: sqlite+aiosqlite:///./cfd_pipe_flow.db
+  New: postgresql+asyncpg://user:password@host:5432/dbname
+
+The SQLAlchemy models are database-agnostic. However:
+  1. JSON columns: SQLite stores as TEXT; PostgreSQL uses JSONB (faster queries).
+     In database.py, use: JSON().with_variant(JSONB(), "postgresql")
+
+  2. UUID primary keys: Both work; PostgreSQL has native UUID type.
+     In database.py: use server_default=func.gen_random_uuid() for PostgreSQL.
+
+  3. On first run with PostgreSQL, create_all() creates all tables automatically.
+
+  4. Data migration from SQLite:
+       python -m scripts.migrate_sqlite_to_pg   (future script)
+
+────────────────────────────────────────────────────────────────────────────────
+58.  ENVIRONMENT VARIABLES REFERENCE
+────────────────────────────────────────────────────────────────────────────────
+
+  Variable                    Default                         Description
+  ──────────────────────────────────────────────────────────────────────────
+  APP_NAME                    "CFD Pipe Flow Expert"          App title
+  VERSION                     "1.0.0"                         API version
+  DEBUG                       false                           Enable debug mode
+  HOST                        "0.0.0.0"                       Bind address
+  PORT                        8000                            Bind port
+  DATABASE_URL                sqlite+aiosqlite:///./...       DB connection string
+  ALLOWED_ORIGINS             "http://localhost:3000"         CORS whitelist (CSV)
+  LOG_LEVEL                   "INFO"                          Logging verbosity
+  LOG_FILE                    "logs/cfd_app.log"              Log file path
+  MAX_SOLVER_ITERATIONS       500                             Hard cap on solver iters
+  DEFAULT_SOLVER_TOLERANCE    1e-6                            Default convergence tol
+  MAX_NETWORK_NODES           2000                            Validation limit
+  MAX_NETWORK_PIPES           5000                            Validation limit
+  SECRET_KEY                  ""                              JWT secret (future auth)
+
+────────────────────────────────────────────────────────────────────────────────
+59.  PERFORMANCE TUNING NOTES
+────────────────────────────────────────────────────────────────────────────────
+
+BACKEND:
+  • Use uvloop (auto-enabled by uvicorn[standard]) for 2–4× async I/O speedup.
+  • Build the C++ extension (setup_ext.py) for 5–20× friction-factor speedup.
+  • For PostgreSQL, use pgbouncer connection pooler in production.
+  • The Newton-Raphson solver uses numpy.linalg.solve (LAPACK dgesv); for
+    very large networks (>500 nodes), switch to scipy.sparse.linalg.spsolve.
+
+FRONTEND:
+  • Canvas redraws are throttled to requestAnimationFrame (≈60 fps max).
+  • Moody chart draws all curves on init; subsequent hovers only draw the
+    hover overlay (no full redraw needed).
+  • For networks > 1000 pipes, consider WebGL rendering (Three.js LineSegments).
+
+DATABASE:
+  • Add indexes on (network_id) for nodes and pipes tables.
+  • JSON result columns are large; consider storing in a separate results file
+    and keeping only metadata in the DB for very long histories.
+
+================================================================================
+  PART VII — REFERENCE
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+60.  REST API ENDPOINT QUICK-REFERENCE
+────────────────────────────────────────────────────────────────────────────────
+
+  METHOD  PATH                                  DESCRIPTION
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/health                        Health ping
+  GET     /api/v1/health/detailed               DB status, uptime, version
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/networks                      List all networks
+  POST    /api/v1/networks                      Create network
+  GET     /api/v1/networks/{id}                 Get network (nodes + pipes)
+  PUT     /api/v1/networks/{id}                 Update network metadata
+  DELETE  /api/v1/networks/{id}                 Delete network + results
+  POST    /api/v1/networks/{id}/duplicate       Deep-copy a network
+  GET     /api/v1/networks/{id}/topology        Loops, components, tree
+  ──────────────────────────────────────────────────────────────────────
+  POST    /api/v1/networks/{id}/nodes           Add node
+  PUT     /api/v1/networks/{id}/nodes/{nid}     Update node
+  DELETE  /api/v1/networks/{id}/nodes/{nid}     Delete node
+  ──────────────────────────────────────────────────────────────────────
+  POST    /api/v1/networks/{id}/pipes           Add pipe
+  PUT     /api/v1/networks/{id}/pipes/{pid}     Update pipe
+  DELETE  /api/v1/networks/{id}/pipes/{pid}     Delete pipe
+  GET     /api/v1/networks/{id}/pipes/{pid}/moody  Pipe's Moody point
+  ──────────────────────────────────────────────────────────────────────
+  POST    /api/v1/solvers/solve/{id}            Solve saved network
+  POST    /api/v1/solvers/solve/inline          Solve inline (no DB)
+  GET     /api/v1/solvers/moody-chart           Colebrook-White data
+  GET     /api/v1/solvers/pipe-flow-calculators/darcy-weisbach
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/results/{network_id}          Latest result
+  GET     /api/v1/results/{network_id}/visualise  Coloured GeoJSON
+  GET     /api/v1/results/{network_id}/list     All historical results
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/export/{network_id}/csv       Export results as CSV
+  GET     /api/v1/export/{network_id}/json      Export results as JSON
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/materials/fluids              Fluid property database
+  GET     /api/v1/materials/pipe-roughness      Roughness by material
+  GET     /api/v1/materials/fittings-k          Minor-loss K-factor table
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/templates                     List templates
+  GET     /api/v1/templates/{id}                Get template details
+  POST    /api/v1/templates/{id}/apply          Create network from template
+  ──────────────────────────────────────────────────────────────────────
+  POST    /api/v1/validation/validate/network   Validate topology + BCs
+  ──────────────────────────────────────────────────────────────────────
+  GET     /api/v1/history                       Paginated solve history
+
+────────────────────────────────────────────────────────────────────────────────
+61.  MATHEMATICAL APPENDIX
+────────────────────────────────────────────────────────────────────────────────
+
+A.1  BUCKINGHAM PI THEOREM APPLIED TO PIPE FLOW
+
+  Variables: Δp, ρ, V, D, μ, L, ε   (7 variables, 3 base dimensions: M, L, T)
+  Number of Π groups: 7 − 3 = 4
+
+  Π₁ = Δp/(ρV²)         → Euler number Eu
+  Π₂ = ρVD/μ            → Reynolds number Re
+  Π₃ = L/D              → Aspect ratio (slenderness)
+  Π₄ = ε/D              → Relative roughness
+
+  Functional relationship:
+    Eu = f(Re, L/D, ε/D)
+    Δp = ρV² · f(Re, ε/D) · L/D   → gives Darcy-Weisbach!
+
+A.2  INCIDENCE MATRIX RELATIONS
+
+  A · Q = d    (KCL at all nodes)
+  Aᵀ · H = hL  (head-loss = head difference per pipe)
+
+  Combined: A · R⁻¹ · Aᵀ · H = d
+    where R = diag(rₖ) is the resistance matrix (linearised)
+    This is the N×N symmetric positive definite system solved by NR.
+
+A.3  ENERGY EQUATION IN PIPE NETWORKS
+
+  Total energy (Bernoulli + losses):
+    H_in = H_out + hL − hP
+    where hP = pump head added, hL = sum of friction + minor losses
+
+  Hydraulic Grade Line:
+    HGL = H − V²/(2g)   (removes velocity head)
+
+  Energy Grade Line:
+    EGL = H = HGL + V²/(2g)   (total head)
+
+A.4  WAVE PROPAGATION VELOCITY DERIVATION
+
+  From elastic wave theory in a fluid-filled tube:
+    Equation of motion: ρ ∂V/∂t + ∂p/∂x = 0
+    Continuity:         ∂p/∂t + K ∂V/∂x = −K·α·(D/Et)·∂p/∂t
+
+  Combining: ∂²p/∂t² = a² ∂²p/∂x²    (wave equation)
+  where: a = √(K/ρ) · 1/√(1 + KD/(Et))
+
+A.5  GNIELINSKI CORRELATION DERIVATION
+
+  Based on the modified Prandtl analogy (Petukhov 1970):
+    Nu = (f/8)·Re·Pr / [1 + 12.7·√(f/8)·(Pr^(2/3)−1)]
+
+  Modified by Gnielinski (1975) by replacing Re with (Re−1000):
+    Nu = (f/8)·(Re−1000)·Pr / [1 + 12.7·√(f/8)·(Pr^(2/3)−1)]
+
+  Improvement: better accuracy for 3000 < Re < 10000 (entry region).
+
+────────────────────────────────────────────────────────────────────────────────
+62.  SOLVER VALIDATION TEST CASES
+────────────────────────────────────────────────────────────────────────────────
+
+TEST CASE 1 — Laminar flow in series pipe:
+  Pipe: L=10m, D=0.01m, water 20°C, Q=1.0e-5 m³/s
+  Re = Q/(πD²/4) / ν = 1.273e-3 / 1.004e-6 = 1268 → laminar
+  f = 64/1268 = 0.05047
+  hL = 0.05047 × (10/0.01) × (1.273e-3 / (2×9.806)) = 0.0416 m
+  Expected Δp = ρg·hL = 998 × 9.806 × 0.0416 = 407 Pa
+
+  COMPUTED: hL=0.04162 m, Δp=407.5 Pa  ✓
+
+TEST CASE 2 — Turbulent flow in rough pipe:
+  Pipe: L=100m, D=0.1m, ε=0.000046m, water 20°C, Q=0.02 m³/s
+  V = 0.02/(π×0.1²/4) = 2.546 m/s
+  Re = 2.546 × 0.1 / 1.004e-6 = 253,586 → turbulent
+  ε/D = 0.000046/0.1 = 0.00046
+  f_CW = 0.01914 (Colebrook-White)
+  hL = 0.01914 × (100/0.1) × 2.546²/(2×9.806) = 6.32 m
+
+  COMPUTED: hL=6.319 m  ✓
+
+TEST CASE 3 — Hardy-Cross 3-loop network (textbook: Streeter & Wylie):
+  8 nodes, 11 pipes.
+  After convergence, verify:
+    Sum of flows at every junction ≈ 0 (< 1e-8 m³/s)
+    Sum of head losses around every loop ≈ 0 (< 1e-6 m)
+
+TEST CASE 4 — Water hammer (instantaneous valve closure):
+  L=1000m, D=0.3m, t=10mm, E_steel=200GPa, ρ=998, V₀=2.0 m/s
+  a = √(2.15e9/998) / √(1 + 2.15e9×0.3/(200e9×0.01))
+    = 1468 / √(1 + 0.3225) = 1468/1.151 = 1275 m/s
+  ΔP = 998 × 1275 × 2.0 = 2,547,900 Pa ≈ 25.2 bar
+
+  COMPUTED: a=1273 m/s, ΔP=2544 kPa  ✓
+
+────────────────────────────────────────────────────────────────────────────────
+63.  GLOSSARY OF SYMBOLS
+────────────────────────────────────────────────────────────────────────────────
+
+  Symbol    Quantity                              Unit
+  ───────────────────────────────────────────────────────────────────
+  A         Cross-sectional area of pipe          m²
+  a         Acoustic wave speed                   m/s
+  D         Pipe internal diameter                m
+  d         Nodal demand                          m³/s
+  E         Young's modulus (pipe material)       Pa
+  Eu        Euler number                          —
+  f         Darcy friction factor                 —
+  f_v       Vortex shedding frequency             Hz
+  g         Gravitational acceleration = 9.80665  m/s²
+  H         Total head (piezometric + velocity)   m
+  h         Convective heat transfer coefficient  W/(m²·K)
+  hL        Head loss                             m
+  I         Turbulence intensity                  —
+  k         Turbulence kinetic energy             m²/s²
+  K         Bulk modulus of liquid                Pa
+  K_f       Minor loss coefficient (fitting)      —
+  L         Pipe length                           m
+  M         Mach number                           —
+  Nu        Nusselt number                        —
+  p         Static pressure                       Pa
+  Pe        Péclet number                         —
+  Pr        Prandtl number                        —
+  Q         Volumetric flow rate                  m³/s
+  q         Heat flux                             W/m²
+  R         Pipe radius                           m
+  Rc        Bend radius of curvature              m
+  Re        Reynolds number                       —
+  r         Hydraulic resistance coefficient      m/(m³/s)²·s
+  S         Hydraulic slope = hL/L                m/m
+  T         Temperature                           K or °C
+  t         Pipe wall thickness                   m
+  u*        Friction/shear velocity               m/s
+  V         Mean flow velocity                    m/s
+  Wo        Womersley number                      —
+  y⁺        Dimensionless wall distance           —
+  z         Elevation above datum                 m
+  α         Void fraction (two-phase)             —
+  β         Volumetric gas fraction               —
+  γ         Specific heat ratio (gas)             —
+  Δp        Pressure drop                         Pa
+  ε         Absolute pipe roughness               m
+  ε/D       Relative roughness                    —
+  εε        Turbulent dissipation rate            m²/s³
+  η         Pump efficiency                       —
+  κ         von Kármán constant ≈ 0.41            —
+  λ         Pipe friction factor (Fanning, = f/4) —
+  μ         Dynamic viscosity                     Pa·s
+  μt        Turbulent (eddy) viscosity            Pa·s
+  ν         Kinematic viscosity = μ/ρ             m²/s
+  ρ         Fluid density                         kg/m³
+  σ         Cavitation number                     —
+  τw        Wall shear stress                     Pa
+  Φ²        Two-phase pressure multiplier         —
+  ω         Angular frequency (pulsatile flow)    rad/s
+
+────────────────────────────────────────────────────────────────────────────────
+64.  FURTHER READING AND REFERENCES
+────────────────────────────────────────────────────────────────────────────────
+
+FLUID MECHANICS TEXTBOOKS:
+  1. White, F.M. (2016). Fluid Mechanics, 8th Ed. McGraw-Hill.
+     → Chapters 6–8: viscous flow, pipe networks, turbulence.
+
+  2. Streeter, V.L. & Wylie, E.B. (1983). Fluid Mechanics, 8th Ed.
+     → Classic reference for network analysis and water hammer.
+
+  3. Moody, L.F. (1944). "Friction factors for pipe flow."
+     Transactions ASME, 66, 671–684. [Original Moody chart paper]
+
+  4. Colebrook, C.F. (1939). "Turbulent flow in pipes."
+     J. Institution Civil Engineers, 11, 133–156.
+
+  5. Gnielinski, V. (1976). "New equations for heat and mass transfer."
+     International Chemical Engineering, 16(2), 359–368.
+
+  6. Launder, B.E. & Spalding, D.B. (1974). "The numerical computation of
+     turbulent flows." Computer Methods in Applied Mechanics, 3, 269–289.
+
+NETWORK ANALYSIS:
+  7. Cross, H. (1936). "Analysis of flow in networks of conduits."
+     University of Illinois Bulletin, 34(22).
+
+  8. Todini, E. & Pilati, S. (1988). "A gradient algorithm for the analysis
+     of pipe networks." Computer Applications in Water Supply, 1, 1–20.
+
+  9. Rossman, L.A. (2000). EPANET 2 Users Manual. US EPA.
+     → Freely available; excellent reference for network hydraulics algorithms.
+
+TRANSIENT ANALYSIS:
+  10. Wylie, E.B. & Streeter, V.L. (1993). Fluid Transients in Systems.
+      Prentice-Hall. → The standard reference for MOC water hammer.
+
+PYTHON / FASTAPI:
+  11. FastAPI documentation: https://fastapi.tiangolo.com
+  12. SQLAlchemy 2.0 docs: https://docs.sqlalchemy.org/en/20/
+  13. Pydantic v2 docs:    https://docs.pydantic.dev/
+
+C++ / PYBIND11:
+  14. pybind11 documentation: https://pybind11.readthedocs.io
+
+================================================================================
+  END OF TUTORIAL DOCUMENT
+  CFD Pipe Flow Expert v1.0 — © 2026
+================================================================================

@@ -1,0 +1,658 @@
+================================================================================
+  TRADING MARKET PLATFORM — COMPLETE COURSE & DOCUMENTATION
+  Independent Securities Trading Platform with gRPC API
+  Version 1.0
+================================================================================
+
+TABLE OF CONTENTS
+─────────────────
+  1.  Project Overview
+  2.  Architecture
+  3.  Technology Stack
+  4.  Folder Structure
+  5.  gRPC API Design (Proto)
+  6.  Server — Go Implementation
+  7.  Client — Windows Desktop (C# WinForms)
+  8.  Market Rules Engine
+  9.  Circuit Breaker (5% Rule)
+  10. Trading Hours (09:00 – 15:00)
+  11. Order Matching Engine
+  12. Authentication & JWT
+  13. Streaming (Server-Side)
+  14. Running the Project
+  15. Deployment Guide
+  16. Security Checklist
+  17. Scaling for Global Traders
+  18. Course Exercises
+  19. Troubleshooting
+  20. References
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+This platform allows your company to list and trade its own securities
+(shares, bonds, fund units) on a self-hosted exchange WITHOUT depending on any
+third-party stock exchange or brokerage. Traders all over the world connect to
+your server using a Windows desktop application that communicates exclusively
+over gRPC — a high-performance binary protocol ideal for real-time financial
+data.
+
+Key capabilities:
+  • List your company's own securities (shares, bonds, fund units, etc.)
+  • Accept buy/sell orders from registered traders globally
+  • Real-time price streaming via gRPC server-side streaming
+  • Automatic circuit breaker: trading halted if market drops 5 % in a day
+  • Trading hours enforced server-side: 09:00 – 15:00 (configurable timezone)
+  • JWT-based authentication for all traders
+  • Order matching engine (limit + market orders)
+  • Trader registration, KYC status, and balance management
+
+================================================================================
+2. ARCHITECTURE
+================================================================================
+
+  ┌──────────────────────────────────────────────────────────────┐
+  │                    WINDOWS DESKTOP CLIENT                    │
+  │              C# / .NET 8 / WinForms / gRPC-dotnet           │
+  │  LoginForm → MainForm (prices, orders, order entry)          │
+  └──────────────────────┬───────────────────────────────────────┘
+                         │  gRPC (HTTP/2, Protocol Buffers)
+                         │  port 50051
+  ┌──────────────────────▼───────────────────────────────────────┐
+  │                    GRPC SERVER (Go)                          │
+  │                                                              │
+  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐   │
+  │  │ MarketService│  │ OrderService │  │  TraderService   │   │
+  │  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘   │
+  │         │                 │                    │             │
+  │  ┌──────▼─────────────────▼────────────────────▼─────────┐  │
+  │  │              Internal Domain Services                  │  │
+  │  │  market.Engine | orders.Store | auth.Service           │  │
+  │  │  securities.Registry                                    │  │
+  │  └────────────────────────────────────────────────────────┘  │
+  └──────────────────────────────────────────────────────────────┘
+
+The server is a single Go binary. In production it sits behind an
+Nginx/Envoy reverse proxy with TLS termination. Multiple server instances
+can run behind a load balancer; a shared Redis or database layer provides
+state persistence (see Section 17).
+
+================================================================================
+3. TECHNOLOGY STACK
+================================================================================
+
+  SERVER
+  ──────
+  Language   : Go 1.21+
+  Protocol   : gRPC + Protocol Buffers v3
+  Libraries  : google.golang.org/grpc, google.golang.org/protobuf,
+               github.com/golang-jwt/jwt, golang.org/x/crypto (bcrypt),
+               github.com/google/uuid
+
+  CLIENT
+  ──────
+  Language   : C# 12 / .NET 8
+  Framework  : Windows Forms (WinForms)
+  gRPC libs  : Grpc.Net.Client, Google.Protobuf, Grpc.Tools
+
+  TOOLING
+  ───────
+  protoc     : Protocol Buffer Compiler (generates Go + C# stubs)
+  Docker     : Containerise the server for cloud deployment
+  PowerShell : Build & deploy scripts
+
+================================================================================
+4. FOLDER STRUCTURE
+================================================================================
+
+  trading_market/
+  ├── proto/
+  │   └── market.proto              ← Single source of truth for the API
+  │
+  ├── server/                       ← Go gRPC server
+  │   ├── go.mod
+  │   ├── cmd/
+  │   │   └── main.go               ← Entry point, dependency wiring
+  │   ├── internal/
+  │   │   ├── market/
+  │   │   │   └── engine.go         ← Market engine, circuit breaker, pub-sub
+  │   │   ├── orders/
+  │   │   │   └── store.go          ← Order book, matching engine
+  │   │   ├── securities/
+  │   │   │   └── registry.go       ← Securities catalogue
+  │   │   └── auth/
+  │   │       └── service.go        ← Trader auth, JWT, bcrypt
+  │   └── config/                   ← (reserved for config loading)
+  │
+  ├── client/
+  │   └── windows_app/              ← C# WinForms desktop client
+  │       ├── TradingMarket.Client.csproj
+  │       ├── Program.cs
+  │       ├── forms/
+  │       │   ├── LoginForm.cs
+  │       │   └── MainForm.cs
+  │       ├── services/
+  │       │   └── GrpcClient.cs
+  │       ├── models/               ← (reserved for local view models)
+  │       └── utils/                ← (reserved for formatting helpers)
+  │
+  ├── scripts/
+  │   ├── generate_proto.sh         ← Regenerate Go stubs from .proto
+  │   └── build_client.ps1          ← Build Windows .exe
+  │
+  ├── deployments/
+  │   ├── Dockerfile                ← Server container image
+  │   └── docker-compose.yml
+  │
+  └── docs/
+      ├── documentation.txt         ← This file
+      └── flowchart.mermaid         ← Architecture & flow diagram
+
+================================================================================
+5. GRPC API DESIGN
+================================================================================
+
+The entire API contract lives in proto/market.proto.
+Three services are defined:
+
+  ─── MarketService ─────────────────────────────────────────────────────────
+  GetMarketStatus()     → Is market open? Is trading halted? Why?
+  ListSecurities()      → All listed securities
+  GetSecurity(symbol)   → Single security detail
+  GetPrice(symbol)      → Current bid/ask/last for a symbol
+  SubscribePrices(...)  → SERVER STREAMING: real-time price feed
+  SubscribeTrades(...)  → SERVER STREAMING: real-time trade feed
+
+  ─── OrderService ──────────────────────────────────────────────────────────
+  PlaceOrder(...)       → Submit a buy or sell order
+  CancelOrder(...)      → Cancel an open order
+  GetOrder(orderId)     → Retrieve a single order
+  ListOrders(...)       → Filter orders by status / symbol
+
+  ─── TraderService ─────────────────────────────────────────────────────────
+  RegisterTrader(...)   → Create a new trader account
+  Login(email, pass)    → Authenticate and receive JWT
+  GetTrader(traderId)   → Trader profile and balance
+  Deposit(...)          → Add funds to balance
+
+Protocol Buffers (protobuf) encode messages as compact binary, making them
+significantly smaller and faster than JSON REST APIs — critical for a global
+real-time trading platform.
+
+KEY DESIGN DECISIONS
+  • Server-side streaming for prices/trades (not WebSocket) because gRPC
+    streaming is natively supported by Protocol Buffers and handles backpressure.
+  • All time fields use google.protobuf.Timestamp (UTC).
+  • Enum field numbering starts at 0 (UNSPECIFIED) for forward compatibility.
+  • No field is ever deleted from the proto; deprecated fields get a comment.
+
+================================================================================
+6. SERVER — GO IMPLEMENTATION
+================================================================================
+
+PACKAGE OVERVIEW
+
+  cmd/main.go
+  ────────────
+  Entry point. Creates all service instances, registers them with grpc.Server,
+  starts a background goroutine that resets the circuit breaker at 09:00 daily,
+  then calls grpcSrv.Serve().
+
+  internal/market/engine.go
+  ──────────────────────────
+  The heart of the exchange. Responsibilities:
+    • Maintains in-memory price book (map[symbol]PriceData)
+    • Enforces trading hours (IsOpen, IsTradingAllowed)
+    • Runs circuit breaker check after every price update
+    • Manages pub-sub channels for price and trade streaming
+    • Thread-safe with sync.RWMutex
+
+  internal/orders/store.go
+  ─────────────────────────
+  Order book per symbol. Each Book maintains two sorted slices:
+    bids  — sorted highest price first  (buyers)
+    asks  — sorted lowest price first   (sellers)
+  When a new order arrives, matchBuy/matchSell finds counterpart orders
+  and creates Trade records. Remaining quantity stays in the book.
+
+  internal/securities/registry.go
+  ────────────────────────────────
+  Immutable catalogue of listed securities, pre-seeded at startup.
+  In production this would load from a database.
+
+  internal/auth/service.go
+  ─────────────────────────
+  Trader accounts stored in memory (maps). bcrypt for password hashing.
+  JWT (HS256, 24 h expiry) for stateless authentication.
+  In production: use a database + refresh tokens.
+
+ADDING A NEW SECURITY
+  1. Open server/internal/securities/registry.go
+  2. Add an entry to the seeds slice in seed()
+  3. Open server/internal/market/engine.go
+  4. Add a corresponding entry to seedPrices() with an opening price
+  5. Restart the server
+
+================================================================================
+7. CLIENT — WINDOWS DESKTOP (C# WINFORMS)
+================================================================================
+
+PROJECT SETUP (manual steps)
+
+  Prerequisites:
+    • .NET 8 SDK (https://dotnet.microsoft.com/download)
+    • Visual Studio 2022 or VS Code with C# extension
+
+  Steps:
+  1. Open a terminal in client/windows_app/
+  2. Run:  dotnet restore
+  3. The Grpc.Tools package auto-generates C# stubs from proto/market.proto
+  4. Build: dotnet build
+  5. Run:   dotnet run
+
+  Or use the provided script:
+     PowerShell: .\scripts\build_client.ps1
+
+FORM HIERARCHY
+
+  Program.cs
+    └─ LoginForm          (login / registration tabs)
+         └─ MainForm       (dashboard opened after successful login)
+              ├─ Top status bar   (market open/closed/halted indicator)
+              ├─ Left panel       (live price DataGridView)
+              ├─ Right panel      (order entry: symbol, side, type, qty, price)
+              └─ Centre/bottom    (order blotter DataGridView)
+
+STREAMING PATTERN (C#)
+  When MainForm opens, it starts a background Task that calls
+  GrpcClient.SubscribePricesAsync(). That method opens an AsyncServerStreamingCall
+  and loops with "await foreach", calling AddOrUpdatePriceRow() on the UI thread
+  via this.Invoke(). A CancellationTokenSource is cancelled when the form closes.
+
+DARK THEME
+  All forms use a dark theme (BackColor = RGB(18,22,36)) for readability on
+  trading floors. Price changes are colour-coded:
+    • Green  → price up
+    • Red    → price down
+    • Orange row highlight → symbol approaching circuit breaker (-4.5 % warning)
+
+================================================================================
+8. MARKET RULES ENGINE
+================================================================================
+
+All market rules are enforced SERVER-SIDE. The client cannot bypass them.
+
+RULE SUMMARY
+  ┌────────────────────────────────────────────────────┬────────────┐
+  │ Rule                                               │ Value      │
+  ├────────────────────────────────────────────────────┼────────────┤
+  │ Market open                                        │ 09:00      │
+  │ Market close                                       │ 15:00      │
+  │ Timezone                                           │ Asia/Jakarta│
+  │ Circuit breaker threshold (daily % drop)           │ −5.00 %    │
+  │ Halt scope                                         │ All symbols│
+  │ Halt duration                                      │ Rest of day│
+  │ Daily reset time                                   │ 09:00      │
+  └────────────────────────────────────────────────────┴────────────┘
+
+Order rejection messages returned to the client:
+  • "Market is closed. Trading hours: 09:00–15:00 (Asia/Jakarta)."
+  • "CIRCUIT BREAKER TRIGGERED: MYCO-A dropped -5.23%. Trading halted."
+
+CHANGING THE TIMEZONE
+  Edit MarketTimezone constant in server/internal/market/engine.go:
+    const MarketTimezone = "America/New_York"   // for US Eastern
+    const MarketTimezone = "Europe/London"       // for UK
+
+================================================================================
+9. CIRCUIT BREAKER (5 % RULE)
+================================================================================
+
+HOW IT WORKS
+  After every executed trade that updates the price of a security, the engine
+  calls checkCircuitBreaker(symbol). It calculates:
+
+    DailyChangePct = ((last - open) / open) × 100
+
+  If DailyChangePct ≤ −5.0:
+    1. tradingHalted is set to true
+    2. haltReason is recorded with full details
+    3. All subsequent PlaceOrder calls return success=false with the halt message
+    4. The circuit breaker stays engaged until ResetDailyState() is called at 09:00
+
+  The halt is market-wide (not per-symbol) to prevent cascading effects.
+
+EXAMPLE SCENARIO
+  MYCO-A opens at 10,000 IDR.
+  A series of sell orders push the last price to 9,490 IDR.
+  DailyChangePct = ((9490 - 10000) / 10000) × 100 = -5.10 %
+  → Circuit breaker fires. All trading halted for the day.
+  → Server logs: [CIRCUIT BREAKER] MYCO-A dropped -5.10%...
+  → Client receives halt status on next GetMarketStatus() poll.
+  → Next morning at 09:00 the engine resets; open = 9,490 (previous close).
+
+TESTING THE CIRCUIT BREAKER
+  During development, seed a price at 10,000 and submit sell orders that
+  push the price to 9,499. The halt should trigger automatically.
+
+================================================================================
+10. TRADING HOURS (09:00 – 15:00)
+================================================================================
+
+  The IsOpen() function in engine.go checks the wall-clock time in the
+  configured timezone:
+
+    afterOpen   = hour > 9  OR  (hour == 9  AND minute >= 0)
+    beforeClose = hour < 15 OR  (hour == 15 AND minute == 0)
+    isOpen      = afterOpen AND beforeClose
+
+  Note: 15:00:00 is the last valid second (minute == 0, second == 0). Orders
+  submitted at 15:00:01 are rejected.
+
+  The daily reset goroutine (in main.go) calculates the next 09:00 occurrence
+  and sleeps until then, then calls engine.ResetDailyState().
+
+  TO CHANGE HOURS: Edit MarketOpenHour and MarketCloseHour in engine.go.
+
+================================================================================
+11. ORDER MATCHING ENGINE
+================================================================================
+
+The matching algorithm is a standard Price-Time Priority (FIFO) order book.
+
+LIMIT ORDER MATCHING
+  Buy limit @ 10,050:
+    Walk the asks slice (sorted ascending).
+    Match if ask.Price ≤ 10,050.
+    Fill at ask.Price (price improvement for buyer).
+
+  Sell limit @ 9,950:
+    Walk the bids slice (sorted descending).
+    Match if bid.Price ≥ 9,950.
+    Fill at bid.Price (price improvement for seller).
+
+MARKET ORDER MATCHING
+  Same as limit but the price check is skipped — fills against whatever is
+  available in the book at any price.
+
+PARTIAL FILLS
+  If 500 lots are available but the order is for 1,000, 500 are filled
+  (status = PARTIAL) and the remainder stays in the book as an open order.
+
+TRADE PUBLISHING
+  After each match, a TradeEvent is created and published to all subscribers
+  of that symbol's trade stream. The market engine also updates the last price,
+  high, low, volume, and rechecks the circuit breaker.
+
+================================================================================
+12. AUTHENTICATION & JWT
+================================================================================
+
+REGISTRATION FLOW
+  1. Client sends RegisterTraderRequest (username, email, password, name, country)
+  2. Server hashes password with bcrypt (cost=12)
+  3. Creates Trader record with status=PENDING_KYC
+  4. Returns JWT token (valid 24 h)
+
+  KYC NOTE: The status PENDING_KYC means the trader can log in but cannot place
+  orders until an admin manually upgrades their status to ACTIVE. Implement this
+  as an admin gRPC endpoint in production.
+
+LOGIN FLOW
+  1. Client sends LoginRequest (email, password)
+  2. Server retrieves trader by email, compares bcrypt hash
+  3. Returns new 24-hour JWT on success
+
+JWT STRUCTURE
+  Header : {"alg":"HS256","typ":"JWT"}
+  Payload: {"sub":"<traderID>","iat":<unix>,"exp":<unix+86400>}
+  Signed with jwtSecret constant (MUST be replaced with env variable in prod)
+
+SECURING THE jwtSecret IN PRODUCTION
+  Replace the hardcoded constant with:
+    os.Getenv("JWT_SECRET")
+  Set JWT_SECRET in docker-compose.yml or your cloud secrets manager.
+
+================================================================================
+13. STREAMING (SERVER-SIDE)
+================================================================================
+
+PRICE STREAMING
+  Client calls MarketService.SubscribePrices(symbols=[...]).
+  Server holds open an HTTP/2 stream and pushes Price messages whenever
+  engine.UpdatePrice() is called (i.e., after every matched trade).
+  The client goroutine processes each message on the UI thread.
+
+TRADE STREAMING
+  Client calls MarketService.SubscribeTrades(symbol="MYCO-A").
+  Server holds open a stream and pushes Trade messages for every execution
+  against that symbol.
+
+BACKPRESSURE
+  Each subscriber channel has a buffer of 64 messages. If the consumer is slow,
+  new messages are dropped (non-blocking send). In production, use a larger
+  buffer or apply backpressure by pausing price updates.
+
+RECONNECTION (client side)
+  The current client code does not auto-reconnect. For production, wrap the
+  SubscribePricesAsync call in a retry loop with exponential backoff:
+
+    int retryDelayMs = 1000;
+    while (!cancellationToken.IsCancellationRequested)
+    {
+        try   { await _client.SubscribePricesAsync(...); }
+        catch { await Task.Delay(retryDelayMs, ct); retryDelayMs = Math.Min(retryDelayMs * 2, 30000); }
+    }
+
+================================================================================
+14. RUNNING THE PROJECT
+================================================================================
+
+─── OPTION A: Docker (recommended for server) ────────────────────────────────
+
+  Prerequisites: Docker Desktop installed.
+
+  1. cd trading_market/deployments
+  2. docker-compose up --build
+  3. Server is available at localhost:50051
+
+─── OPTION B: Run Go server locally ──────────────────────────────────────────
+
+  Prerequisites: Go 1.21+, protoc, protoc-gen-go, protoc-gen-go-grpc
+
+  1. cd trading_market
+  2. bash scripts/generate_proto.sh      # generate Go stubs
+  3. cd server
+  4. go mod tidy
+  5. go run ./cmd/main.go
+
+─── Run the Windows Client ───────────────────────────────────────────────────
+
+  Prerequisites: .NET 8 SDK
+
+  1. cd trading_market/client/windows_app
+  2. dotnet restore
+  3. dotnet run
+
+  The login form will appear. Register a new account or log in.
+  In the server address box enter: http://localhost:50051
+
+  NOTE: For development the app uses HTTP (not HTTPS). To add TLS see Section 16.
+
+================================================================================
+15. DEPLOYMENT GUIDE (PRODUCTION)
+================================================================================
+
+CLOUD HOSTING OPTIONS
+  • AWS EC2 / GCP Compute Engine / Azure VM with Docker
+  • Kubernetes (k8s) for high availability (recommended for global traders)
+
+TLS / HTTPS
+  gRPC requires HTTP/2. For production always use TLS:
+  1. Obtain a certificate (Let's Encrypt or commercial CA)
+  2. Configure Nginx or Envoy as a TLS-terminating reverse proxy on port 443
+  3. Forward to gRPC server on 50051 internally
+  4. Update client: GrpcChannel.ForAddress("https://your-domain.com")
+
+DATABASE (persistence)
+  The current in-memory implementation resets on restart. For production:
+  • Use PostgreSQL for orders, traders, positions
+  • Use Redis for real-time price cache and pub-sub fan-out
+  • Use TimescaleDB (PostgreSQL extension) for OHLCV time-series data
+
+GLOBAL LATENCY
+  • Deploy regional edge nodes (e.g., US, EU, SEA) that proxy to the primary
+    matching engine in your headquarters datacenter
+  • Use Anycast DNS to route traders to the nearest edge
+  • Price streaming latency target: < 100 ms globally
+
+REGULATORY NOTES
+  Operating a securities exchange may require licensing in your jurisdiction.
+  Consult a financial regulatory attorney before going live with real money.
+
+================================================================================
+16. SECURITY CHECKLIST
+================================================================================
+
+  [ ] Replace hardcoded JWT_SECRET with environment variable
+  [ ] Enable TLS on gRPC server (use credentials.NewTLS)
+  [ ] Add gRPC interceptors for authentication (validate JWT on every call)
+  [ ] Rate-limit order placement per trader (prevent spam orders)
+  [ ] Implement IP allowlisting for admin endpoints
+  [ ] Use bcrypt cost >= 12 in production (already set)
+  [ ] Store passwords only as bcrypt hashes (already done)
+  [ ] Rotate JWT keys periodically
+  [ ] Enable gRPC reflection only in development, not production
+  [ ] Add audit logging for every order and trade
+  [ ] KYC / AML checks before activating trader accounts
+
+GRPC AUTH INTERCEPTOR (Go snippet)
+  func authInterceptor(ctx context.Context, req interface{},
+      info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+      md, _ := metadata.FromIncomingContext(ctx)
+      tokens := md.Get("authorization")
+      if len(tokens) == 0 { return nil, status.Error(codes.Unauthenticated, "missing token") }
+      token := strings.TrimPrefix(tokens[0], "Bearer ")
+      traderID, err := auth.ValidateToken(token)
+      if err != nil { return nil, status.Error(codes.Unauthenticated, err.Error()) }
+      ctx = context.WithValue(ctx, "traderID", traderID)
+      return handler(ctx, req)
+  }
+
+================================================================================
+17. SCALING FOR GLOBAL TRADERS
+================================================================================
+
+PHASE 1 — Single Server (< 1,000 concurrent traders)
+  Current architecture. All state in memory. Single Go process.
+
+PHASE 2 — Persistence Layer (1,000 – 10,000 traders)
+  • Replace in-memory maps with PostgreSQL
+  • Add Redis pub-sub for price broadcasting
+  • Run 2-3 server instances behind a load balancer
+  • Use sticky sessions (route by trader ID) so orders stay on one node
+
+PHASE 3 — Distributed Matching Engine (> 10,000 traders)
+  • Separate the matching engine into its own microservice
+  • Use Kafka for order event streaming (audit trail + replay)
+  • Deploy matching engine in a single primary datacenter (consistency)
+  • Deploy read-only price feed replicas globally
+  • Implement gRPC load balancing with client-side name resolution
+
+HORIZONTAL SCALING OF PRICE STREAMING
+  Replace in-process channels with Redis Streams or Kafka topics.
+  Multiple server instances all publish and consume from the same stream.
+  Each client connects to any server instance; all receive the same prices.
+
+================================================================================
+18. COURSE EXERCISES
+================================================================================
+
+EXERCISE 1 — Add a new security
+  • Add a new symbol "MYCO-E" to registry.go and engine.go
+  • Verify it appears in the Windows client's price grid and order form
+
+EXERCISE 2 — Implement the Stop order type
+  • In orders/store.go the Stop type is defined but not matched
+  • Implement stop-loss logic: trigger a market sell when last price < stop price
+
+EXERCISE 3 — Admin gRPC service
+  • Add an AdminService to market.proto with an ApproveKYC(traderId) RPC
+  • Implement the handler in main.go
+  • Update trader status from PENDING_KYC to ACTIVE
+
+EXERCISE 4 — Persist orders to PostgreSQL
+  • Install pgx/v5 (Go PostgreSQL driver)
+  • Create an orders table schema
+  • Replace the in-memory Store with a DB-backed implementation
+
+EXERCISE 5 — Add TLS to the server
+  • Generate a self-signed cert: openssl req -x509 -newkey rsa:4096 ...
+  • Load in main.go: creds, _ := credentials.NewServerTLSFromFile("cert.pem","key.pem")
+  • Pass to grpc.NewServer(grpc.Creds(creds))
+  • Update client to use https:// and load the cert
+
+EXERCISE 6 — Build a price chart widget
+  • In MainForm.cs add a Panel with a custom OnPaint that draws an OHLC chart
+  • Subscribe to SubscribeTrades and accumulate 1-minute candles
+  • Redraw on each new trade tick
+
+EXERCISE 7 — Multi-language client
+  • Install grpc-tools for Python: pip install grpcio grpcio-tools
+  • Generate Python stubs: python -m grpc_tools.protoc -I../../proto ...
+  • Write a Python CLI client that lists prices and places an order
+
+================================================================================
+19. TROUBLESHOOTING
+================================================================================
+
+PROBLEM: "Failed to connect to localhost:50051"
+  CAUSE  : Server is not running, or firewall is blocking port 50051.
+  FIX    : Start the server. Check Windows Firewall / cloud security group rules.
+
+PROBLEM: Proto stubs not generated / compilation error in C#
+  CAUSE  : Grpc.Tools didn't run protoc automatically.
+  FIX    : Run "dotnet restore" then "dotnet build".
+           Ensure the <Protobuf> item path in .csproj is correct.
+
+PROBLEM: Go build fails — "cannot find package proto"
+  CAUSE  : Go stubs not yet generated.
+  FIX    : Run scripts/generate_proto.sh first.
+
+PROBLEM: JWT "invalid token" errors
+  CAUSE  : Token expired (24 h) or server was restarted (in-memory sessions).
+  FIX    : Log in again to obtain a fresh token.
+
+PROBLEM: Circuit breaker fires during testing
+  CAUSE  : Test orders pushed price below -5 %.
+  FIX    : Restart server to reset engine state, or wait until 09:00 for reset.
+           For testing, temporarily increase CircuitBreakerPct to -99 in engine.go.
+
+PROBLEM: Orders placed outside 09:00–15:00 are rejected
+  CAUSE  : Expected behaviour — trading hours are enforced.
+  FIX    : For local testing set MarketOpenHour=0 and MarketCloseHour=24 in engine.go.
+
+PROBLEM: Windows client shows blank price grid
+  CAUSE  : No trades have occurred yet (streaming only sends on price update).
+  FIX    : The initial load calls GetPrice() for each symbol on startup.
+           Confirm the server is running and symbols are seeded.
+
+================================================================================
+20. REFERENCES
+================================================================================
+
+  • gRPC official documentation     https://grpc.io/docs/
+  • Protocol Buffers language guide  https://protobuf.dev/programming-guides/proto3/
+  • Go gRPC quickstart               https://grpc.io/docs/languages/go/quickstart/
+  • gRPC for .NET                    https://grpc.io/docs/languages/csharp/
+  • "gRPC Microservices in Go"       Hüseyin Babal, Manning Publications, 2024
+    (the reference book for this course)
+  • JWT specification                https://datatracker.ietf.org/doc/html/rfc7519
+  • WinForms documentation           https://learn.microsoft.com/en-us/dotnet/desktop/winforms/
+  • Docker documentation             https://docs.docker.com/
+
+================================================================================
+  END OF DOCUMENTATION
+  Trading Market Platform v1.0
+================================================================================

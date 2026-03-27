@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+# Install build tools for optional C++ extension
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        g++ cmake pybind11-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install Python dependencies first (layer caching)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source
+COPY backend/ ./backend/
+COPY setup_ext.py .
+
+# Build C++ extension (optional — falls back to pure Python if it fails)
+RUN python setup_ext.py build_ext --inplace || echo "C++ extension build skipped"
+
+# Create log directory
+RUN mkdir -p logs
+
+ENV PYTHONPATH=/app
+WORKDIR /app/backend
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]

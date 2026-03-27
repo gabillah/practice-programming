@@ -1,0 +1,51 @@
+/*
+https://www.youtube.com/watch?v=KiB0vRi2wlc
+*/
+
+
+
+#include <iostream>
+#include <vector>
+#include <map>
+#include <unordered_map>
+
+struct CityRecord {
+    std::string Name;
+    uint64_t Population;
+    double Latitude, Longitude;
+    
+//     //Default constructor
+//    CityRecord() 
+//        : Name(""),
+//          Population(0),
+//          Latitude(0.0),
+//          Longitude(0.0) {}
+
+//    // Constructor dengan parameter untuk menginisialisasi semua anggota
+//    CityRecord(std::string name, uint64_t pop, double lat, double lon)
+//        : Name(std::move(name)), 
+//          Population(pop), 
+//          Latitude(lat), 
+//          Longitude(lon) {}
+};
+
+int main() {
+//	std::map<std::string, CityRecord> cityMap;
+    std::unordered_map<std::string, CityRecord> cityMap;
+    cityMap["Melbourne"] = CityRecord{"Melbourne", 5000001, 2.41, 9.41};
+    cityMap["Lol-town"]  = CityRecord{"Lol-town",  5000002, 2.42, 9.42};
+    cityMap["Berlin"]    = CityRecord{"Berlin",    5000003, 2.43, 9.43};
+    cityMap["Paris"]     = CityRecord{"Paris",     5000004, 2.44, 9.44};
+    cityMap["London"]    = CityRecord{"London",    5000005, 2.45, 9.45};
+	
+    // Menggunakan range-based for loop untuk mencetak setiap elemen di unordered_map.
+    for (const auto& item : cityMap) {
+        std::cout << "City: " << item.first
+                  << ", Population: " << item.second.Population
+                  << ", Latitude: " << item.second.Latitude
+                  << ", Longitude: " << item.second.Longitude
+                  << std::endl;
+    }
+	
+    return 0;
+}

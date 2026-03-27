@@ -1,0 +1,181 @@
+---
+title: Trading Market Platform — Architecture & Flow Diagrams
+---
+
+%% ═══════════════════════════════════════════════════
+%%  DIAGRAM 1 — SYSTEM ARCHITECTURE
+%% ═══════════════════════════════════════════════════
+
+flowchart TB
+    subgraph CLIENT["🖥️  Windows Desktop Client  (C# / WinForms / .NET 8)"]
+        direction TB
+        LP["LoginForm\n• Email / Password\n• Registration"]
+        MF["MainForm Dashboard\n• Market status bar\n• Live price grid\n• Order entry panel\n• Order blotter"]
+        GC["GrpcClient.cs\n• MarketServiceClient\n• OrderServiceClient\n• TraderServiceClient"]
+        LP -->|"Auth success + JWT"| MF
+        MF <-->|"calls"| GC
+    end
+
+    subgraph GRPC["gRPC Channel  (HTTP/2 · Port 50051 · Protocol Buffers)"]
+        direction LR
+        UNI["Unary RPCs\n(request/response)"]
+        STREAM["Server Streaming RPCs\n(SubscribePrices / SubscribeTrades)"]
+    end
+
+    subgraph SERVER["⚙️  Go gRPC Server"]
+        direction TB
+        MS["MarketService\nGetMarketStatus\nListSecurities\nGetPrice\nSubscribePrices ▶\nSubscribeTrades ▶"]
+        OS["OrderService\nPlaceOrder\nCancelOrder\nGetOrder\nListOrders"]
+        TS["TraderService\nRegisterTrader\nLogin\nGetTrader\nDeposit"]
+
+        subgraph DOMAIN["Internal Domain"]
+            ENG["market.Engine\n• Price book\n• Circuit breaker\n• Trading hours\n• Pub-Sub channels"]
+            ORD["orders.Store\n• Order book (bids/asks)\n• Matching engine\n• Trade generation"]
+            AUTH["auth.Service\n• bcrypt passwords\n• JWT generation\n• Balance management"]
+            REG["securities.Registry\n• Listed securities\n• Symbol catalogue"]
+        end
+
+        MS <--> ENG
+        MS <--> REG
+        OS <--> ORD
+        OS <--> ENG
+        TS <--> AUTH
+    end
+
+    GC <-->|"gRPC calls"| GRPC
+    GRPC <-->|"gRPC calls"| SERVER
+
+    style CLIENT fill:#0d1b2a,color:#e0e0e0,stroke:#1e3a5f
+    style GRPC   fill:#1a1a2e,color:#e0e0e0,stroke:#533483
+    style SERVER fill:#0f2027,color:#e0e0e0,stroke:#1b4332
+    style DOMAIN fill:#1b2838,color:#e0e0e0,stroke:#2a475e
+
+---
+
+%% ═══════════════════════════════════════════════════
+%%  DIAGRAM 2 — ORDER PLACEMENT FLOW
+%% ═══════════════════════════════════════════════════
+
+flowchart TD
+    A(["🖥️ Trader clicks PLACE ORDER"]) --> B["GrpcClient.PlaceOrderAsync()"]
+    B --> C["gRPC call → OrderService.PlaceOrder()"]
+
+    C --> D{{"⏰ Is market open?\n09:00 – 15:00?"}}
+    D -->|"NO"| E["Return: success=false\n'Market is closed'"]
+    E --> Z(["❌ Client shows rejection message"])
+
+    D -->|"YES"| F{{"⚡ Is trading halted?\n(Circuit breaker)"}}
+    F -->|"YES — halted"| G["Return: success=false\nCircuit breaker message"]
+    G --> Z
+
+    F -->|"NO — trading OK"| H{{"🔍 Does symbol exist\nin registry?"}}
+    H -->|"NO"| I["Return: NotFound error"]
+    I --> Z
+
+    H -->|"YES"| J["orders.Store.PlaceOrder()\nCreate Order record"]
+    J --> K["Order Book matching\nbids vs asks"]
+
+    K --> L{{"Match found?"}}
+    L -->|"Partial / No match"| M["Order stays in book\nStatus = OPEN / PARTIAL"]
+    L -->|"Full match"| N["Trade(s) created\nStatus = FILLED"]
+
+    M --> O["Return Order to client"]
+    N --> P["engine.UpdatePrice()\nnew last / high / low / volume"]
+    P --> Q["engine.PublishTrade()\n→ broadcast to trade subscribers"]
+    Q --> R{{"DailyChangePct ≤ -5%?"}}
+    R -->|"NO"| O
+    R -->|"YES — HALT"| S["🚨 Circuit Breaker TRIGGERED\ntradingHalted = true\nAll orders rejected for today"]
+    S --> T["Log halt reason\nSubscribers notified\nvia GetMarketStatus()"]
+    T --> O
+
+    O --> U(["✅ Client receives Order + message"])
+
+    style A fill:#1b4332,color:#fff
+    style U fill:#1b4332,color:#fff
+    style Z fill:#7b1414,color:#fff
+    style S fill:#7b1414,color:#fff
+    style R fill:#1a1a2e,color:#ffd700,stroke:#ffd700
+
+---
+
+%% ═══════════════════════════════════════════════════
+%%  DIAGRAM 3 — DAILY MARKET LIFECYCLE
+%% ═══════════════════════════════════════════════════
+
+flowchart LR
+    NIGHT(["🌙 Pre-market\n(before 09:00)"])
+    NIGHT -->|"09:00 — daily reset goroutine fires"| RESET["engine.ResetDailyState()\n• tradingHalted = false\n• open = prev close\n• high/low/volume reset"]
+    RESET --> OPEN(["✅ MARKET OPEN\n09:00 – 15:00"])
+    OPEN -->|"Normal trading"| TRADE["Orders matched\nPrices update\nTrades broadcast"]
+    TRADE --> CHECK{{"DailyChangePct\n≤ -5%?"}}
+    CHECK -->|"NO"| TRADE
+    CHECK -->|"YES"| HALT(["⚠️ CIRCUIT BREAKER\nTrading halted\nrest of day"])
+    OPEN -->|"15:00 reached"| CLOSE(["🔒 MARKET CLOSED"])
+    HALT --> CLOSE
+    CLOSE -->|"Wait until next 09:00"| NIGHT
+
+    style OPEN  fill:#1b4332,color:#fff
+    style HALT  fill:#7b1414,color:#fff
+    style CLOSE fill:#1a1a2e,color:#aaa
+    style NIGHT fill:#0d1b2a,color:#aaa
+
+---
+
+%% ═══════════════════════════════════════════════════
+%%  DIAGRAM 4 — TRADER REGISTRATION & AUTH FLOW
+%% ═══════════════════════════════════════════════════
+
+sequenceDiagram
+    participant C  as Windows Client
+    participant S  as gRPC Server
+    participant A  as auth.Service
+
+    Note over C,A: Registration
+    C->>S: RegisterTrader(username, email, password, country)
+    S->>A: Register(...)
+    A->>A: bcrypt.Hash(password)
+    A->>A: Create Trader{status=PENDING_KYC}
+    A->>A: GenerateJWT(traderID, 24h)
+    A-->>S: trader, token
+    S-->>C: RegisterTraderResponse{success, token, trader}
+
+    Note over C,A: Login
+    C->>S: Login(email, password)
+    S->>A: Login(email, password)
+    A->>A: bcrypt.Compare(hash, password)
+    A->>A: GenerateJWT(traderID, 24h)
+    A-->>S: trader, token
+    S-->>C: LoginResponse{success, token, trader}
+
+    Note over C,A: Authenticated request
+    C->>S: PlaceOrder(...) [Authorization: Bearer <token>]
+    S->>S: ValidateToken(token) → traderID
+    S->>S: Process order...
+    S-->>C: PlaceOrderResponse
+
+---
+
+%% ═══════════════════════════════════════════════════
+%%  DIAGRAM 5 — PRICE STREAMING FLOW
+%% ═══════════════════════════════════════════════════
+
+sequenceDiagram
+    participant C  as Windows Client
+    participant S  as gRPC Server
+    participant E  as market.Engine
+
+    C->>S: SubscribePrices(symbols=[MYCO-A, MYCO-B, ...])
+    S->>E: SubscribePrices(symbols) → channels
+    Note over S: Opens HTTP/2 server stream
+    S-->>C: (stream open)
+
+    loop Every matched trade
+        E->>E: UpdatePrice(symbol, last, bid, ask, vol)
+        E->>S: channel ← PriceData snapshot
+        S-->>C: stream.Send(Price{symbol, last, bid, ask, changePct, ...})
+        C->>C: AddOrUpdatePriceRow(price)\n[on UI thread via Invoke()]
+    end
+
+    C->>C: Form closed → CancellationTokenSource.Cancel()
+    C->>S: (stream closed)
+    S->>E: cleanup() → remove subscriber channels

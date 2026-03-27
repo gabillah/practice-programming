@@ -1,0 +1,216 @@
+syntax = "proto3";
+
+package market;
+
+option go_package = "github.com/yourcompany/trading_market/proto;market";
+
+import "google/protobuf/timestamp.proto";
+
+// ─────────────────────────────────────────────
+//  COMMON MESSAGES
+// ─────────────────────────────────────────────
+
+message Security {
+  string  symbol      = 1;
+  string  name        = 2;
+  string  description = 3;
+  double  face_value  = 4;
+  int64   total_supply = 5;
+  string  currency    = 6;
+  string  sector      = 7;
+}
+
+message Price {
+  string symbol    = 1;
+  double bid       = 2;
+  double ask       = 3;
+  double last      = 4;
+  double open      = 5;
+  double high      = 6;
+  double low       = 7;
+  double change    = 8;
+  double change_pct = 9;
+  int64  volume    = 10;
+  google.protobuf.Timestamp timestamp = 11;
+}
+
+message Order {
+  string order_id   = 1;
+  string trader_id  = 2;
+  string symbol     = 3;
+  OrderSide   side  = 4;
+  OrderType   type  = 5;
+  OrderStatus status = 6;
+  double quantity   = 7;
+  double price      = 8;
+  double filled_qty = 9;
+  double avg_fill_price = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message Trade {
+  string trade_id   = 1;
+  string symbol     = 2;
+  double price      = 3;
+  double quantity   = 4;
+  string buyer_id   = 5;
+  string seller_id  = 6;
+  google.protobuf.Timestamp executed_at = 7;
+}
+
+message Trader {
+  string trader_id    = 1;
+  string username     = 2;
+  string email        = 3;
+  string full_name    = 4;
+  double balance      = 5;
+  string country      = 6;
+  TraderStatus status = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message MarketStatus {
+  bool   is_open        = 1;
+  bool   trading_halted = 2;
+  string halt_reason    = 3;
+  string open_time      = 4;  // "09:00"
+  string close_time     = 5;  // "15:00"
+  string timezone       = 6;
+  double circuit_breaker_threshold = 7; // -5.0 means 5% drop
+  google.protobuf.Timestamp last_updated = 8;
+}
+
+// ─────────────────────────────────────────────
+//  ENUMS
+// ─────────────────────────────────────────────
+
+enum OrderSide {
+  ORDER_SIDE_UNSPECIFIED = 0;
+  ORDER_SIDE_BUY         = 1;
+  ORDER_SIDE_SELL        = 2;
+}
+
+enum OrderType {
+  ORDER_TYPE_UNSPECIFIED = 0;
+  ORDER_TYPE_MARKET      = 1;
+  ORDER_TYPE_LIMIT       = 2;
+  ORDER_TYPE_STOP        = 3;
+}
+
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_PENDING     = 1;
+  ORDER_STATUS_OPEN        = 2;
+  ORDER_STATUS_FILLED      = 3;
+  ORDER_STATUS_PARTIAL     = 4;
+  ORDER_STATUS_CANCELLED   = 5;
+  ORDER_STATUS_REJECTED    = 6;
+}
+
+enum TraderStatus {
+  TRADER_STATUS_UNSPECIFIED = 0;
+  TRADER_STATUS_ACTIVE      = 1;
+  TRADER_STATUS_SUSPENDED   = 2;
+  TRADER_STATUS_PENDING_KYC = 3;
+}
+
+// ─────────────────────────────────────────────
+//  REQUEST / RESPONSE MESSAGES
+// ─────────────────────────────────────────────
+
+message ListSecuritiesRequest  {}
+message ListSecuritiesResponse { repeated Security securities = 1; }
+
+message GetSecurityRequest  { string symbol = 1; }
+message GetSecurityResponse { Security security = 1; }
+
+message GetPriceRequest  { string symbol = 1; }
+message GetPriceResponse { Price price = 1; }
+
+message PlaceOrderRequest {
+  string     trader_id = 1;
+  string     symbol    = 2;
+  OrderSide  side      = 3;
+  OrderType  type      = 4;
+  double     quantity  = 5;
+  double     price     = 6;
+}
+message PlaceOrderResponse {
+  Order  order   = 1;
+  bool   success = 2;
+  string message = 3;
+}
+
+message CancelOrderRequest  { string order_id = 1; string trader_id = 2; }
+message CancelOrderResponse { bool success = 1; string message = 2; }
+
+message GetOrderRequest  { string order_id = 1; }
+message GetOrderResponse { Order order = 1; }
+
+message ListOrdersRequest {
+  string      trader_id = 1;
+  OrderStatus status    = 2;
+  string      symbol    = 3;
+}
+message ListOrdersResponse { repeated Order orders = 1; }
+
+message RegisterTraderRequest {
+  string username  = 1;
+  string email     = 2;
+  string password  = 3;
+  string full_name = 4;
+  string country   = 5;
+}
+message RegisterTraderResponse {
+  Trader trader  = 1;
+  string token   = 2;
+  bool   success = 3;
+  string message = 4;
+}
+
+message LoginRequest  { string email = 1; string password = 2; }
+message LoginResponse { string token = 1; Trader trader = 2; bool success = 3; string message = 4; }
+
+message GetTraderRequest  { string trader_id = 1; }
+message GetTraderResponse { Trader trader = 1; }
+
+message DepositRequest  { string trader_id = 1; double amount = 2; string currency = 3; }
+message DepositResponse { bool success = 1; double new_balance = 2; string message = 3; }
+
+message GetMarketStatusRequest  {}
+message GetMarketStatusResponse { MarketStatus status = 1; }
+
+message SubscribePricesRequest  { repeated string symbols = 1; }
+message SubscribeTradesRequest  { string symbol = 1; }
+
+// ─────────────────────────────────────────────
+//  SERVICES
+// ─────────────────────────────────────────────
+
+service MarketService {
+  rpc GetMarketStatus   (GetMarketStatusRequest)   returns (GetMarketStatusResponse);
+  rpc ListSecurities    (ListSecuritiesRequest)     returns (ListSecuritiesResponse);
+  rpc GetSecurity       (GetSecurityRequest)        returns (GetSecurityResponse);
+  rpc GetPrice          (GetPriceRequest)           returns (GetPriceResponse);
+
+  // Server-side streaming: real-time price feed
+  rpc SubscribePrices   (SubscribePricesRequest)   returns (stream Price);
+
+  // Server-side streaming: real-time trade feed
+  rpc SubscribeTrades   (SubscribeTradesRequest)   returns (stream Trade);
+}
+
+service OrderService {
+  rpc PlaceOrder  (PlaceOrderRequest)  returns (PlaceOrderResponse);
+  rpc CancelOrder (CancelOrderRequest) returns (CancelOrderResponse);
+  rpc GetOrder    (GetOrderRequest)    returns (GetOrderResponse);
+  rpc ListOrders  (ListOrdersRequest)  returns (ListOrdersResponse);
+}
+
+service TraderService {
+  rpc RegisterTrader (RegisterTraderRequest) returns (RegisterTraderResponse);
+  rpc Login          (LoginRequest)          returns (LoginResponse);
+  rpc GetTrader      (GetTraderRequest)      returns (GetTraderResponse);
+  rpc Deposit        (DepositRequest)        returns (DepositResponse);
+}

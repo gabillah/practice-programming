@@ -1,0 +1,138 @@
+{
+  "data_source": {
+    "provider": "twelvedata",
+    "api_key": "",
+    "websocket_url": "",
+    "rest_base_url": "",
+    "reconnect_delay": 5,
+    "max_reconnects": 20
+  },
+  "pairs": [
+    "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "USD/CHF",
+    "AUD/USD",
+    "NZD/USD",
+    "USD/CAD",
+    "EUR/GBP",
+    "EUR/JPY",
+    "GBP/JPY",
+    "XAU/USD",
+    "XAG/USD"
+  ],
+  "timeframes": [
+    "1min",
+    "5min",
+    "15min",
+    "1h",
+    "4h",
+    "1day"
+  ],
+  "primary_tf": "15min",
+  "signal_engine": {
+    "min_confluence": 3,
+    "signal_cooldown": 300,
+    "require_trend_confirm": true,
+    "use_ml_filter": true,
+    "use_volume_filter": true,
+    "use_session_filter": true
+  },
+  "indicators": {
+    "ema_fast": 9,
+    "ema_slow": 21,
+    "ema_trend": 200,
+    "rsi_period": 14,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30,
+    "macd_fast": 12,
+    "macd_slow": 26,
+    "macd_signal": 9,
+    "bb_period": 20,
+    "bb_std": 2.0,
+    "stoch_k": 14,
+    "stoch_d": 3,
+    "stoch_smooth": 3,
+    "atr_period": 14,
+    "adx_period": 14,
+    "adx_threshold": 25,
+    "cci_period": 20,
+    "williams_period": 14,
+    "mfi_period": 14,
+    "ichimoku_tenkan": 9,
+    "ichimoku_kijun": 26,
+    "ichimoku_senkou": 52,
+    "pivot_method": "classic",
+    "vwap_enabled": true,
+    "supertrend_period": 10,
+    "supertrend_mult": 3.0,
+    "hma_period": 21,
+    "dema_period": 21,
+    "tema_period": 21,
+    "keltner_period": 20,
+    "keltner_atr_mult": 2.0,
+    "donchian_period": 20,
+    "squeeze_bb_period": 20,
+    "squeeze_kc_period": 20
+  },
+  "risk": {
+    "account_balance": 10000.0,
+    "risk_per_trade_pct": 1.5,
+    "max_open_trades": 5,
+    "max_daily_loss_pct": 5.0,
+    "default_sl_atr_mult": 2.0,
+    "default_tp_rr": 2.0,
+    "trailing_stop": true,
+    "trailing_atr_mult": 1.5,
+    "kelly_fraction": 0.25,
+    "use_dynamic_sizing": true,
+    "spread_filter_pips": 3.0
+  },
+  "ml": {
+    "model_type": "random_forest",
+    "lookback_candles": 100,
+    "retrain_interval": 3600,
+    "min_train_samples": 500,
+    "confidence_thresh": 0.6,
+    "feature_set": "full"
+  },
+  "sessions": {
+    "sydney": {
+      "open": "21:00",
+      "close": "06:00"
+    },
+    "tokyo": {
+      "open": "00:00",
+      "close": "09:00"
+    },
+    "london": {
+      "open": "08:00",
+      "close": "17:00"
+    },
+    "newyork": {
+      "open": "13:00",
+      "close": "22:00"
+    },
+    "active_only": true
+  },
+  "notifications": {
+    "sound_enabled": true,
+    "popup_enabled": true,
+    "log_all": true
+  },
+  "ui": {
+    "theme": "light",
+    "chart_style": "candle",
+    "refresh_ms": 1000,
+    "max_candles": 300,
+    "show_signals": true,
+    "show_indicators": true,
+    "window_width": 1600,
+    "window_height": 950
+  },
+  "reporting": {
+    "csv_path": "reports/trades.csv",
+    "html_path": "reports/performance.html",
+    "auto_export": true
+  }
+}

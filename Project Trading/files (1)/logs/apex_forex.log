@@ -1,0 +1,140 @@
+2026-03-07 13:11:27  DEBUG     logger                          Logging initialised → logs/apex_forex.log
+2026-03-07 13:11:27  INFO      main                            ======================================================================
+2026-03-07 13:11:27  INFO      main                              Apex Forex Signal System  v3.0.0  starting up…
+2026-03-07 13:11:27  INFO      main                            ======================================================================
+2026-03-07 13:11:27  WARNING   core.config_manager             Config file not found: config.json  (using defaults)
+2026-03-07 13:11:27  INFO      core.config_manager             Wrote default config → config.json
+2026-03-07 13:11:27  DEBUG     core.config_manager             Configuration ready: 12 top-level keys
+2026-03-07 13:11:27  INFO      main                            Config loaded: config.json
+2026-03-07 13:11:27  INFO      trade_log                       TradeLogger → reports\trades.csv
+2026-03-07 13:11:27  INFO      main                            Trade logger initialised
+2026-03-07 13:11:27  INFO      risk.risk_manager               RiskManager: balance=10000.00, risk/trade=1.5%
+2026-03-07 13:11:27  INFO      main                            Risk manager initialised
+2026-03-07 13:11:27  INFO      ml.pattern_engine               scikit-learn loaded successfully
+2026-03-07 13:11:27  INFO      main                            Pattern engine initialised
+2026-03-07 13:11:27  INFO      core.signal_engine              SignalEngine initialised with 23 indicator weights
+2026-03-07 13:11:27  INFO      main                            Signal engine initialised
+2026-03-07 13:11:27  INFO      main                            Stream manager initialised
+2026-03-07 13:11:27  DEBUG     app_controller                  AppController initialised — subsystems wired
+2026-03-07 13:11:27  INFO      main                            Launching GUI …
+2026-03-07 13:11:27  INFO      ui.main_window                  MainWindow constructed
+2026-03-07 13:11:27  INFO      app_controller                  AppController starting subsystems...
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: EUR/USD
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: GBP/USD
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: USD/JPY
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: USD/CHF
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: AUD/USD
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: NZD/USD
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: USD/CAD
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: EUR/GBP
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: EUR/JPY
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: GBP/JPY
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: XAU/USD
+2026-03-07 13:11:27  DEBUG     core.signal_engine              Registered pair: XAG/USD
+2026-03-07 13:11:27  INFO      data.stream_manager             [Stream] Loading historical data…
+2026-03-07 13:11:27  DEBUG     data.stream_manager             Generated 300 synthetic bars for EUR/USD
+2026-03-07 13:11:27  INFO      data.stream_manager             [Stream] Connecting to twelvedata live stream…
+2026-03-07 13:11:27  INFO      data.stream_manager             Demo price simulator started (12 pairs)
+2026-03-07 13:11:27  INFO      data.stream_manager             [Stream] Historical: EUR/USD (300 bars)
+2026-03-07 13:11:27  INFO      data.stream_manager             [Stream] Demo simulator running (no live data)
+2026-03-07 13:11:27  INFO      app_controller                  AppController — all systems running
+2026-03-07 13:11:28  DEBUG     data.stream_manager             Generated 300 synthetic bars for GBP/USD
+2026-03-07 13:11:28  INFO      data.stream_manager             [Stream] Historical: GBP/USD (300 bars)
+2026-03-07 13:11:28  DEBUG     data.stream_manager             Generated 300 synthetic bars for USD/JPY
+2026-03-07 13:11:28  INFO      data.stream_manager             [Stream] Historical: USD/JPY (300 bars)
+2026-03-07 13:11:28  DEBUG     data.stream_manager             Generated 300 synthetic bars for USD/CHF
+2026-03-07 13:11:28  INFO      data.stream_manager             [Stream] Historical: USD/CHF (300 bars)
+2026-03-07 13:11:29  DEBUG     data.stream_manager             Generated 300 synthetic bars for AUD/USD
+2026-03-07 13:11:29  INFO      data.stream_manager             [Stream] Historical: AUD/USD (300 bars)
+2026-03-07 13:11:29  DEBUG     data.stream_manager             Generated 300 synthetic bars for NZD/USD
+2026-03-07 13:11:29  INFO      data.stream_manager             [Stream] Historical: NZD/USD (300 bars)
+2026-03-07 13:11:29  DEBUG     data.stream_manager             Generated 300 synthetic bars for USD/CAD
+2026-03-07 13:11:29  INFO      data.stream_manager             [Stream] Historical: USD/CAD (300 bars)
+2026-03-07 13:11:30  DEBUG     data.stream_manager             Generated 300 synthetic bars for EUR/GBP
+2026-03-07 13:11:30  INFO      data.stream_manager             [Stream] Historical: EUR/GBP (300 bars)
+2026-03-07 13:11:30  DEBUG     data.stream_manager             Generated 300 synthetic bars for EUR/JPY
+2026-03-07 13:11:30  INFO      data.stream_manager             [Stream] Historical: EUR/JPY (300 bars)
+2026-03-07 13:11:30  DEBUG     data.stream_manager             Generated 300 synthetic bars for GBP/JPY
+2026-03-07 13:11:30  INFO      data.stream_manager             [Stream] Historical: GBP/JPY (300 bars)
+2026-03-07 13:11:31  DEBUG     data.stream_manager             Generated 300 synthetic bars for XAU/USD
+2026-03-07 13:11:31  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:11:31  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:11:31  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:12:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:12:27  INFO      app_controller                  Heartbeat — ticks: 2868 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:13:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:13:27  INFO      app_controller                  Heartbeat — ticks: 5736 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:13:41  DEBUG     data.stream_manager             News spike on XAU/USD: -0.17903
+2026-03-07 13:14:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:14:27  INFO      app_controller                  Heartbeat — ticks: 8604 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:15:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:15:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:15:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:15:27  INFO      app_controller                  Heartbeat — ticks: 11472 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:16:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:16:27  INFO      app_controller                  Heartbeat — ticks: 14340 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: EUR/USD SELL | Entry: 1.08376 | SL: 1.08681 | TP: 1.07765 | Conf: 69% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: GBP/USD SELL | Entry: 1.25628 | SL: 1.26136 | TP: 1.24612 | Conf: 61% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: USD/JPY BUY | Entry: 250.70448 | SL: 194.49443 | TP: 363.12458 | Conf: 68% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: USD/CHF BUY | Entry: 0.89859 | SL: 0.89592 | TP: 0.90394 | Conf: 78% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: AUD/USD BUY | Entry: 0.65049 | SL: 0.64744 | TP: 0.65661 | Conf: 81% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: NZD/USD SELL | Entry: 0.60031 | SL: 0.60247 | TP: 0.59599 | Conf: 80% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: USD/CAD BUY | Entry: 1.36439 | SL: 1.35986 | TP: 1.37345 | Conf: 79% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: EUR/GBP SELL | Entry: 0.85202 | SL: 0.85506 | TP: 0.84596 | Conf: 79% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: EUR/JPY SELL | Entry: 167.10907 | SL: 217.81983 | TP: 65.68755 | Conf: 71% | Tokyo
+2026-03-07 13:17:00  INFO      data.stream_manager             SIGNAL: GBP/JPY BUY | Entry: 252.64502 | SL: 108.50007 | TP: 540.93492 | Conf: 63% | Tokyo
+2026-03-07 13:17:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:17:27  INFO      app_controller                  Heartbeat — ticks: 17172 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:17:47  DEBUG     data.stream_manager             News spike on GBP/USD: -0.00052
+2026-03-07 13:18:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:18:27  INFO      app_controller                  Heartbeat — ticks: 20040 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:19:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:19:27  INFO      app_controller                  Heartbeat — ticks: 22908 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:19:33  DEBUG     data.stream_manager             News spike on GBP/USD: +0.00032
+2026-03-07 13:19:43  DEBUG     data.stream_manager             News spike on GBP/USD: +0.00031
+2026-03-07 13:19:48  DEBUG     data.stream_manager             News spike on USD/JPY: -0.00849
+2026-03-07 13:20:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:20:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:20:27  INFO      app_controller                  Heartbeat — ticks: 25776 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:21:27  INFO      app_controller                  Heartbeat — ticks: 28644 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:22:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:22:27  INFO      app_controller                  Heartbeat — ticks: 31500 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:22:38  DEBUG     data.stream_manager             News spike on EUR/JPY: +0.01386
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: EUR/USD SELL | Entry: 1.08586 | SL: 1.08919 | TP: 1.07921 | Conf: 75% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: GBP/USD BUY | Entry: 1.26390 | SL: 1.25857 | TP: 1.27456 | Conf: 62% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: USD/JPY BUY | Entry: 267.62310 | SL: 193.89103 | TP: 415.08725 | Conf: 78% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: USD/CHF BUY | Entry: 0.89826 | SL: 0.89464 | TP: 0.90551 | Conf: 79% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: AUD/USD BUY | Entry: 0.65166 | SL: 0.64897 | TP: 0.65706 | Conf: 82% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: NZD/USD SELL | Entry: 0.59924 | SL: 0.60125 | TP: 0.59521 | Conf: 80% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: USD/CAD BUY | Entry: 1.36317 | SL: 1.35890 | TP: 1.37172 | Conf: 80% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: EUR/GBP SELL | Entry: 0.84907 | SL: 0.85191 | TP: 0.84341 | Conf: 74% | Tokyo
+2026-03-07 13:23:00  INFO      data.stream_manager             SIGNAL: EUR/JPY SELL | Entry: 207.55299 | SL: 292.14240 | TP: 38.37416 | Conf: 65% | Tokyo
+2026-03-07 13:23:01  INFO      data.stream_manager             SIGNAL: GBP/JPY SELL | Entry: 263.94645 | SL: 429.72298 | TP: -67.60660 | Conf: 59% | Tokyo
+2026-03-07 13:23:27  INFO      app_controller                  Heartbeat — ticks: 34320 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:23:37  DEBUG     data.stream_manager             News spike on USD/JPY: -0.01763
+2026-03-07 13:24:27  INFO      app_controller                  Heartbeat — ticks: 37188 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:25:27  INFO      app_controller                  Heartbeat — ticks: 40056 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:26:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:26:02  DEBUG     data.stream_manager             News spike on AUD/USD: -0.00000
+2026-03-07 13:26:24  DEBUG     data.stream_manager             News spike on GBP/USD: +0.00068
+2026-03-07 13:26:27  INFO      app_controller                  Heartbeat — ticks: 42924 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:26:31  DEBUG     data.stream_manager             News spike on EUR/USD: +0.00031
+2026-03-07 13:27:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:27:27  INFO      app_controller                  Heartbeat — ticks: 45780 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:28:00  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:28:27  INFO      app_controller                  Heartbeat — ticks: 48648 | open trades: 0 | daily P&L: $0.00 | balance: $10000.00
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: EUR/USD BUY | Entry: 1.08844 | SL: 1.08469 | TP: 1.09596 | Conf: 81% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: GBP/USD BUY | Entry: 1.26248 | SL: 1.25703 | TP: 1.27337 | Conf: 72% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: USD/JPY BUY | Entry: 467.71116 | SL: 351.01065 | TP: 701.11217 | Conf: 72% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: USD/CHF SELL | Entry: 0.89211 | SL: 0.89571 | TP: 0.88490 | Conf: 67% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: AUD/USD BUY | Entry: 0.65032 | SL: 0.64766 | TP: 0.65563 | Conf: 79% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: NZD/USD BUY | Entry: 0.60247 | SL: 0.60042 | TP: 0.60657 | Conf: 62% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: USD/CAD SELL | Entry: 1.35731 | SL: 1.36190 | TP: 1.34813 | Conf: 60% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: EUR/GBP SELL | Entry: 0.84858 | SL: 0.85122 | TP: 0.84328 | Conf: 78% | Tokyo
+2026-03-07 13:29:00  INFO      data.stream_manager             SIGNAL: EUR/JPY BUY | Entry: 198.13364 | SL: 118.25962 | TP: 357.88166 | Conf: 63% | Tokyo
+2026-03-07 13:29:01  INFO      data.stream_manager             SIGNAL: GBP/JPY SELL | Entry: 176.06950 | SL: 345.51911 | TP: -162.82970 | Conf: 70% | Tokyo
+2026-03-07 13:29:01  DEBUG     core.signal_engine              Signal filtered: spread 4.0 > 3.0 pips
+2026-03-07 13:29:17  INFO      ui.main_window                  Application closing…
+2026-03-07 13:29:17  INFO      app_controller                  AppController stopping...
+2026-03-07 13:29:17  INFO      data.stream_manager             [Stream] Stream stopped
+2026-03-07 13:29:17  INFO      app_controller                  AppController stopped cleanly

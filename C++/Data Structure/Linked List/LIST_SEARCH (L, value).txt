@@ -1,0 +1,16 @@
+listSearch(L, value) {
+    x = L.head;
+    while (x != NIL && x.key != value) {
+        x = x.next;
+    }
+    return x;
+}
+
+searchAndPrint(L, value) {
+    result = listSearch(value);
+    if (result != NULL) {
+        print value // found
+    } else {
+        print value // not found
+    }
+}

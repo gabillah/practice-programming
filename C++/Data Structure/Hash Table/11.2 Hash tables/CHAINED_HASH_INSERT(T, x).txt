@@ -1,0 +1,3 @@
+CHAINED_HASH_INSERT(T, x) {
+    LIST_PREPEND(T[h(x.key)], x)
+}

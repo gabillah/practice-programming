@@ -1,0 +1,64 @@
+%% ============================================================================
+%% solver_flowchart.mermaid
+%% CFD Solver Dispatch Flowchart
+%% ============================================================================
+
+flowchart TD
+    START([▶ Solve Request]) --> VALIDATE
+
+    VALIDATE{{"🔍 Validate Network\nTopology"}}
+    VALIDATE -->|"Errors found"| ERR_VAL(["❌ Return 422\nValidation Error"])
+    VALIDATE -->|"Valid"| FLUID
+
+    FLUID["📋 Load Fluid Properties\nfrom FLUID_DATABASE"]
+    FLUID --> TOPO
+
+    TOPO["🕸️ Build Network Topology\n• BFS traversal\n• Spanning tree\n• Independent loops\n• Incidence matrix A"]
+    TOPO --> INIT
+
+    INIT["⚙️ Initialise Flows Q⁰\n• Set chord flows = 0\n• Backsolve tree flows\n• Satisfy KCL at all nodes"]
+    INIT --> SOLVER_SEL
+
+    SOLVER_SEL{{"🔀 Solver Type?"}}
+    SOLVER_SEL -->|"hardy_cross"| HC
+    SOLVER_SEL -->|"newton_raphson"| NR
+
+    subgraph HC["🔁 Hardy-Cross Loop Correction"]
+        HC1["For each loop ℓ:\n  Compute head-loss residual Eℓ"]
+        HC2["ΔQℓ = −Eℓ / (2·Σ rₖ|Qₖ|)"]
+        HC3["Apply: Qₖ += Bℓₖ · ΔQℓ"]
+        HC4["Update friction factors\n(Qₖ → Reₖ → Colebrook-White)"]
+        HC5{{"max|ΔQ| < tol?"}}
+        HC1 --> HC2 --> HC3 --> HC4 --> HC5
+        HC5 -->|"No"| HC1
+    end
+
+    subgraph NR["🔁 Newton-Raphson Gradient"]
+        NR1["Compute Q(H) for all pipes\nQₖ = sgn(ΔH)·|ΔH|^0.5/rₖ^0.5"]
+        NR2["Assemble residual F\nFᵢ = ΣQₖ − dᵢ"]
+        NR3["Build Jacobian J\nJᵢⱼ = ∂Fᵢ/∂Hⱼ"]
+        NR4["Solve: J·ΔH = −F\n(numpy.linalg.solve)"]
+        NR5["Update: H += ω·ΔH\n(ω = relaxation factor)"]
+        NR6{{"‖F‖∞ < tol?"}}
+        NR1 --> NR2 --> NR3 --> NR4 --> NR5 --> NR6
+        NR6 -->|"No"| NR1
+    end
+
+    HC5 -->|"Yes ✓"| POST
+    NR6 -->|"Yes ✓"| POST
+    HC5 -->|"Max iters reached"| WARN
+    NR6 -->|"Max iters reached"| WARN
+
+    WARN["⚠️ converged = False\nIssue warning"]
+    WARN --> POST
+
+    POST["📊 Post-Processing\nfor each pipe:\n  • Re, friction factor f\n  • velocity, head loss\n  • pressure drop\n  • Nusselt, h, T_out\n  • cavitation number\n  • k-ε turbulence"]
+
+    POST --> STATS["📈 Compute CFDStatistics\n• min/max/mean velocities\n• energy budget\n• uniformity index\n• HGL at each node"]
+
+    STATS --> SAVE{{"💾 Save to DB?"}}
+    SAVE -->|"Yes"| DB["INSERT solve_result\n(async SQLAlchemy)"]
+    SAVE -->|"No (inline)"| RETURN
+    DB --> RETURN
+
+    RETURN(["✅ Return SolverResult JSON\n{converged, pipe_results[],\n node_results[], statistics,\n convergence_history[]}"])

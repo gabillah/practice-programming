@@ -1,0 +1,101 @@
+flowchart TD
+    %% ── Startup ─────────────────────────────────────────────────────────
+    A([▶ python main.py]) --> B[Parse CLI args\n--debug --headless\n--reset-db --config]
+    B --> C{Dependencies\ninstalled?}
+    C -- No --> D[/Print install\ncommand & exit/]
+    C -- Yes --> E[Create dirs\nlogs/ db/ exports/]
+
+    E --> F[Config\ncore/config.py\nLoad config.json]
+    F --> G[Database\ndb/database.py\nSQLite WAL mode]
+    G --> H[AccountManager\nauth/account.py\nBalance · Margin · PnL]
+    H --> I[BarAggregator\ndata/bars.py\nTick → OHLCV bars]
+    I --> J[RiskManager\nrisk/manager.py\nKelly · VaR · Sizing]
+    J --> K[SignalEngine\nsignals/engine.py\n22 strategies + ML]
+    K --> L[TradingEngine\ntrading/engine.py\nOrder execution]
+    L --> M[PriceFeed\ndata/feed.py\ndemo / live]
+
+    %% ── Headless branch ─────────────────────────────────────────────────
+    M --> N{Headless\nmode?}
+    N -- Yes --> O[Feed runs in\nbackground thread\nCtrl+C to stop]
+
+    %% ── GUI branch ──────────────────────────────────────────────────────
+    N -- No --> P[BrokerApp\nui/app.py\nTkinter root window]
+    P --> Q[Build UI\n8-tab layout]
+
+    %% ── Live data pipeline ───────────────────────────────────────────────
+    M -->|tick| R[AccountManager\nupdate_price\nPrice cache]
+    M -->|tick| S[BarAggregator\non_tick\nBuild OHLCV bars]
+    S -->|completed bar| T[SignalEngine\non_bar\nRun 22 strategies]
+
+    %% ── C++ acceleration ─────────────────────────────────────────────────
+    T -->|EMA/RSI/ATR\nBollinger/ADX etc.| U[cpp/bridge.py\nctypes]
+    U -->|zero-copy\ndouble arrays| V[math_engine.dll/.so\nC++ engine\nO3 optimised]
+    V -.->|returns arrays| U
+    U -.->|NumPy arrays| T
+
+    %% ── Signal pipeline ─────────────────────────────────────────────────
+    T --> W{Confidence ≥\nmin_confluence?}
+    W -- No --> X[Signal discarded]
+    W -- Yes --> Y[Apply filters\nCooldown · Spread\nSession]
+    Y --> Z[Calculate SL/TP\n2×ATR stop loss\nKelly lot size]
+    Z --> AA[Save signal\ndb/signals\nEmit callbacks]
+
+    %% ── Auto-trade ───────────────────────────────────────────────────────
+    AA --> AB{auto_trade\nenabled?}
+    AB -- Yes --> AC[TradingEngine\nhandle_signal\nOpen market order]
+    AB -- No --> AD[Show signal\ncard in UI]
+
+    %% ── Tick-level monitoring ────────────────────────────────────────────
+    M -->|every tick| AE[TradingEngine\non_price_update]
+    AE --> AF{SL or TP\nhit?}
+    AF -- Yes --> AG[close_position\nRecord to history\nUpdate balance]
+    AF -- No --> AH{Trailing\nstop?}
+    AH -- Yes --> AI[Advance SL\ntoward price]
+
+    %% ── Background monitor thread (1s) ───────────────────────────────────
+    L --> AJ[Monitor thread\n1-second loop]
+    AJ --> AK[Check pending\norder triggers]
+    AJ --> AL{Margin\nlevel?}
+    AL -- "< Stop-Out\n(20%)" --> AM[STOP-OUT\nClose ALL positions]
+    AL -- "< Margin Call\n(50%)" --> AN[Alert user\nBlock new trades]
+    AJ --> AO[Apply daily\nswap charges]
+
+    %% ── Manual trading ───────────────────────────────────────────────────
+    P --> AP[Trading tab\nui/trading_panel.py]
+    AP -->|BUY/SELL\nbutton| AQ[TradingEngine\nopen_market]
+    AP -->|Pending order| AR[TradingEngine\nplace_pending]
+    AQ --> AS[Pre-trade checks\nLot · Margin · Daily limit]
+    AS -- Pass --> AT[Execute order\nDeduct commission\nStore in DB]
+    AS -- Fail --> AU[/Show error\ndialog/]
+
+    %% ── UI panels ────────────────────────────────────────────────────────
+    P --> AV[Chart\nui/chart.py\nCandlestick + overlays]
+    P --> AW[Positions\nui/positions_panel.py]
+    P --> AX[Signals\nui/signals_panel.py]
+    P --> AY[Analytics\nui/analytics_panel.py\n16 metrics + charts]
+    P --> AZ[Risk Dashboard\nui/risk_panel.py\nMargin gauge]
+
+    %% ── Persistence ─────────────────────────────────────────────────────
+    AT --> BA[(SQLite\ndb/broker.db\nWAL mode)]
+    AG --> BA
+    AA --> BA
+    BA --> BB[Reporter\nreports/reporter.py\nCSV auto-export]
+
+    %% ── Styling ──────────────────────────────────────────────────────────
+    classDef cpp    fill:#1E3A5F,stroke:#3B82F6,color:#93C5FD,font-weight:bold
+    classDef db     fill:#0F4C2A,stroke:#16A34A,color:#86EFAC
+    classDef ui     fill:#1E1B4B,stroke:#7C3AED,color:#C4B5FD
+    classDef engine fill:#1C1917,stroke:#D97706,color:#FDE68A
+    classDef sig    fill:#3B0764,stroke:#A855F7,color:#E9D5FF
+    classDef risk   fill:#4C0519,stroke:#E11D48,color:#FECDD3
+    classDef alert  fill:#7F1D1D,stroke:#DC2626,color:#FCA5A5,font-weight:bold
+    classDef start  fill:#166534,stroke:#16A34A,color:#DCFCE7,font-weight:bold
+
+    class A start
+    class V,U cpp
+    class BA,G db
+    class P,AP,AV,AW,AX,AY,AZ,Q ui
+    class L,AE,AQ,AR,AT,AJ,AK,AO engine
+    class T,W,Y,Z,AA,AB,AD sig
+    class J,AL,AH,AI risk
+    class AM,AN alert

@@ -1,0 +1,162 @@
+%% ============================================================================
+%% class_diagram.mermaid
+%% Backend Class Diagram — CFD Solver Engine
+%% ============================================================================
+
+classDiagram
+
+    class FluidProperties {
+        +str name
+        +float density
+        +float dynamic_viscosity
+        +float kinematic_viscosity
+        +float prandtl_number
+        +float specific_heat
+        +float thermal_conductivity
+        +float vapor_pressure
+        +float bulk_modulus
+    }
+
+    class PipeSegment {
+        +str pipe_id
+        +str start_node_id
+        +str end_node_id
+        +float length
+        +float diameter
+        +float roughness
+        +str material
+        +bool has_valve
+        +float valve_cv
+        +float valve_open_pct
+        +bool has_pump
+        +float pump_head
+        +float pump_efficiency
+        +float minor_loss_k
+        +float initial_flow
+        +float area()
+        +float relative_roughness()
+    }
+
+    class NetworkNode {
+        +str node_id
+        +str node_type
+        +float x
+        +float y
+        +float elevation
+        +bool pressure_known
+        +float pressure_value
+        +float demand
+    }
+
+    class SolverConfig {
+        +str solver_type
+        +int max_iterations
+        +float tolerance
+        +float relaxation
+        +bool include_minor_losses
+        +bool run_heat_transfer
+        +float temperature
+        +float ambient_temp
+    }
+
+    class SolverResult {
+        +bool converged
+        +int iterations
+        +float final_residual
+        +float solve_time_ms
+        +str solver_type
+        +list pipe_results
+        +list node_results
+        +CFDStatistics statistics
+        +list warnings
+        +list convergence_history
+    }
+
+    class NetworkTopology {
+        +list nodes
+        +list pipes
+        +bfs(start_node) list
+        +spanning_tree() tuple
+        +fundamental_loops() list
+        +incidence_matrix() ndarray
+        +connected_components() list
+        +validate() list[str]
+        +initialise_flows() dict
+    }
+
+    class HardyCrossSolver {
+        +SolverConfig config
+        +solve(nodes, pipes, fluid) SolverResult
+        -_resistance_coeff(pipe, Q, fluid) float
+        -_loop_correction(loop, Q, r) float
+        -_update_friction(pipes, Q, fluid) dict
+        -_check_convergence(dQ_list) bool
+    }
+
+    class NewtonRaphsonSolver {
+        +SolverConfig config
+        +solve(nodes, pipes, fluid) SolverResult
+        -_initial_heads(nodes, pipes) ndarray
+        -_compute_flows(H, pipes, fluid) ndarray
+        -_residuals(H, Q, nodes) ndarray
+        -_jacobian(H, pipes, fluid) ndarray
+        -_pipe_resistance(pipe, fluid) float
+    }
+
+    class WaterHammerSolver {
+        +int n_reaches
+        +float t_total
+        +solve_transient(pipes, nodes, fluid) dict
+        -_wave_speed(pipe, fluid) float
+        -_update_interior(H, Q, R, a, g, A) tuple
+        -_apply_boundary(H, Q, bc_type) void
+    }
+
+    class PipeHydraulics {
+        +FluidProperties fluid
+        +compute_pipe(pipe, Q) PipeResult
+        +compute_all_pipes(pipes, Q_dict, fluid) list
+        -_friction_factor(re, eps_d) float
+        -_nusselt(re, pr, f, method) float
+        -_cavitation(p, rho, v) float
+    }
+
+    class KEpsilonModel {
+        +float C_mu
+        +float C1e
+        +float C2e
+        +float sigma_k
+        +float sigma_e
+        +compute(re, v, D, nu) dict
+        +report(re, v, D, nu) str
+    }
+
+    class CFDNetworkSolver {
+        +SolverConfig config
+        +solve(nodes, pipes, fluid) SolverResult
+        -_select_solver() HardyCrossSolver|NewtonRaphsonSolver
+        -_post_process(H, Q, nodes, pipes, fluid) SolverResult
+    }
+
+    class CFDStatistics {
+        +list pipe_results
+        +list node_results
+        +compute() dict
+        -_velocity_stats() dict
+        -_energy_budget() dict
+        -_uniformity_index() float
+        -_hgl_points() list
+    }
+
+    CFDNetworkSolver --> HardyCrossSolver : uses
+    CFDNetworkSolver --> NewtonRaphsonSolver : uses
+    CFDNetworkSolver --> PipeHydraulics : uses
+    CFDNetworkSolver --> NetworkTopology : uses
+    HardyCrossSolver --> NetworkTopology : uses
+    NewtonRaphsonSolver --> NetworkTopology : uses
+    PipeHydraulics --> KEpsilonModel : uses
+    PipeHydraulics --> FluidProperties : reads
+    HardyCrossSolver ..> SolverResult : produces
+    NewtonRaphsonSolver ..> SolverResult : produces
+    SolverResult *-- CFDStatistics
+    CFDNetworkSolver --> SolverConfig : configured by

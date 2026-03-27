@@ -1,0 +1,31 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
+  <diagram name="Page-1" id="XS3tswMt1PHei2dwhNMy">
+    <mxGraphModel dx="521" dy="613" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="TspsI9wPXQu5ZM5YZxOF-57" target="TspsI9wPXQu5ZM5YZxOF-58">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-57" value="START" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="140" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-58" value="&lt;div style=&quot;color: rgb(41, 41, 41); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;color: #5e2cbc;&quot;&gt;sort&lt;/span&gt;(&lt;span style=&quot;color: #001080;&quot;&gt;intervals&lt;/span&gt;, &lt;span style=&quot;color: #001080;&quot;&gt;intervalsSize&lt;/span&gt;);&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="290" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-60" value="&lt;div style=&quot;color: rgb(41, 41, 41); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;color: #001080;&quot;&gt;writeIndex&lt;/span&gt; &lt;span style=&quot;color: #000000;&quot;&gt;=&lt;/span&gt; &lt;span style=&quot;color: #096d48;&quot;&gt;0&lt;/span&gt;;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="165" y="440" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-61" value="&#xa;&lt;div style=&quot;color: #292929;background-color: #ffffff;font-family: Consolas, &#39;Courier New&#39;, monospace;font-weight: normal;font-size: 14px;line-height: 19px;white-space: pre;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #001080;&quot;&gt;start&lt;/span&gt;&lt;span style=&quot;color: #292929;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;color: #000000;&quot;&gt;=&lt;/span&gt;&lt;span style=&quot;color: #292929;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;color: #001080;&quot;&gt;intervals&lt;/span&gt;&lt;span style=&quot;color: #292929;&quot;&gt;[&lt;/span&gt;&lt;span style=&quot;color: #096d48;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot;color: #292929;&quot;&gt;][&lt;/span&gt;&lt;span style=&quot;color: #096d48;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot;color: #292929;&quot;&gt;];&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&#xa;&#xa;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="135" y="570" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-62" value="&lt;div style=&quot;color: rgb(41, 41, 41); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;color: #001080;&quot;&gt;end&lt;/span&gt; &lt;span style=&quot;color: #000000;&quot;&gt;=&lt;/span&gt; &lt;span style=&quot;color: #001080;&quot;&gt;intervals&lt;/span&gt;[&lt;span style=&quot;color: #096d48;&quot;&gt;0&lt;/span&gt;][&lt;span style=&quot;color: #096d48;&quot;&gt;1&lt;/span&gt;];&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="690" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="TspsI9wPXQu5ZM5YZxOF-63" value="&lt;div style=&quot;color: rgb(41, 41, 41); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;&quot;&gt;&lt;span style=&quot;color: #001080;&quot;&gt;readIndex&lt;/span&gt; &lt;span style=&quot;color: #000000;&quot;&gt;=&lt;/span&gt; &lt;span style=&quot;color: #096d48;&quot;&gt;1&lt;/span&gt;;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="800" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

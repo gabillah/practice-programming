@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathWriter — LaTeX-Powered Document Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- KaTeX for LaTeX rendering -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<style>
+  :root {
+    --bg: #0f0e0d;
+    --surface: #1a1917;
+    --surface2: #232220;
+    --border: #2e2c29;
+    --accent: #d4a853;
+    --accent2: #c87941;
+    --text: #e8e0d4;
+    --text-dim: #8a8278;
+    --text-dimmer: #4a4844;
+    --paper: #f5f0e8;
+    --paper-shadow: #e8e0d0;
+    --ink: #1a1610;
+    --ink-dim: #4a4440;
+    --red: #c85a3a;
+    --green: #5a9e6a;
+    --blue: #5a7ec8;
+    --popup-bg: #1e1c1a;
+    --popup-border: #3a3632;
+    --popup-hover: #2a2724;
+    --popup-selected: #d4a85322;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 40px;
+    padding: 0 12px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+  }
+
+  #logo {
+    font-family: 'Crimson Pro', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    margin-right: 20px;
+    white-space: nowrap;
+  }
+  #logo span { color: var(--text-dim); font-weight: 300; }
+
+  .menu-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 0 10px;
+    height: 40px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    white-space: nowrap;
+  }
+  .menu-btn:hover { color: var(--text); background: var(--surface2); }
+
+  .sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+  /* ── TOOLBAR ── */
+  #toolbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .tb-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-family: 'Crimson Pro', serif;
+    transition: all 0.12s;
+  }
+  .tb-btn:hover { color: var(--text); background: var(--surface2); border-color: var(--border); }
+  .tb-btn.active { color: var(--accent); background: var(--popup-selected); border-color: var(--accent2); }
+
+  .tb-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+  .tb-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── MAIN AREA ── */
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  #sidebar-title {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    padding: 10px 14px 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #symbol-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .sym-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 10px;
+    padding: 6px 4px;
+    cursor: pointer;
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .sym-tab:hover { color: var(--text); }
+  .sym-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  #symbol-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    padding: 8px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .sym-btn {
+    background: var(--surface2);
+    border: 1px solid transparent;
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px 2px;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.12s;
+    font-family: 'Crimson Pro', serif;
+  }
+  .sym-btn:hover { background: var(--popup-hover); border-color: var(--accent); color: var(--accent); }
+
+  /* ── CANVAS (paper) ── */
+  #canvas-area {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  #page {
+    width: 720px;
+    min-height: 900px;
+    background: var(--paper);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
+    position: relative;
+    padding: 80px 90px;
+  }
+
+  #editor {
+    min-height: 700px;
+    outline: none;
+    font-family: 'Crimson Pro', serif;
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--ink);
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
+    caret-color: var(--accent2);
+  }
+
+  #editor:empty::before {
+    content: 'Start writing… Type \\ for the symbol menu, $…$ for inline LaTeX, $$…$$ for display math.';
+    color: var(--ink-dim);
+    font-style: italic;
+    pointer-events: none;
+  }
+
+  /* Rendered math inside editor */
+  #editor .math-inline {
+    display: inline-block;
+    background: rgba(212,168,83,0.08);
+    border-radius: 3px;
+    padding: 0 3px;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  #editor .math-inline:hover { border-color: rgba(212,168,83,0.4); }
+
+  #editor .math-block {
+    display: block;
+    text-align: center;
+    margin: 16px 0;
+    padding: 12px;
+    background: rgba(212,168,83,0.05);
+    border-left: 3px solid var(--accent);
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+  }
+
+  #editor h1 { font-size: 28px; font-weight: 600; margin: 20px 0 10px; }
+  #editor h2 { font-size: 22px; font-weight: 600; margin: 16px 0 8px; }
+  #editor h3 { font-size: 18px; font-weight: 600; margin: 12px 0 6px; }
+
+  /* ── POPUP MENU ── */
+  #popup {
+    position: fixed;
+    z-index: 9999;
+    background: var(--popup-bg);
+    border: 1px solid var(--popup-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
+    width: 340px;
+    max-height: 320px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'DM Sans', sans-serif;
+  }
+  #popup.visible { display: flex; }
+
+  #popup-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--popup-border);
+    background: var(--surface);
+  }
+
+  #popup-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 4px 8px;
+    outline: none;
+  }
+  #popup-input:focus { border-color: var(--accent); }
+
+  #popup-preview {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dimmer);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  #popup-list {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .popup-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-bottom: 1px solid #1e1c1a;
+  }
+  .popup-item:hover, .popup-item.selected {
+    background: var(--popup-hover);
+  }
+  .popup-item.selected { background: var(--popup-selected); }
+
+  .pi-symbol {
+    font-size: 18px;
+    width: 32px;
+    text-align: center;
+    font-family: 'Crimson Pro', serif;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .pi-info { flex: 1; min-width: 0; }
+  .pi-name { font-size: 12px; color: var(--text); }
+  .pi-cmd {
+    font-size: 10px;
+    color: var(--text-dimmer);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 1px;
+  }
+  .pi-tag {
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: var(--surface2);
+    color: var(--text-dimmer);
+    flex-shrink: 0;
+  }
+
+  /* ── STATUSBAR ── */
+  #statusbar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    height: 26px;
+    font-size: 11px;
+    color: var(--text-dimmer);
+    flex-shrink: 0;
+  }
+
+  .sb-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  kbd {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 1px 4px;
+    color: var(--text-dim);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dimmer); }
+
+  /* Page number watermark */
+  #page::after {
+    content: '1';
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--ink-dim);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Notification toast */
+  #toast {
+    position: fixed;
+    bottom: 40px;
+    right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--text);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10000;
+  }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div id="logo">Math<span>Writer</span></div>
+  <button class="menu-btn">File</button>
+  <button class="menu-btn">Edit</button>
+  <button class="menu-btn">View</button>
+  <button class="menu-btn">Insert</button>
+  <button class="menu-btn">Format</button>
+  <button class="menu-btn">Tools</button>
+  <div class="sep"></div>
+  <button class="menu-btn" onclick="exportHTML()">Export HTML</button>
+  <button class="menu-btn" onclick="exportTex()">Export LaTeX</button>
+</div>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <select class="tb-select" id="style-select" onchange="applyStyle(this.value)">
+    <option value="p">Paragraph</option>
+    <option value="h1">Heading 1</option>
+    <option value="h2">Heading 2</option>
+    <option value="h3">Heading 3</option>
+  </select>
+
+  <select class="tb-select" style="width:70px" onchange="setFontSize(this.value)">
+    <option value="16">16</option>
+    <option value="18" selected>18</option>
+    <option value="20">20</option>
+    <option value="24">24</option>
+    <option value="28">28</option>
+    <option value="32">32</option>
+  </select>
+
+  <div class="tb-sep"></div>
+  <button class="tb-btn" title="Bold (Ctrl+B)" onclick="fmt('bold')"><b>B</b></button>
+  <button class="tb-btn" title="Italic (Ctrl+I)" onclick="fmt('italic')"><i>I</i></button>
+  <button class="tb-btn" title="Underline (Ctrl+U)" onclick="fmt('underline')"><u>U</u></button>
+  <button class="tb-btn" title="Strikethrough" onclick="fmt('strikeThrough')"><s>S</s></button>
+
+  <div class="tb-sep"></div>
+  <button class="tb-btn" title="Align Left" onclick="fmt('justifyLeft')">⬅</button>
+  <button class="tb-btn" title="Align Center" onclick="fmt('justifyCenter')">☰</button>
+  <button class="tb-btn" title="Align Right" onclick="fmt('justifyRight')">➡</button>
+
+  <div class="tb-sep"></div>
+  <button class="tb-btn" title="Inline Math ($...$)" onclick="insertMathInline()" style="font-size:11px;width:auto;padding:0 6px;">∑ inline</button>
+  <button class="tb-btn" title="Display Math ($$...$$)" onclick="insertMathBlock()" style="font-size:11px;width:auto;padding:0 6px;">∑ block</button>
+
+  <div class="tb-sep"></div>
+  <button class="tb-btn" title="Undo" onclick="document.execCommand('undo')">↺</button>
+  <button class="tb-btn" title="Redo" onclick="document.execCommand('redo')">↻</button>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-title">Symbol Palette</div>
+    <div id="symbol-tabs">
+      <button class="sym-tab active" onclick="switchTab('greek',this)">Greek</button>
+      <button class="sym-tab" onclick="switchTab('ops',this)">Ops</button>
+      <button class="sym-tab" onclick="switchTab('arrows',this)">Arrows</button>
+      <button class="sym-tab" onclick="switchTab('misc',this)">Misc</button>
+    </div>
+    <div id="symbol-grid"></div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-area">
+    <div id="page">
+      <div id="editor" contenteditable="true" spellcheck="true"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATUSBAR -->
+<div id="statusbar">
+  <div class="sb-dot"></div>
+  <span id="word-count">0 words</span>
+  <span>|</span>
+  <span>Type <kbd>\</kbd> for symbol menu</span>
+  <span>|</span>
+  <span>Wrap math in <kbd>$...$</kbd> or <kbd>$$...$$</kbd></span>
+  <span style="margin-left:auto">MathWriter 1.0</span>
+</div>
+
+<!-- POPUP MENU -->
+<div id="popup">
+  <div id="popup-header">
+    <span style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:13px;">\</span>
+    <input type="text" id="popup-input" placeholder="type to search…" autocomplete="off">
+    <div id="popup-preview"></div>
+  </div>
+  <div id="popup-list"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// SYMBOL DATABASE
+// ─────────────────────────────────────────────
+const SYMBOLS = {
+  greek: [
+    { name:'Alpha', cmd:'\\alpha', sym:'α', latex:'\\alpha' },
+    { name:'Beta', cmd:'\\beta', sym:'β', latex:'\\beta' },
+    { name:'Gamma', cmd:'\\gamma', sym:'γ', latex:'\\gamma' },
+    { name:'Delta', cmd:'\\delta', sym:'δ', latex:'\\delta' },
+    { name:'Epsilon', cmd:'\\epsilon', sym:'ε', latex:'\\epsilon' },
+    { name:'Zeta', cmd:'\\zeta', sym:'ζ', latex:'\\zeta' },
+    { name:'Eta', cmd:'\\eta', sym:'η', latex:'\\eta' },
+    { name:'Theta', cmd:'\\theta', sym:'θ', latex:'\\theta' },
+    { name:'Lambda', cmd:'\\lambda', sym:'λ', latex:'\\lambda' },
+    { name:'Mu', cmd:'\\mu', sym:'μ', latex:'\\mu' },
+    { name:'Nu', cmd:'\\nu', sym:'ν', latex:'\\nu' },
+    { name:'Pi', cmd:'\\pi', sym:'π', latex:'\\pi' },
+    { name:'Rho', cmd:'\\rho', sym:'ρ', latex:'\\rho' },
+    { name:'Sigma', cmd:'\\sigma', sym:'σ', latex:'\\sigma' },
+    { name:'Tau', cmd:'\\tau', sym:'τ', latex:'\\tau' },
+    { name:'Phi', cmd:'\\phi', sym:'φ', latex:'\\phi' },
+    { name:'Chi', cmd:'\\chi', sym:'χ', latex:'\\chi' },
+    { name:'Psi', cmd:'\\psi', sym:'ψ', latex:'\\psi' },
+    { name:'Omega', cmd:'\\omega', sym:'ω', latex:'\\omega' },
+    { name:'Gamma (cap)', cmd:'\\Gamma', sym:'Γ', latex:'\\Gamma' },
+    { name:'Delta (cap)', cmd:'\\Delta', sym:'Δ', latex:'\\Delta' },
+    { name:'Theta (cap)', cmd:'\\Theta', sym:'Θ', latex:'\\Theta' },
+    { name:'Lambda (cap)', cmd:'\\Lambda', sym:'Λ', latex:'\\Lambda' },
+    { name:'Pi (cap)', cmd:'\\Pi', sym:'Π', latex:'\\Pi' },
+    { name:'Sigma (cap)', cmd:'\\Sigma', sym:'Σ', latex:'\\Sigma' },
+  ],
+  ops: [
+    { name:'Sum', cmd:'\\sum', sym:'∑', latex:'\\sum' },
+    { name:'Product', cmd:'\\prod', sym:'∏', latex:'\\prod' },
+    { name:'Integral', cmd:'\\int', sym:'∫', latex:'\\int' },
+    { name:'Double Integral', cmd:'\\iint', sym:'∬', latex:'\\iint' },
+    { name:'Triple Integral', cmd:'\\iiint', sym:'∭', latex:'\\iiint' },
+    { name:'Contour Integral', cmd:'\\oint', sym:'∮', latex:'\\oint' },
+    { name:'Square Root', cmd:'\\sqrt', sym:'√', latex:'\\sqrt{}' },
+    { name:'Partial', cmd:'\\partial', sym:'∂', latex:'\\partial' },
+    { name:'Nabla', cmd:'\\nabla', sym:'∇', latex:'\\nabla' },
+    { name:'Infinity', cmd:'\\infty', sym:'∞', latex:'\\infty' },
+    { name:'Plus-minus', cmd:'\\pm', sym:'±', latex:'\\pm' },
+    { name:'Times', cmd:'\\times', sym:'×', latex:'\\times' },
+    { name:'Dot product', cmd:'\\cdot', sym:'·', latex:'\\cdot' },
+    { name:'Fraction', cmd:'\\frac', sym:'⁄', latex:'\\frac{}{}' },
+    { name:'Lim', cmd:'\\lim', sym:'lim', latex:'\\lim' },
+    { name:'Max', cmd:'\\max', sym:'max', latex:'\\max' },
+    { name:'Min', cmd:'\\min', sym:'min', latex:'\\min' },
+    { name:'Log', cmd:'\\log', sym:'log', latex:'\\log' },
+    { name:'Sin', cmd:'\\sin', sym:'sin', latex:'\\sin' },
+    { name:'Cos', cmd:'\\cos', sym:'cos', latex:'\\cos' },
+    { name:'Tan', cmd:'\\tan', sym:'tan', latex:'\\tan' },
+    { name:'Not equal', cmd:'\\neq', sym:'≠', latex:'\\neq' },
+    { name:'Leq', cmd:'\\leq', sym:'≤', latex:'\\leq' },
+    { name:'Geq', cmd:'\\geq', sym:'≥', latex:'\\geq' },
+  ],
+  arrows: [
+    { name:'Right arrow', cmd:'\\to', sym:'→', latex:'\\to' },
+    { name:'Left arrow', cmd:'\\leftarrow', sym:'←', latex:'\\leftarrow' },
+    { name:'Up arrow', cmd:'\\uparrow', sym:'↑', latex:'\\uparrow' },
+    { name:'Down arrow', cmd:'\\downarrow', sym:'↓', latex:'\\downarrow' },
+    { name:'Leftrightarrow', cmd:'\\leftrightarrow', sym:'↔', latex:'\\leftrightarrow' },
+    { name:'Implies', cmd:'\\Rightarrow', sym:'⇒', latex:'\\Rightarrow' },
+    { name:'Iff', cmd:'\\Leftrightarrow', sym:'⇔', latex:'\\Leftrightarrow' },
+    { name:'Mapsto', cmd:'\\mapsto', sym:'↦', latex:'\\mapsto' },
+    { name:'Long arrow', cmd:'\\longrightarrow', sym:'⟶', latex:'\\longrightarrow' },
+    { name:'Long implies', cmd:'\\Longrightarrow', sym:'⟹', latex:'\\Longrightarrow' },
+    { name:'Hookleft', cmd:'\\hookleftarrow', sym:'↩', latex:'\\hookleftarrow' },
+    { name:'Hookright', cmd:'\\hookrightarrow', sym:'↪', latex:'\\hookrightarrow' },
+  ],
+  misc: [
+    { name:'In', cmd:'\\in', sym:'∈', latex:'\\in' },
+    { name:'Not in', cmd:'\\notin', sym:'∉', latex:'\\notin' },
+    { name:'Subset', cmd:'\\subset', sym:'⊂', latex:'\\subset' },
+    { name:'Supset', cmd:'\\supset', sym:'⊃', latex:'\\supset' },
+    { name:'Union', cmd:'\\cup', sym:'∪', latex:'\\cup' },
+    { name:'Intersect', cmd:'\\cap', sym:'∩', latex:'\\cap' },
+    { name:'Empty set', cmd:'\\emptyset', sym:'∅', latex:'\\emptyset' },
+    { name:'For all', cmd:'\\forall', sym:'∀', latex:'\\forall' },
+    { name:'Exists', cmd:'\\exists', sym:'∃', latex:'\\exists' },
+    { name:'Therefore', cmd:'\\therefore', sym:'∴', latex:'\\therefore' },
+    { name:'Because', cmd:'\\because', sym:'∵', latex:'\\because' },
+    { name:'Degree', cmd:'\\deg', sym:'°', latex:'^{\\circ}' },
+    { name:'Angle', cmd:'\\angle', sym:'∠', latex:'\\angle' },
+    { name:'Parallel', cmd:'\\parallel', sym:'∥', latex:'\\parallel' },
+    { name:'Perp', cmd:'\\perp', sym:'⊥', latex:'\\perp' },
+    { name:'Real numbers', cmd:'\\mathbb{R}', sym:'ℝ', latex:'\\mathbb{R}' },
+    { name:'Complex', cmd:'\\mathbb{C}', sym:'ℂ', latex:'\\mathbb{C}' },
+    { name:'Naturals', cmd:'\\mathbb{N}', sym:'ℕ', latex:'\\mathbb{N}' },
+    { name:'Integers', cmd:'\\mathbb{Z}', sym:'ℤ', latex:'\\mathbb{Z}' },
+    { name:'Rationals', cmd:'\\mathbb{Q}', sym:'ℚ', latex:'\\mathbb{Q}' },
+  ]
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const editor = document.getElementById('editor');
+const popup  = document.getElementById('popup');
+const popupInput  = document.getElementById('popup-input');
+const popupList   = document.getElementById('popup-list');
+const popupPreview= document.getElementById('popup-preview');
+
+let popupOpen = false;
+let selectedIdx = 0;
+let currentQuery = '';
+let filteredItems = [];
+let backslashNode = null;
+let backslashOffset = 0;
+let currentTab = 'greek';
+
+// ─────────────────────────────────────────────
+// SIDEBAR SYMBOLS
+// ─────────────────────────────────────────────
+function renderSymbolGrid(tab) {
+  const grid = document.getElementById('symbol-grid');
+  grid.innerHTML = '';
+  (SYMBOLS[tab] || []).forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'sym-btn';
+    btn.title = `${s.name} (${s.cmd})`;
+    btn.textContent = s.sym;
+    btn.onclick = () => { editor.focus(); insertLatexInline(s.latex); };
+    grid.appendChild(btn);
+  });
+}
+
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.sym-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderSymbolGrid(tab);
+}
+renderSymbolGrid('greek');
+
+// ─────────────────────────────────────────────
+// POPUP LOGIC
+// ─────────────────────────────────────────────
+function allSymbols() {
+  return Object.values(SYMBOLS).flat();
+}
+
+function filterSymbols(q) {
+  const lower = q.toLowerCase();
+  if (!lower) return allSymbols().slice(0, 20);
+  return allSymbols().filter(s =>
+    s.cmd.toLowerCase().includes(lower) ||
+    s.name.toLowerCase().includes(lower)
+  ).slice(0, 20);
+}
+
+function renderPopupList(items, selIdx) {
+  popupList.innerHTML = '';
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'popup-item' + (i === selIdx ? ' selected' : '');
+    div.innerHTML = `
+      <div class="pi-symbol">${item.sym}</div>
+      <div class="pi-info">
+        <div class="pi-name">${item.name}</div>
+        <div class="pi-cmd">${item.cmd}</div>
+      </div>
+      <div class="pi-tag">LaTeX</div>
+    `;
+    div.onclick = () => insertSymbolFromPopup(item);
+    popupList.appendChild(div);
+  });
+  // Scroll selected into view
+  const sel = popupList.querySelector('.selected');
+  if (sel) sel.scrollIntoView({ block: 'nearest' });
+}
+
+function openPopup() {
+  popupOpen = true;
+  currentQuery = '';
+  popupInput.value = '';
+  filteredItems = filterSymbols('');
+  selectedIdx = 0;
+  renderPopupList(filteredItems, selectedIdx);
+
+  // Position near cursor
+  const sel = window.getSelection();
+  let rect = null;
+  if (sel.rangeCount) {
+    const range = sel.getRangeAt(0).cloneRange();
+    range.collapse(true);
+    rect = range.getBoundingClientRect();
+  }
+  if (rect && rect.top > 0) {
+    let top = rect.bottom + 6;
+    let left = rect.left;
+    if (left + 340 > window.innerWidth) left = window.innerWidth - 350;
+    if (top + 320 > window.innerHeight) top = rect.top - 320;
+    popup.style.top = top + 'px';
+    popup.style.left = left + 'px';
+  } else {
+    popup.style.top = '200px';
+    popup.style.left = '300px';
+  }
+
+  popup.classList.add('visible');
+  // Use requestAnimationFrame to ensure the popup is visible before focusing
+  requestAnimationFrame(() => {
+    popupInput.focus();
+    popupInput.select();
+  });
+}
+
+function closePopup() {
+  popupOpen = false;
+  popup.classList.remove('visible');
+  popupInput.value = '';
+  editor.focus();
+}
+
+function insertSymbolFromPopup(item) {
+  // Delete the backslash + query from the editor
+  deleteBackslashQuery();
+  // Insert the LaTeX rendered
+  insertLatexInline(item.latex);
+  closePopup();
+}
+
+function deleteBackslashQuery() {
+  if (!backslashNode) return;
+  try {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    // Only delete the backslash itself — the query text stayed in popupInput, not the editor
+    range.setStart(backslashNode, backslashOffset);
+    range.setEnd(backslashNode, backslashOffset + 1);
+    range.deleteContents();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    sel.collapseToEnd();
+  } catch(e) {}
+}
+
+// ─────────────────────────────────────────────
+// LATEX INSERTION
+// ─────────────────────────────────────────────
+function insertLatexInline(latex) {
+  const rendered = document.createElement('span');
+  rendered.className = 'math-inline';
+  rendered.contentEditable = 'false';
+  rendered.setAttribute('data-latex', latex);
+  try {
+    katex.render(latex, rendered, { throwOnError: false, displayMode: false });
+  } catch(e) {
+    rendered.textContent = latex;
+  }
+
+  // Insert space after
+  const space = document.createTextNode('\u200B');
+
+  const sel = window.getSelection();
+  if (sel.rangeCount) {
+    const range = sel.getRangeAt(0);
+    range.collapse(false);
+    range.insertNode(space);
+    range.insertNode(rendered);
+    range.setStartAfter(space);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    editor.appendChild(rendered);
+    editor.appendChild(space);
+  }
+  updateWordCount();
+}
+
+function insertMathInline() {
+  const sel = window.getSelection();
+  const selectedText = sel.toString().trim();
+  const latex = selectedText || 'x^2 + y^2 = z^2';
+  insertLatexInline(latex);
+}
+
+function insertMathBlock() {
+  const latex = prompt('Enter display math (LaTeX):', '\\int_0^\\infty e^{-x^2}\\,dx = \\frac{\\sqrt{\\pi}}{2}');
+  if (!latex) return;
+  const block = document.createElement('div');
+  block.className = 'math-block';
+  block.contentEditable = 'false';
+  block.setAttribute('data-latex', latex);
+  try {
+    katex.render(latex, block, { throwOnError: false, displayMode: true });
+  } catch(e) {
+    block.textContent = latex;
+  }
+  block.onclick = () => {
+    const newLatex = prompt('Edit LaTeX:', block.getAttribute('data-latex'));
+    if (newLatex) {
+      block.setAttribute('data-latex', newLatex);
+      try { katex.render(newLatex, block, { throwOnError: false, displayMode: true }); }
+      catch(e) { block.textContent = newLatex; }
+    }
+  };
+
+  const sel2 = window.getSelection();
+  if (sel2.rangeCount) {
+    const range = sel2.getRangeAt(0);
+    range.collapse(false);
+    range.insertNode(document.createElement('br'));
+    range.insertNode(block);
+  } else {
+    editor.appendChild(block);
+  }
+  updateWordCount();
+}
+
+// ─────────────────────────────────────────────
+// AUTOMATIC LaTeX RENDERING: $...$ and $$...$$
+// ─────────────────────────────────────────────
+function processInlineMath(text) {
+  // We scan for $...$ pattern, replace with rendered span
+  // This is called when user presses $ in certain contexts
+}
+
+// Scan and render $...$ patterns after user types closing $
+function tryRenderMathAtCursor() {
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const node = range.startContainer;
+  if (node.nodeType !== Node.TEXT_NODE) return;
+  const text = node.textContent;
+  const pos = range.startOffset;
+
+  // Check for $$...$$
+  const ddStart = text.lastIndexOf('$$', pos - 2);
+  if (ddStart !== -1 && text[pos-1] === '$' && text[pos-2] === '$') {
+    const latex = text.substring(ddStart + 2, pos - 2).trim();
+    if (latex.length > 0) {
+      renderMathRange(node, ddStart, pos, latex, true);
+      return;
+    }
+  }
+
+  // Check for $...$
+  let dollarPos = -1;
+  for (let i = pos - 2; i >= 0; i--) {
+    if (text[i] === '$' && (i === 0 || text[i-1] !== '$') && text[i+1] !== '$') {
+      dollarPos = i; break;
+    }
+  }
+  if (dollarPos !== -1 && text[pos-1] === '$') {
+    const latex = text.substring(dollarPos + 1, pos - 1).trim();
+    if (latex.length > 0) {
+      renderMathRange(node, dollarPos, pos, latex, false);
+    }
+  }
+}
+
+function renderMathRange(textNode, start, end, latex, displayMode) {
+  const before = textNode.textContent.substring(0, start);
+  const after  = textNode.textContent.substring(end);
+
+  const rendered = document.createElement('span');
+  rendered.className = displayMode ? 'math-block' : 'math-inline';
+  rendered.contentEditable = 'false';
+  rendered.setAttribute('data-latex', latex);
+  rendered.onclick = () => {
+    const newLatex = prompt('Edit LaTeX:', rendered.getAttribute('data-latex'));
+    if (newLatex) {
+      rendered.setAttribute('data-latex', newLatex);
+      try { katex.render(newLatex, rendered, { throwOnError: false, displayMode }); }
+      catch(e) { rendered.textContent = newLatex; }
+    }
+  };
+  try {
+    katex.render(latex, rendered, { throwOnError: false, displayMode });
+  } catch(e) {
+    rendered.textContent = latex;
+  }
+
+  const parent = textNode.parentNode;
+  const beforeNode = document.createTextNode(before);
+  const afterNode  = document.createTextNode(after + '\u200B');
+  parent.replaceChild(afterNode, textNode);
+  parent.insertBefore(rendered, afterNode);
+  parent.insertBefore(beforeNode, rendered);
+
+  // Move cursor after rendered
+  const sel = window.getSelection();
+  const range = document.createRange();
+  range.setStart(afterNode, 1);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ─────────────────────────────────────────────
+// EDITOR KEY HANDLER
+// ─────────────────────────────────────────────
+editor.addEventListener('keydown', (e) => {
+  // Not popup open — handle escape only
+  if (!popupOpen && e.key === 'Escape') return;
+});
+
+editor.addEventListener('input', (e) => {
+  if (popupOpen) return;
+
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const node = range.startContainer;
+  if (node.nodeType !== Node.TEXT_NODE) return;
+
+  const text = node.textContent;
+  const pos = range.startOffset;
+
+  // Detect backslash typed
+  if (text[pos - 1] === '\\') {
+    backslashNode = node;
+    backslashOffset = pos - 1;
+    openPopup();
+    return;
+  }
+
+  // Detect closing $ for auto-render
+  if (text[pos - 1] === '$') {
+    tryRenderMathAtCursor();
+  }
+
+  updateWordCount();
+});
+
+// ── Popup input: drives filtering as the single source of truth ──
+popupInput.addEventListener('input', () => {
+  currentQuery = popupInput.value;
+  filteredItems = filterSymbols(currentQuery);
+  selectedIdx = 0;
+  renderPopupList(filteredItems, selectedIdx);
+});
+
+// Handle arrow-key navigation and confirm/cancel from within popupInput
+popupInput.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    selectedIdx = (selectedIdx + 1) % (filteredItems.length || 1);
+    renderPopupList(filteredItems, selectedIdx);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    selectedIdx = (selectedIdx - 1 + (filteredItems.length || 1)) % (filteredItems.length || 1);
+    renderPopupList(filteredItems, selectedIdx);
+  } else if (e.key === 'Enter' || e.key === 'Tab') {
+    e.preventDefault();
+    if (filteredItems[selectedIdx]) insertSymbolFromPopup(filteredItems[selectedIdx]);
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    deleteBackslashQuery();
+    closePopup();
+  } else if (e.key === 'Backspace' && popupInput.value.length === 0) {
+    // Empty query + backspace → cancel popup
+    deleteBackslashQuery();
+    closePopup();
+  }
+});
+
+// Block ALL editor keystrokes while popup is open so they go to popupInput instead
+editor.addEventListener('keydown', (e) => {
+  if (!popupOpen) return;
+  // Navigation keys are handled by popupInput's own keydown above
+  e.preventDefault();
+  e.stopPropagation();
+}, true); // capture phase
+
+// ─────────────────────────────────────────────
+// TOOLBAR COMMANDS
+// ─────────────────────────────────────────────
+function fmt(cmd) {
+  document.execCommand(cmd);
+  editor.focus();
+}
+
+function applyStyle(tag) {
+  document.execCommand('formatBlock', false, tag);
+  editor.focus();
+}
+
+function setFontSize(px) {
+  document.execCommand('fontSize', false, '7');
+  const fontEls = editor.querySelectorAll('font[size="7"]');
+  fontEls.forEach(el => {
+    el.removeAttribute('size');
+    el.style.fontSize = px + 'px';
+  });
+  editor.focus();
+}
+
+// ─────────────────────────────────────────────
+// WORD COUNT
+// ─────────────────────────────────────────────
+function updateWordCount() {
+  const text = editor.innerText || '';
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById('word-count').textContent = words + ' word' + (words !== 1 ? 's' : '');
+}
+editor.addEventListener('input', updateWordCount);
+
+// ─────────────────────────────────────────────
+// EXPORT
+// ─────────────────────────────────────────────
+function exportHTML() {
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+</head><body style="max-width:700px;margin:60px auto;font-family:Georgia,serif;font-size:18px;line-height:1.8;">
+${editor.innerHTML}
+</body></html>`;
+  download('document.html', html);
+}
+
+function exportTex() {
+  let tex = '\\documentclass{article}\n\\usepackage{amsmath,amssymb}\n\\begin{document}\n\n';
+  // Simple extraction
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_ALL);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      tex += node.textContent;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const latex = node.getAttribute && node.getAttribute('data-latex');
+      if (latex) {
+        if (node.classList.contains('math-block')) tex += `\n\\[\n${latex}\n\\]\n`;
+        else tex += `$${latex}$`;
+      }
+    }
+  }
+  tex += '\n\\end{document}';
+  download('document.tex', tex);
+}
+
+function download(filename, content) {
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
+  a.download = filename;
+  a.click();
+  showToast(`Downloaded ${filename}`);
+}
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─────────────────────────────────────────────
+// CLOSE POPUP ON OUTSIDE CLICK
+// ─────────────────────────────────────────────
+document.addEventListener('mousedown', (e) => {
+  if (popupOpen && !popup.contains(e.target) && e.target !== editor) {
+    deleteBackslashQuery();
+    closePopup();
+  }
+});
+
+// ─────────────────────────────────────────────
+// DEMO CONTENT
+// ─────────────────────────────────────────────
+window.addEventListener('load', () => {
+  editor.focus();
+  showToast('Welcome! Type \\ to open the symbol menu');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+%% ============================================================================
+%% api_sequence.mermaid
+%% API Sequence Diagram — Inline Solve Flow
+%% ============================================================================
+
+sequenceDiagram
+    autonumber
+
+    actor User
+    participant Browser as Browser<br/>(Frontend)
+    participant API as FastAPI<br/>Backend
+    participant Validator as NetworkTopology<br/>Validator
+    participant Solver as CFDNetworkSolver
+    participant HC as HardyCrossSolver<br/>or NewtonRaphson
+    participant PH as PipeHydraulics
+    participant DB as SQLite/PostgreSQL
+
+    User->>Browser: Draw network on canvas
+    User->>Browser: Click ▶ Solve
+    Browser->>Browser: Build InlineSolveRequest payload
+
+    Browser->>+API: POST /api/v1/solvers/solve/inline\n{network, fluid, solver_type, tolerance, ...}
+
+    API->>+Validator: validate(nodes, pipes)
+    Validator-->>-API: [] (empty = valid)
+
+    API->>+Solver: solve(nodes, pipes, fluid, config)
+
+    Solver->>Solver: select_solver(config.solver_type)
+    Solver->>Solver: build_network_topology()
+
+    loop Iterations (max 200)
+        Solver->>HC: iterate(Q, loops, fluid)
+        HC->>HC: compute_resistances(pipes, Q, fluid)
+        HC->>HC: apply_loop_corrections(ΔQ)
+        HC->>HC: update_friction_factors(Q, fluid)
+        HC-->>Solver: residual, ΔQ_max
+    end
+
+    Note over Solver,HC: Converged when max|ΔQ| < 1e-6
+
+    Solver->>+PH: compute_all_pipes(pipes, Q_final, fluid)
+    PH->>PH: For each pipe: Re, f, hL, Δp, Nu, h, T_out
+    PH->>PH: cavitation_number()
+    PH->>PH: KEpsilonModel.compute()
+    PH-->>-Solver: list[PipeResult]
+
+    Solver->>Solver: compute_node_heads(H_final)
+    Solver->>Solver: CFDStatistics.compute()
+    Solver-->>-API: SolverResult{converged, pipe_results, ...}
+
+    opt save_result=True
+        API->>+DB: INSERT INTO solve_results (result_json)
+        DB-->>-API: result_id
+    end
+
+    API-->>-Browser: 200 OK {SolverResult JSON}
+
+    Browser->>Browser: CanvasColourer.applyToCanvas(result)
+    Browser->>Browser: ResultsRenderer.renderAll(result)
+    Browser->>Browser: ConvergencePlot.draw(history)
+    Browser->>Browser: LegendRenderer.update()
+    Browser-->>User: Colour-mapped network + results tables
+
+
+%% ============================================================================
+%% database_er.mermaid
+%% Entity-Relationship Diagram — Database Schema
+%% ============================================================================
+
+erDiagram
+
+    NETWORKS {
+        uuid    id            PK
+        varchar name
+        text    description
+        float   scale_factor
+        varchar default_fluid
+        boolean is_template
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    NODES {
+        uuid    id            PK
+        uuid    network_id    FK
+        varchar node_type
+        varchar label
+        float   x
+        float   y
+        float   elevation
+        boolean pressure_known
+        float   pressure_value
+        float   demand
+    }
+
+    PIPES {
+        uuid    id            PK
+        uuid    network_id    FK
+        uuid    start_node_id FK
+        uuid    end_node_id   FK
+        varchar label
+        float   length
+        float   diameter
+        float   roughness
+        varchar material
+        boolean has_valve
+        float   valve_cv
+        float   valve_open_pct
+        boolean has_pump
+        float   pump_head
+        float   pump_efficiency
+        float   minor_loss_k
+        float   initial_flow
+    }
+
+    SOLVE_RESULTS {
+        uuid    id            PK
+        uuid    network_id    FK
+        varchar solver_type
+        boolean converged
+        integer iterations
+        float   final_residual
+        float   solve_time_ms
+        json    pipe_results
+        json    node_results
+        json    statistics
+        json    convergence_history
+        timestamp created_at
+    }
+
+    TEMPLATES {
+        uuid    id            PK
+        varchar name
+        text    description
+        json    network_json
+        integer node_count
+        integer pipe_count
+        timestamp created_at
+    }
+
+    NETWORKS ||--o{ NODES         : "has"
+    NETWORKS ||--o{ PIPES         : "has"
+    NETWORKS ||--o{ SOLVE_RESULTS : "has"
+    NODES    ||--o{ PIPES         : "start_node"
+    NODES    ||--o{ PIPES         : "end_node"

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>TradingMarket.Client</AssemblyName>
+    <RootNamespace>TradingMarket.Client</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- gRPC client packages -->
+    <PackageReference Include="Google.Protobuf"                     Version="3.25.1" />
+    <PackageReference Include="Grpc.Net.Client"                     Version="2.59.0" />
+    <PackageReference Include="Grpc.Tools"                          Version="2.59.0" PrivateAssets="All" />
+
+    <!-- Proto files (generated stubs) -->
+    <Protobuf Include="..\..\proto\market.proto"
+              GrpcServices="Client"
+              OutputDir="%(RelativePath)" />
+  </ItemGroup>
+
+</Project>

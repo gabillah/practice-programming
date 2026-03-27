@@ -1,0 +1,3 @@
+DIRECT_ADDRESS_SEARCH(T,k) {
+    return T[k]
+}
