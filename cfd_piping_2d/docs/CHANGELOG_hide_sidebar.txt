@@ -1,0 +1,314 @@
+================================================================================
+ FlowSim CFD v2.0 — CHANGELOG
+ Feature: Hide Sidebar (Kaggle-style collapsible sidebar)
+================================================================================
+
+DATE: 2026
+VERSION: 2.0.1
+
+================================================================================
+ OVERVIEW
+================================================================================
+
+Added a collapsible sidebar identical in behaviour to Kaggle's sidebar:
+  • A toggle button collapses the sidebar to a narrow icon-only rail (56px)
+  • Expanding restores it to the full width (224px)
+  • Smooth CSS transition (300ms ease-in-out)
+  • When collapsed: nav labels hidden, icons remain clickable with tooltips
+  • When collapsed: a re-open button appears in the TopBar left side
+  • State is held in Layout.tsx and passed down as props
+
+Only 3 files were modified. All other files are unchanged.
+
+
+================================================================================
+ FILES CHANGED
+================================================================================
+
+--------------------------------------------------------------------------------
+ 1. src/components/layout/Layout.tsx
+--------------------------------------------------------------------------------
+
+WHAT CHANGED:
+  Added `transition-all duration-300` to the main content wrapper div.
+
+LINES ADDED:
+  Line 11 (className on content wrapper div):
+    BEFORE: className="flex flex-col flex-1 min-w-0"
+    AFTER:  className="flex flex-col flex-1 min-w-0 transition-all duration-300"
+
+  (The sidebarOpen state and props were already present in this file from
+   a previous version. No other logic was changed.)
+
+LINES REMOVED:
+  None.
+
+--------------------------------------------------------------------------------
+ 2. src/components/layout/Sidebar.tsx
+--------------------------------------------------------------------------------
+
+WHAT CHANGED:
+  - Added Props interface with `open: boolean` and `onToggle: () => void`
+  - Changed <aside> from fixed w-56 to dynamic width: w-56 (open) / w-14 (closed)
+  - Added CSS transition: transition-all duration-300 ease-in-out overflow-hidden
+  - Added PanelLeftClose toggle button inside the logo row (visible when open)
+  - Added PanelLeftOpen button row below logo (visible when closed)
+  - Nav labels and ChevronRight arrow hidden when closed
+  - Nav items use justify-center when closed (icon-only centered)
+  - Title and logo text hidden when closed
+  - Footer text hidden when closed; replaced with small green status dot
+  - Nav links have title={label} for tooltip when collapsed (browser native)
+  - Added Network and FlaskConical removal (unused imports cleaned up)
+
+IMPORTS ADDED:
+  PanelLeftClose, PanelLeftOpen  from 'lucide-react'
+
+IMPORTS REMOVED:
+  Network, FlaskConical  (were imported but never used — dead code cleanup)
+
+LINES ADDED (key additions):
+
+  // Props interface — NEW
+  interface Props {
+    open: boolean
+    onToggle: () => void
+  }
+
+  // <aside> dynamic width — CHANGED
+  className={clsx(
+    'shrink-0 bg-white border-r border-slate-200 flex flex-col h-full shadow-sm',
+    'transition-all duration-300 ease-in-out overflow-hidden',
+    open ? 'w-56' : 'w-14',
+  )}
+
+  // Toggle button in logo row — NEW (shown when open)
+  {open && (
+    <button onClick={onToggle} title="Collapse sidebar" ...>
+      <PanelLeftClose size={15} />
+    </button>
+  )}
+
+  // Expand button row — NEW (shown when closed)
+  {!open && (
+    <div className="flex justify-center py-2 border-b border-slate-100">
+      <button onClick={onToggle} title="Expand sidebar" ...>
+        <PanelLeftOpen size={15} />
+      </button>
+    </div>
+  )}
+
+  // Nav label hidden when closed — CHANGED
+  {open && (
+    <>
+      <span className="flex-1 truncate">{label}</span>
+      {isActive && <ChevronRight ... />}
+    </>
+  )}
+
+  // Footer — shows full text when open, just green dot when closed — CHANGED
+  {open && ( <div>...full footer text...</div> )}
+  {!open && ( <div>...green dot only...</div> )}
+
+LINES REMOVED:
+  // Old fixed <aside> class (no width transition, no open prop)
+  <aside className="w-56 shrink-0 bg-white border-r border-slate-200 flex flex-col h-full shadow-sm">
+
+  // Old function signature (no props)
+  export default function Sidebar() {
+
+  // Old logo div (no collapse awareness)
+  <div className="h-14 flex items-center px-5 border-b border-slate-100 shrink-0">
+    <div className="flex items-center gap-2.5">
+      ...logo content without toggle button...
+    </div>
+  </div>
+
+  // Old nav item (always showed label)
+  <span className="flex-1">{label}</span>
+  {isActive && <ChevronRight size={12} className="text-flow-400" />}
+
+  // Old footer (always visible, no conditional)
+  <div className="px-4 py-3 border-t border-slate-100 shrink-0">
+    <div className="text-[11px] text-slate-400">
+      ...footer content...
+    </div>
+  </div>
+
+--------------------------------------------------------------------------------
+ 3. src/components/layout/TopBar.tsx
+--------------------------------------------------------------------------------
+
+WHAT CHANGED:
+  - Added Props interface with `sidebarOpen: boolean` and `onToggleSidebar: () => void`
+  - Added PanelLeftOpen toggle button that appears ONLY when sidebar is collapsed
+  - Changed px-6 to px-4 on the header (slightly tighter now toggle button is present)
+  - Added gap-3 and min-w-0 on left wrapper div
+  - Added shrink-0 on right buttons div
+  - Cleaned up button classes (removed btn-ghost/btn-sm, uses direct Tailwind)
+
+IMPORTS ADDED:
+  PanelLeftOpen  from 'lucide-react'
+
+IMPORTS REMOVED:
+  None.
+
+LINES ADDED (key additions):
+
+  // Props interface — NEW
+  interface Props {
+    sidebarOpen: boolean
+    onToggleSidebar: () => void
+  }
+
+  // Function signature — CHANGED (now accepts props)
+  export default function TopBar({ sidebarOpen, onToggleSidebar }: Props) {
+
+  // Toggle button in topbar — NEW (shown only when sidebar is collapsed)
+  {!sidebarOpen && (
+    <button
+      onClick={onToggleSidebar}
+      title="Expand sidebar"
+      className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
+    >
+      <PanelLeftOpen size={16} />
+    </button>
+  )}
+
+LINES REMOVED:
+  // Old function signature (no props)
+  export default function TopBar() {
+
+  // Old header padding
+  className="h-14 shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-6"
+  (changed px-6 → px-4, added gap-3)
+
+  // Old left div (no gap or min-w-0)
+  <div>
+    <h1 className="text-sm font-semibold text-slate-800">{title}</h1>
+  </div>
+
+
+================================================================================
+ BEHAVIOUR DESCRIPTION
+================================================================================
+
+EXPANDED STATE (open = true, default):
+  ┌──────────────────────────────────────────────────────┐
+  │ [~wave] FlowSim         [<]   │  Dashboard    [🔔][⚙]│
+  │         CFD                   │                       │
+  ├───────────────────────────────┤                       │
+  │  [icon] Dashboard          >  │                       │
+  │  [icon] Projects              │                       │
+  │  [icon] Simulations           │      Page content     │
+  │  [icon] Pipe Analysis         │                       │
+  │  [icon] Moody Chart           │                       │
+  │  [icon] Fluid Library         │                       │
+  │  [icon] Diagnostics           │                       │
+  │                               │                       │
+  ├───────────────────────────────┤                       │
+  │  FlowSim CFD v2.0             │                       │
+  │  Hardy-Cross / Gradient       │                       │
+  │  ● API Connected              │                       │
+  └──────────────────────────────────────────────────────┘
+
+  The [<] button (PanelLeftClose) is in the top-right of the sidebar logo row.
+  Clicking it collapses the sidebar.
+
+COLLAPSED STATE (open = false):
+  ┌───────────────────────────────────────────────────────┐
+  │[~]  │[>] Dashboard                         [🔔][⚙]   │
+  │─────│                                                  │
+  │[>]  │                                                  │
+  │─────│                                                  │
+  │[ico]│                                                  │
+  │[ico]│                 Page content                     │
+  │[ico]│                                                  │
+  │[ico]│                                                  │
+  │[ico]│                                                  │
+  │[ico]│                                                  │
+  │─────│                                                  │
+  │  ●  │                                                  │
+  └───────────────────────────────────────────────────────┘
+
+  Sidebar width collapses from 224px (w-56) to 56px (w-14).
+  Icons remain clickable. Hovering shows browser tooltip with the page name.
+  The [>] button (PanelLeftOpen) appears in both:
+    - The sidebar itself (below the logo icon)
+    - The TopBar left side (next to the page title)
+  Green dot (●) at bottom shows API status without text.
+
+
+================================================================================
+ TRANSITION ANIMATION
+================================================================================
+
+CSS:  transition-all duration-300 ease-in-out
+      (on the <aside> element)
+
+This smoothly animates:
+  - width:   224px ↔ 56px
+  - Content fades out as width narrows (via overflow-hidden)
+
+The main content area also has:
+  transition-all duration-300
+  (on the flex-1 content wrapper in Layout.tsx)
+
+This makes the content expand/contract smoothly as the sidebar opens/closes.
+
+
+================================================================================
+ NO CHANGES TO THESE FILES
+================================================================================
+
+These files were NOT modified:
+  src/App.tsx
+  src/main.tsx
+  src/styles/globals.css
+  src/api/client.ts
+  src/components/ui/index.tsx
+  src/components/canvas/NetworkCanvas.tsx
+  src/components/canvas/IsometricCanvas.tsx
+  src/components/canvas/PropertiesPanel.tsx
+  src/components/canvas/ColormapLegend.tsx
+  src/pages/DashboardPage.tsx
+  src/pages/ProjectsPage.tsx
+  src/pages/NetworkEditorPage.tsx
+  src/pages/AnalysisPage.tsx
+  src/pages/MoodyChartPage.tsx
+  src/pages/FluidLibraryPage.tsx
+  src/pages/SimulationsPage.tsx
+  src/pages/DiagnosticsPage.tsx
+  All backend files (app/, tests/, requirements.txt, etc.)
+  All diagram files (diagrams/)
+  All config files (vite.config.ts, tailwind.config.js, etc.)
+
+
+================================================================================
+ HOW TO UPDATE YOUR LOCAL FILES
+================================================================================
+
+Only copy these 3 files from the ZIP into your project:
+
+  SOURCE (in ZIP):
+    cfd_piping/frontend/src/components/layout/Layout.tsx
+    cfd_piping/frontend/src/components/layout/Sidebar.tsx
+    cfd_piping/frontend/src/components/layout/TopBar.tsx
+
+  DESTINATION (on your machine):
+    D:\...\cfd_piping\frontend\src\components\layout\Layout.tsx
+    D:\...\cfd_piping\frontend\src\components\layout\Sidebar.tsx
+    D:\...\cfd_piping\frontend\src\components\layout\TopBar.tsx
+
+  Overwrite the 3 existing files.
+  No other files need to be touched.
+
+After copying, if npm run dev is already running, Vite will hot-reload
+automatically. If not, run:
+
+    cd frontend
+    npm run dev
+
+
+================================================================================
+ END OF CHANGELOG
+================================================================================

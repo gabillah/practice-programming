@@ -1,0 +1,337 @@
+================================================================================
+ FlowSim CFD v2.0 — Feature Documentation
+ 1. Connecting Two Nodes with a Pipe
+ 2. Isometric View
+================================================================================
+
+
+================================================================================
+ FEATURE 1 — CONNECTING TWO NODES WITH A PIPE
+================================================================================
+
+OVERVIEW:
+  The "Add Pipe" tool lets you draw a pipe between any two nodes by clicking
+  them in sequence. A live preview line follows your cursor while you draw.
+
+HOW TO USE IT (step by step):
+  ─────────────────────────────────────────────────────────
+  Step 1: Make sure you are in the Network Editor.
+          Open a project → click on a network to open it.
+
+  Step 2: You must have at least TWO nodes on the canvas.
+          If not, use the "Add Node" tool first:
+            • Click the "+" (PlusCircle) button in the toolbar
+            • Click anywhere on the canvas to place each node
+
+  Step 3: Click the "Add Pipe" tool in the toolbar.
+          It is the line/minus icon (─) in the tool group.
+          The toolbar will show it highlighted in blue when active.
+          An instruction card appears in the top-left corner explaining the steps.
+
+  Step 4: Click the FIRST (source) node.
+          The node turns AMBER (orange/yellow) with a dashed ring.
+          The status bar at the bottom of the canvas changes to:
+            "Click a second node to connect — or press Esc to cancel"
+
+  Step 5: Move your mouse toward the second node.
+          A DASHED BLUE LINE follows your cursor from the source node.
+          When your cursor gets close to another node, a GREEN snap ring
+          appears around it, showing it will be the target.
+
+  Step 6: Click the SECOND (target) node.
+          The pipe is created instantly.
+          The canvas refreshes and the new pipe appears as a solid line.
+          You can immediately draw another pipe — the tool stays active.
+
+  Step 7: To CANCEL a pipe in progress, press the Escape key.
+          The amber highlight disappears and you can start over.
+
+  Step 8: To STOP using the pipe tool, click a different tool in the toolbar
+          (Select, Pan, or Add Node).
+  ─────────────────────────────────────────────────────────
+
+VISUAL FEEDBACK SUMMARY:
+  Source node (first click):
+    → Amber dashed ring around node
+    → Bottom bar turns amber: "Click a second node to connect"
+
+  Target node (hovering):
+    → Green dashed ring appears (snap indicator)
+    → Node circle turns light green
+
+  Preview line:
+    → Dashed blue line from source to cursor
+    → Snaps to nearby node automatically
+
+  After pipe is created:
+    → Pipe appears as solid colored line
+    → Tool remains in Add Pipe mode for quick multi-pipe drawing
+
+KEYBOARD SHORTCUTS:
+  V → Switch to Select tool
+  H → Switch to Pan tool
+  N → Switch to Add Node tool
+  P → Switch to Add Pipe tool (planned)
+  Esc → Cancel current pipe drawing
+
+
+PIPE PROPERTIES (set after creation):
+  Once a pipe is created, click it to select it.
+  The Properties Panel appears on the right side showing:
+    • Label
+    • Diameter (m) — default 0.10 m
+    • Length (m)   — default 100 m
+    • Roughness (m) — default 4.6×10⁻⁵ m (commercial steel)
+    • Minor Loss K
+    • Valve open/closed
+    • Pump settings (if has_pump = true)
+
+  To edit these, use the PATCH /api/v1/pipes/{id} endpoint
+  or the Properties panel once editing is added in a future version.
+
+
+PIPE NUMBERING:
+  Pipes are automatically labeled P1, P2, P3, ... in creation order.
+  The label is based on the current count when the pipe is created.
+
+
+TECHNICAL DETAILS:
+  When two nodes are clicked in sequence with the Add Pipe tool:
+  1. Frontend sends POST /api/v1/pipes/ with:
+     { network_id, node_from_id, node_to_id, label, diameter_m, length_m, roughness_m }
+  2. Backend validates both node IDs belong to the network
+  3. Backend checks node_from_id ≠ node_to_id (no self-loops)
+  4. Returns the created pipe object (HTTP 201)
+  5. Frontend invalidates the pipes query → canvas re-renders
+
+  The pipe is stored in SQLite with a UUID, and can be retrieved via:
+    GET /api/v1/pipes/?network_id={id}
+    GET /api/v1/pipes/{pipe_id}
+
+
+================================================================================
+ FEATURE 2 — ISOMETRIC VIEW
+================================================================================
+
+OVERVIEW:
+  The Isometric View renders the pipe network as a 3D isometric projection.
+  This is a standard engineering drawing technique where 3D objects are
+  shown at 30° angles without perspective distortion.
+
+  The isometric view shows:
+    • Node positions in X-Y plane (from canvas coordinates)
+    • Node ELEVATION on the Z-axis (from elevation_m property)
+    • Pipes as 3D tubes with light/shadow simulation
+    • Elevation columns (vertical pillars under each node)
+    • CFD result colors on pipes (same colormap as 2D view)
+    • Flow direction arrows on pipes
+    • Pressure head labels above nodes
+    • Coordinate axes (X=red, Y=green, Z=blue)
+    • Isometric grid floor
+
+HOW TO SWITCH TO ISOMETRIC VIEW:
+  ─────────────────────────────────────────────────────────
+  Method: Click the "Isometric" button in the toolbar.
+          It is in the view mode toggle group next to "2D".
+          The button shows a box/cube icon (Box).
+
+  The toolbar changes:
+    → 2D mode: shows Select / Pan / Add Node / Add Pipe tools
+    → Iso mode: hides editing tools (view-only, no editing in iso mode)
+
+  To return to editing: click the "2D" button in the toggle group.
+  ─────────────────────────────────────────────────────────
+
+ISOMETRIC VIEW CONTROLS:
+  Mouse wheel scroll  → Zoom in / out
+  Click and drag      → Pan the view
+  "↻ Rotate View" button (top-right) → Rotate 60° to next isometric angle
+
+  There are 6 rotation angles available (0°, 60°, 120°, 180°, 240°, 300°).
+  The current angle is shown in the top-left: "Isometric · 0°"
+  Clicking Rotate View cycles through them.
+
+
+ELEVATION DISPLAY:
+  If nodes have non-zero elevation_m values:
+    → Each node shows a vertical column (pillar) from the floor to its elevation
+    → The column height is proportional to elevation_m
+    → An elevation legend appears bottom-left showing min and max elevation
+    → Labels show "z=X.Xm" next to each elevated node
+
+  To set a node's elevation:
+    1. Select the node in 2D view
+    2. Use PATCH /api/v1/nodes/{id} with { "elevation_m": 5.0 }
+    OR edit via the Properties Panel → Elevation field
+
+  Default elevation = 0 m (all nodes on the floor plane).
+
+
+ISOMETRIC PROJECTION MATHEMATICS:
+  The projection maps 3D world coordinates (wx, wy, wz) to screen (sx, sy):
+
+    World coordinates:
+      wx = canvas_x / 2.0       (canvas position scaled to world units)
+      wy = canvas_y / 2.0
+      wz = elevation_m * 3.0    (elevation scaled to pixels per meter)
+
+    Rotation (for view angle θ):
+      rx = wx * cos(θ) - wy * sin(θ)
+      ry = wx * sin(θ) + wy * cos(θ)
+
+    Isometric projection:
+      sx = (rx - ry) * cos(30°)   → screen X
+      sy = (rx + ry) * sin(30°) - wz → screen Y
+
+    cos(30°) = √3/2 ≈ 0.866
+    sin(30°) = 0.5
+
+  This is the standard dimetric/isometric projection used in engineering
+  drawings and technical illustrations.
+
+
+PIPE 3D RENDERING:
+  Pipes in isometric view are rendered as 3D tubes using three overlapping lines:
+    1. Wide dark line  → pipe body / shadow (bottom face)
+    2. Medium main line → pipe surface color (CFD result color)
+    3. Narrow light line offset by (-1.5, -2) pixels → top highlight
+
+  This creates a convincing cylindrical appearance without true 3D rendering.
+  The pipe diameter affects the tube width (wider diameter = thicker tube).
+
+
+NODE 3D RENDERING:
+  Nodes are rendered as circles at their isometric position.
+  Elevated nodes show a vertical column below them to the floor.
+  Node types use different colors:
+    junction    → white fill, blue stroke
+    reservoir   → light blue, dark blue, with "~" symbol
+    tank        → light green, green stroke
+    pump_inlet  → light yellow, amber stroke, "P" symbol
+    pump_outlet → same as pump_inlet
+    valve_node  → pink, dark pink stroke
+
+
+CFD RESULTS IN ISOMETRIC VIEW:
+  After running a simulation in 2D view:
+  1. Switch to Isometric view
+  2. Select a color field (Velocity, Pressure, Reynolds, etc.)
+  3. Select a colormap (viridis, jet, plasma, etc.)
+  4. Pipes automatically show the CFD result colors
+  5. Flow arrows show direction and magnitude
+
+  The colormap legend appears bottom-right.
+  The same colors are used as in the 2D view for consistency.
+
+
+LIMITATIONS OF ISOMETRIC VIEW:
+  • View-only: no editing (cannot add nodes/pipes in iso mode)
+  • No true 3D perspective (isometric has no vanishing point)
+  • Pipes that cross may look confusing (no depth sorting)
+  • Elevation scale is fixed (3 pixels per meter)
+  • Very large networks may have overlapping labels
+
+
+================================================================================
+ FILES CHANGED IN THIS UPDATE
+================================================================================
+
+FILE                                              CHANGE
+------------------------------------------------- ----------------------------
+frontend/src/components/canvas/NetworkCanvas.tsx  Improved pipe-drawing UX:
+                                                  - Hover snap indicator (green ring)
+                                                  - Amber ring on source node
+                                                  - Live preview line snaps to nearby nodes
+                                                  - Escape key cancels draw
+                                                  - Instruction banner in canvas
+                                                  - Tool resets on tool change
+
+frontend/src/components/canvas/IsometricCanvas.tsx  NEW FILE
+                                                  Full isometric 3D view:
+                                                  - Isometric projection math
+                                                  - 3D tube pipe rendering
+                                                  - Elevation columns for nodes
+                                                  - Grid floor
+                                                  - Rotate view (6 angles)
+                                                  - Zoom + pan
+                                                  - CFD color overlay
+                                                  - Coordinate axes indicator
+                                                  - Elevation legend
+
+frontend/src/pages/NetworkEditorPage.tsx          Added:
+                                                  - 2D / Isometric view toggle
+                                                  - Add Pipe instruction card
+                                                  - Box icon for iso button
+                                                  - Both canvases wired up
+
+
+================================================================================
+ QUICK START — DRAW YOUR FIRST PIPE NETWORK
+================================================================================
+
+  1. Open browser: http://localhost:5173
+  2. Click "Projects" in sidebar
+  3. Create or open a project
+  4. Click on a network to open the editor
+
+  5. Click "Add Node" tool (+ icon)
+  6. Click 3 locations on canvas → creates N1, N2, N3
+
+  7. Click "Add Pipe" tool (─ icon)
+  8. Click N1 → it turns amber
+  9. Click N2 → pipe P1 created (N1 → N2)
+  10. Click N2 again → it turns amber
+  11. Click N3 → pipe P2 created (N2 → N3)
+  12. Click N3 → it turns amber
+  13. Click N1 → pipe P3 created (N3 → N1) → closed loop!
+
+  14. Click "Select" tool (arrow icon)
+  15. Click "N1" → set fixed_head_m = 20 in Properties Panel
+  16. Click "N2" → set demand_m3s = 0.005
+  17. Click "N3" → set demand_m3s = 0.005
+
+  18. Click "Run CFD" → wait ~1 second for convergence
+  19. Pipes color by velocity automatically
+
+  20. Click "Isometric" in toolbar → see the 3D view!
+  21. Click "↻ Rotate View" to see from different angles
+  22. Scroll to zoom in/out
+
+
+================================================================================
+ API ENDPOINTS FOR PIPES
+================================================================================
+
+Create pipe:
+  POST /api/v1/pipes/
+  Body: {
+    "network_id": "...",
+    "node_from_id": "...",
+    "node_to_id": "...",
+    "label": "P1",
+    "diameter_m": 0.10,
+    "length_m": 100,
+    "roughness_m": 0.000046
+  }
+
+List pipes in network:
+  GET /api/v1/pipes/?network_id=...
+
+Get single pipe:
+  GET /api/v1/pipes/{pipe_id}
+
+Update pipe properties:
+  PATCH /api/v1/pipes/{pipe_id}
+  Body: { "diameter_m": 0.15, "valve_open": false }
+
+Delete pipe:
+  DELETE /api/v1/pipes/{pipe_id}
+
+Bulk create:
+  POST /api/v1/pipes/bulk
+  Body: [ { pipe1 }, { pipe2 }, ... ]
+
+
+================================================================================
+ END
+================================================================================

@@ -1,0 +1,913 @@
+================================================================================
+ FlowSim CFD v2.0 — Computational Fluid Dynamics for Pipe Networks
+ Complete Tutorial Course Documentation
+================================================================================
+
+CONTENTS
+--------
+ 1. Introduction & Overview
+ 2. Project Structure
+ 3. Physics & Mathematics
+ 4. Solver Algorithms
+ 5. REST API Reference
+ 6. Frontend Architecture
+ 7. Installation & Setup
+ 8. Tutorial: Building Your First Network
+ 9. Advanced Topics
+10. Testing & Validation
+11. Deployment
+12. References
+
+================================================================================
+ 1. INTRODUCTION & OVERVIEW
+================================================================================
+
+FlowSim CFD is a full-stack web application for analyzing fluid flow in complex
+pipe networks. It implements professional-grade hydraulic simulation comparable
+to commercial software like PipeFlow Expert, EPANET, and WaterGEMS.
+
+KEY FEATURES
+  • Hardy-Cross and Gradient (Todini-Pilati) network solvers
+  • Darcy-Weisbach friction loss with Colebrook-White friction factor
+  • Minor loss modeling (valves, elbows, tees, contractions, expansions)
+  • CFD result visualization: color-mapped pipe flows on interactive canvas
+  • Velocity profiles (laminar parabolic, turbulent log-law / power-law)
+  • Turbulence parameters: intensity, TKE, dissipation rate, wall shear stress
+  • Water hammer (Joukowski surge pressure, wave celerity, critical closure time)
+  • Compressible flow (Mach number, Fanno flow, stagnation properties)
+  • Multi-fluid library: water, oil, gas, glycol, custom fluids
+  • REST API for full CRUD + simulation management
+  • Interactive Moody chart with live friction factor comparison
+  • Zustand global state + TanStack Query data fetching
+
+TECHNOLOGY STACK
+  Backend:
+    - Python 3.11+
+    - FastAPI 0.115 (async REST API)
+    - SQLAlchemy 2.0 async ORM
+    - SQLite (dev) / PostgreSQL (prod)
+    - NumPy 1.26, SciPy 1.14 (solver linear algebra)
+    - Uvicorn ASGI server
+
+  Frontend:
+    - React 18 + TypeScript 5
+    - Vite 6 build tool
+    - React-Konva (2D canvas rendering)
+    - TanStack Query v5 (server state)
+    - Recharts (Moody diagram, bar charts)
+    - Tailwind CSS 3 (light engineering theme)
+    - React Hook Form + Zod (validation)
+    - Zustand (global state)
+
+================================================================================
+ 2. PROJECT STRUCTURE
+================================================================================
+
+cfd_piping/
+├── backend/
+│   ├── app/
+│   │   ├── main.py              ← FastAPI app factory, middleware, lifespan
+│   │   ├── core/
+│   │   │   ├── config.py        ← Pydantic Settings (env-based config)
+│   │   │   ├── database.py      ← Async SQLAlchemy engine + session
+│   │   │   └── events.py        ← Startup/shutdown hooks, fluid seeding
+│   │   ├── api/
+│   │   │   ├── router.py        ← Assembles all sub-routers
+│   │   │   └── endpoints/
+│   │   │       ├── fluids.py    ← GET/POST/DELETE fluids
+│   │   │       ├── projects.py  ← CRUD projects
+│   │   │       ├── networks.py  ← CRUD networks + topology
+│   │   │       ├── nodes.py     ← CRUD nodes (bulk supported)
+│   │   │       ├── pipes.py     ← CRUD pipes (bulk supported)
+│   │   │       ├── simulations.py ← Run solver, poll status, get results
+│   │   │       ├── analysis.py  ← Single-pipe CFD, Moody chart data
+│   │   │       ├── canvas.py    ← Color-mapped export for frontend
+│   │   │       └── diagnostics.py ← Built-in test cases
+│   │   ├── models/
+│   │   │   └── fluid.py         ← All SQLAlchemy ORM models
+│   │   ├── schemas/
+│   │   │   └── schemas.py       ← All Pydantic request/response models
+│   │   └── services/
+│   │       ├── physics.py       ← Full CFD physics engine
+│   │       └── solver.py        ← Hardy-Cross + Gradient solver
+│   ├── tests/
+│   │   └── test_all.py          ← Comprehensive pytest test suite
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── main.tsx             ← React entry point
+│   │   ├── App.tsx              ← Router configuration
+│   │   ├── api/
+│   │   │   └── client.ts        ← Typed axios API client
+│   │   ├── components/
+│   │   │   ├── canvas/
+│   │   │   │   ├── NetworkCanvas.tsx    ← Konva pipe network editor
+│   │   │   │   ├── PropertiesPanel.tsx  ← Node/pipe property inspector
+│   │   │   │   └── ColormapLegend.tsx   ← Color scale legend
+│   │   │   ├── layout/
+│   │   │   │   ├── Layout.tsx   ← App shell
+│   │   │   │   ├── Sidebar.tsx  ← Navigation sidebar
+│   │   │   │   └── TopBar.tsx   ← Top header
+│   │   │   └── ui/
+│   │   │       └── index.tsx    ← Badge, MetricCard, Alert, EmptyState, etc.
+│   │   ├── pages/
+│   │   │   ├── DashboardPage.tsx        ← Overview + quick actions
+│   │   │   ├── ProjectsPage.tsx         ← Project/network management
+│   │   │   ├── NetworkEditorPage.tsx    ← Main CFD editor canvas
+│   │   │   ├── AnalysisPage.tsx         ← Single pipe CFD analysis
+│   │   │   ├── MoodyChartPage.tsx       ← Interactive Moody diagram
+│   │   │   ├── FluidLibraryPage.tsx     ← Fluid database view
+│   │   │   ├── SimulationsPage.tsx      ← Simulation history
+│   │   │   └── DiagnosticsPage.tsx      ← Solver validation tests
+│   │   └── styles/
+│   │       └── globals.css      ← Tailwind + custom CFD styles
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── tsconfig.json
+│
+└── diagrams/
+    ├── class_diagram.md         ← UML class diagram (Mermaid)
+    ├── sequence_diagram.md      ← Simulation sequence (Mermaid)
+    ├── solver_flowchart.md      ← Algorithm flowchart (Mermaid)
+    └── architecture.md          ← System architecture (Mermaid)
+
+================================================================================
+ 3. PHYSICS & MATHEMATICS
+================================================================================
+
+3.1  GOVERNING EQUATIONS
+─────────────────────────
+
+CONTINUITY EQUATION (Mass Conservation at Node j):
+    ΣQ_in(j) - ΣQ_out(j) - d_j = 0
+    where d_j = external demand at node j [m³/s]
+
+ENERGY EQUATION (Head Balance around Loop L):
+    Σ hf_L = 0
+    where hf = signed head loss in loop direction
+
+3.2  DARCY-WEISBACH EQUATION
+──────────────────────────────
+
+Primary friction head loss equation:
+
+    hf = f · (L/D) · V²/(2g)          [m]
+
+Equivalently as pressure drop:
+
+    ΔP = f · (L/D) · ½·ρ·V²          [Pa]
+
+where:
+    f  = Darcy-Weisbach friction factor [-]
+    L  = pipe length [m]
+    D  = internal diameter [m]
+    V  = mean flow velocity [m/s]
+    g  = gravitational acceleration [m/s²]
+    ρ  = fluid density [kg/m³]
+
+3.3  FRICTION FACTOR CORRELATIONS
+───────────────────────────────────
+
+LAMINAR FLOW (Re < 2300): Hagen-Poiseuille
+    f = 64 / Re
+
+TRANSITIONAL (2300 ≤ Re < 4000): Linear interpolation
+    f = f_lam + α·(f_turb - f_lam)
+    α = (Re - 2300) / (4000 - 2300)
+
+TURBULENT (Re ≥ 4000): Colebrook-White (implicit)
+    1/√f = -2 log₁₀(ε/(3.7D) + 2.51/(Re·√f))
+    Solved by Newton-Raphson iteration (convergence in < 10 iters)
+
+Explicit approximations:
+
+SWAMEE-JAIN (1976) — explicit, ±3%:
+    f = 0.25 / [log₁₀(ε/(3.7D) + 5.74/Re^0.9)]²
+
+CHURCHILL (1977) — continuous across all regimes:
+    f = 8·[(8/Re)¹² + (A+B)^(-3/2)]^(1/12)
+    A = [-2.457·ln((7/Re)^0.9 + 0.27·ε/D)]^16
+    B = (37530/Re)^16
+
+3.4  REYNOLDS NUMBER
+─────────────────────
+
+    Re = V·D / ν = ρ·V·D / μ
+
+Flow regime classification:
+    Re < 2300:       Laminar
+    2300 ≤ Re < 4000: Transitional
+    Re ≥ 4000:       Turbulent
+
+3.5  MINOR (LOCAL) LOSSES
+──────────────────────────
+
+    hm = K · V²/(2g)          [m]
+    ΔPm = K · ½·ρ·V²          [Pa]
+
+Common K values:
+    Gate valve (fully open):    K = 0.1
+    Globe valve (fully open):   K = 10.0
+    90° std elbow:              K = 1.5
+    90° long-radius elbow:      K = 0.7
+    Tee (branch flow):          K = 1.5
+    Sharp entrance:             K = 0.5
+    Exit loss:                  K = 1.0
+    Sudden contraction:         K = 0.42·(1 - (A₂/A₁)²)
+    Sudden expansion (Borda):   K = (1 - A₁/A₂)²
+
+3.6  EXTENDED BERNOULLI EQUATION
+──────────────────────────────────
+
+Between two points in a pipe system:
+
+    H₁ = H₂ + hf + hm ± Δz    [m]
+
+Total head:
+    H = P/(ρg) + V²/(2g) + z   [m]
+
+Hydraulic Grade Line (HGL):
+    HGL = P/(ρg) + z            [m]
+
+Energy Grade Line (EGL):
+    EGL = HGL + V²/(2g)         [m]
+
+3.7  VELOCITY PROFILES
+───────────────────────
+
+LAMINAR (Hagen-Poiseuille parabolic):
+    u(r) = 2·V_mean · [1 - (r/R)²]
+    u_max = 2·V_mean    (at r = 0, centerline)
+    Coriolis coefficient α = 2.0
+
+TURBULENT — Power Law (Nikuradse):
+    u(r) = V_cl · (r/R)^(1/n)   [from wall, r = distance from wall]
+    V_cl = V_mean · (n+1)(2n+1) / (2n²)
+    n ≈ 6  for Re ~ 4×10⁴
+    n ≈ 7  for Re ~ 1×10⁵
+    n ≈ 10 for Re ~ 3×10⁶
+    Coriolis coefficient α ≈ 1.02–1.08
+
+TURBULENT — Log Law (wall region, y⁺ > 30):
+    u⁺ = (1/κ)·ln(y⁺) + B
+    u⁺ = u/u*,  y⁺ = y·u*/ν
+    κ = 0.41 (von Kármán constant)
+    B = 5.0 (smooth wall)
+
+Friction velocity:
+    u* = √(τ_w/ρ)
+
+Wall shear stress:
+    τ_w = (f/8)·ρ·V²
+
+3.8  TURBULENCE PARAMETERS (k-ε MODEL)
+─────────────────────────────────────────
+
+Turbulence intensity (empirical, pipe inlet):
+    I = 0.16 · Re^(-1/8)       [-]
+
+Turbulent kinetic energy:
+    k = 1.5 · (I·V)²           [m²/s²]
+
+Turbulent integral length scale:
+    L_t ≈ 0.07·D               [m]
+
+Turbulent dissipation rate:
+    ε = C_μ^(3/4) · k^(3/2) / L_t   [m²/s³]
+    C_μ = 0.09
+
+Turbulent dynamic viscosity:
+    μ_t = ρ·C_μ · k²/ε         [Pa·s]
+
+3.9  WATER HAMMER (TRANSIENT HYDRAULICS)
+──────────────────────────────────────────
+
+Wave celerity (Joukowski-Korteweg):
+    a = √(K/ρ) / √(1 + K·D/(E·e)·C₁)   [m/s]
+    K = fluid bulk modulus [Pa]
+    E = pipe elastic modulus [Pa]
+    e = pipe wall thickness [m]
+    C₁ = support condition factor
+
+Joukowski pressure surge (sudden closure):
+    ΔP = ρ·a·ΔV               [Pa]
+
+Critical closure time:
+    T_c = 2L/a                 [s]
+    (valve closure faster than T_c gives full surge)
+
+3.10  COMPRESSIBLE FLOW
+────────────────────────
+
+Mach number:
+    Ma = V/c    where c = √(K/ρ)
+
+Stagnation pressure:
+    P₀/P = (1 + (γ-1)/2·Ma²)^(γ/(γ-1))
+
+Stagnation temperature:
+    T₀/T = 1 + (γ-1)/2·Ma²
+
+Fanno flow (adiabatic compressible pipe flow):
+    4fL*/D = (1-M²)/(γM²) + (γ+1)/(2γ)·ln[(γ+1)M²/(2+(γ-1)M²)]
+
+================================================================================
+ 4. SOLVER ALGORITHMS
+================================================================================
+
+4.1  HARDY-CROSS METHOD
+────────────────────────
+
+Classic iterative method for looped pipe networks (Hardy Cross, 1936).
+
+STEP 1: Identify independent loops using DFS spanning tree.
+        Number of independent loops = pipes - nodes + 1
+
+STEP 2: Assume initial flow distribution satisfying continuity.
+
+STEP 3: For each loop L, compute the flow correction:
+    ΔQ_L = -ω · Σ(hf_L) / (n · Σ|hf_L/Q|)
+    where:
+        hf_L = head loss for pipe in loop direction
+        n    = flow exponent (2.0 for Darcy-Weisbach)
+        ω    = relaxation factor (0 < ω ≤ 1)
+
+STEP 4: Update all flows:
+    Q_pipe += sign · ΔQ_L  for each loop containing pipe
+
+STEP 5: Repeat until max|ΔQ_L| < tolerance
+
+CONVERGENCE:
+    Typical: 20-50 iterations for |ΔQ| < 10⁻⁷ m³/s
+    For ill-conditioned networks, use gradient method instead.
+
+4.2  GRADIENT METHOD (TODINI-PILATI, 1988)
+───────────────────────────────────────────
+
+More robust Newton-Raphson method for large or ill-conditioned networks.
+
+FORMULATION:
+    Pipe equations:  A·H - hf(Q) = 0     (head balance)
+    Node equations:  Aᵀ·Q - d = 0        (continuity)
+
+Combined residual vector:
+    r₁ = D·Q + A·H - b₁   (pipe head residuals)
+    r₂ = Aᵀ·Q - d_unknown (node continuity residuals)
+
+JACOBIAN:
+    J = ⎡ D     A₁₁ ⎤
+        ⎣ A₁₁ᵀ   0  ⎦
+
+    where D = diag(d(hf)/dQ) = diag(2R|Q|)
+
+NEWTON UPDATE (with relaxation ω):
+    [δQ; δH] = J⁻¹ · [r₁; r₂]
+    Q += ω · δQ
+    H_unknown += ω · δH
+
+CONVERGENCE:
+    max‖r‖ < tolerance (typically 10⁻⁷)
+    Usually converges in 5-20 iterations.
+
+4.3  PIPE RESISTANCE
+─────────────────────
+
+Resistance coefficient R (Darcy-Weisbach):
+    hf = R · Q · |Q|
+    R = f · L / (D · 2g · A²)
+
+For Hardy-Cross: R varies with Q (since f depends on Re which depends on V=Q/A).
+Each iteration recomputes f using Colebrook-White.
+
+================================================================================
+ 5. REST API REFERENCE
+================================================================================
+
+Base URL: http://localhost:8000/api/v1
+OpenAPI docs: http://localhost:8000/api/v1/docs
+
+5.1  FLUIDS
+────────────
+GET    /fluids/                   List all fluids
+GET    /fluids/{id}               Get fluid by ID
+GET    /fluids/slug/{slug}        Get fluid by slug
+POST   /fluids/                   Create fluid
+DELETE /fluids/{id}               Delete fluid
+
+5.2  PROJECTS
+──────────────
+GET    /projects/                 List projects
+POST   /projects/                 Create project
+GET    /projects/{id}             Get project
+PATCH  /projects/{id}             Update project
+DELETE /projects/{id}             Delete project (cascades networks)
+
+5.3  NETWORKS
+──────────────
+GET    /networks/                 List networks (filter: ?project_id=)
+POST   /networks/                 Create network
+GET    /networks/{id}             Get network
+PATCH  /networks/{id}             Update network
+DELETE /networks/{id}             Delete network (cascades all)
+GET    /networks/{id}/topology    Get full topology (nodes + pipes)
+
+5.4  NODES
+───────────
+GET    /nodes/?network_id=        List nodes in network
+POST   /nodes/                    Create node
+POST   /nodes/bulk                Bulk create nodes
+GET    /nodes/{id}                Get node
+PATCH  /nodes/{id}                Update node position / properties
+DELETE /nodes/{id}                Delete node
+
+NODE TYPES: junction | reservoir | tank | pump_inlet | pump_outlet | valve_node
+
+5.5  PIPES
+───────────
+GET    /pipes/?network_id=        List pipes in network
+POST   /pipes/                    Create pipe
+POST   /pipes/bulk                Bulk create pipes
+GET    /pipes/{id}                Get pipe
+PATCH  /pipes/{id}                Update pipe
+DELETE /pipes/{id}                Delete pipe
+
+5.6  SIMULATIONS
+─────────────────
+POST   /simulations/              Create + queue simulation (returns 202)
+GET    /simulations/              List simulations
+GET    /simulations/{id}          Poll status
+GET    /simulations/{id}/results  Get full results (when status=converged)
+POST   /simulations/{id}/run      Re-run existing simulation
+DELETE /simulations/{id}          Delete simulation
+
+SIMULATION BODY:
+{
+  "network_id": "string",
+  "name": "My Run",
+  "solver_settings": {
+    "max_iterations": 500,
+    "convergence_tol": 1e-7,
+    "relaxation": 1.0,
+    "use_gradient_method": true
+  }
+}
+
+SIMULATION STATUS FLOW:
+  pending → running → converged | failed
+
+5.7  ANALYSIS
+──────────────
+POST   /analysis/pipe             Single-pipe CFD analysis
+GET    /analysis/friction-factor-comparison?re=&eps_d=
+GET    /analysis/moody-chart-data?n_re_points=&n_roughness_lines=
+GET    /analysis/velocity-profile/{pipe_id}?sim_id=
+
+5.8  CANVAS EXPORT
+───────────────────
+POST   /canvas/export             Color-mapped visualization data
+GET    /canvas/colormaps          Available colormaps
+GET    /canvas/color-fields       Available result fields
+
+CANVAS EXPORT BODY:
+{
+  "network_id": "string",
+  "simulation_id": "string | null",
+  "color_field": "velocity|pressure_drop|reynolds|head_loss|turbulence|friction_factor",
+  "colormap": "viridis|plasma|RdYlBu|coolwarm|jet|hot",
+  "show_labels": true,
+  "show_arrows": true
+}
+
+5.9  DIAGNOSTICS
+─────────────────
+POST   /diagnostics/solver-test          Run a single test case
+GET    /diagnostics/solver-test/all      Run all built-in tests
+
+TEST CASES: simple_loop | branched | complex_grid
+
+================================================================================
+ 6. FRONTEND ARCHITECTURE
+================================================================================
+
+6.1  STATE MANAGEMENT
+──────────────────────
+
+TanStack Query (React Query) handles all server state:
+  - Automatic caching with configurable stale time
+  - Background refetching
+  - Optimistic updates for node drag
+  - 2-second polling for running simulations
+
+Key query keys:
+  ['projects']             - Project list
+  ['networks', projectId]  - Networks in project
+  ['nodes', networkId]     - Nodes in network
+  ['pipes', networkId]     - Pipes in network
+  ['sim', simId]           - Simulation status (polled)
+  ['canvas', networkId, simId, colorField, colormap]
+
+6.2  CANVAS RENDERING (REACT-KONVA)
+─────────────────────────────────────
+
+The NetworkCanvas component uses Konva (HTML5 Canvas) for:
+  - High-performance 2D rendering of 100+ pipes/nodes
+  - Smooth zoom (mouse wheel) and pan (drag stage)
+  - Node drag-and-drop with grid snapping (24px grid)
+  - Interactive pipe drawing tool (click node → click node)
+  - Color-mapped pipes from CFD results
+  - Flow direction arrows (Arrow component)
+  - Label overlays (velocity, pressure head)
+
+Render layers:
+  1. Grid Layer  — background grid lines
+  2. Pipe Layer  — colored lines + arrows + labels
+  3. Node Layer  — circles/rectangles + labels
+
+6.3  COLORMAP IMPLEMENTATION
+──────────────────────────────
+
+The server computes pipe colors server-side:
+  1. Extract field value (e.g., velocity) for each pipe
+  2. Normalize: norm = (v - min) / (max - min)
+  3. Interpolate RGB from colormap control points
+  4. Return hex color string (#rrggbb)
+
+Available colormaps: viridis, plasma, RdYlBu, coolwarm, jet, hot
+
+6.4  FORMS (REACT HOOK FORM + ZOD)
+────────────────────────────────────
+
+All user inputs validated with:
+  - React Hook Form for form state
+  - Zod schemas for runtime type checking
+  - Inline error messages
+  - Disabled submit until valid
+
+================================================================================
+ 7. INSTALLATION & SETUP
+================================================================================
+
+REQUIREMENTS
+  - Python 3.11+
+  - Node.js 18+
+  - npm or yarn
+
+BACKEND SETUP
+─────────────
+
+  cd cfd_piping/backend
+
+  # Create virtual environment
+  python -m venv venv
+  source venv/bin/activate   # Windows: venv\Scripts\activate
+
+  # Install dependencies
+  pip install -r requirements.txt
+
+  # Run development server
+  uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+  # The API will be at: http://localhost:8000
+  # Interactive docs:   http://localhost:8000/api/v1/docs
+
+  # Run tests
+  pytest tests/ -v
+
+FRONTEND SETUP
+──────────────
+
+  cd cfd_piping/frontend
+
+  # Install dependencies
+  npm install
+
+  # Development server (with proxy to backend)
+  npm run dev
+  # App will be at: http://localhost:5173
+
+  # Production build
+  npm run build
+
+ENVIRONMENT VARIABLES (.env in backend/)
+─────────────────────────────────────────
+
+  DATABASE_URL=sqlite+aiosqlite:///./flowsim.db
+  SECRET_KEY=change-this-in-production
+  DEBUG=false
+  BACKEND_CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+  SOLVER_MAX_ITERATIONS=1000
+  SOLVER_CONVERGENCE_TOLERANCE=1e-6
+
+================================================================================
+ 8. TUTORIAL: BUILDING YOUR FIRST PIPE NETWORK
+================================================================================
+
+STEP 1: Create a Project
+────────────────────────
+  1. Navigate to Projects page
+  2. Click "New Project"
+  3. Enter name: "Tutorial Network"
+  4. A default network is automatically created
+  5. Click on the network to open the editor
+
+STEP 2: Add Reservoir Node
+──────────────────────────
+  1. Select "Add Node" tool (N key)
+  2. Click on canvas (top-left area)
+  3. In Properties panel, change type to "reservoir"
+  4. Set fixed_head_m = 20.0 (20 meters supply head)
+  5. Label: "Reservoir"
+
+STEP 3: Add Junction Nodes
+───────────────────────────
+  1. Keep "Add Node" tool active
+  2. Click 3 more positions on canvas
+  3. Label them N2, N3, N4
+  4. Set N3 demand: 0.005 m³/s
+  5. Set N4 demand: 0.005 m³/s
+
+STEP 4: Connect Pipes
+─────────────────────
+  1. Select "Add Pipe" tool (P key)
+  2. Click Reservoir → N2 (click source, then destination)
+  3. Connect N2 → N3, N2 → N4, N3 → N4 (creates a loop)
+  4. For each pipe, set diameter = 0.10m, length = 200m
+
+STEP 5: Run CFD Simulation
+───────────────────────────
+  1. Click "Run CFD" button (top-right)
+  2. Status changes to "Running…"
+  3. After ~1 second: "Converged in N iterations"
+  4. Canvas pipes are now color-coded by velocity
+
+STEP 6: Visualize Results
+──────────────────────────
+  1. Use color field dropdown to switch between:
+     - Velocity (m/s)
+     - Pressure Drop (Pa)
+     - Reynolds Number
+     - Head Loss (m)
+     - Turbulence Intensity (%)
+  2. Change colormap (viridis, plasma, jet, etc.)
+  3. Click any pipe to see its detailed CFD results
+  4. Click any node to see pressure head and balance error
+
+STEP 7: Single Pipe Analysis
+──────────────────────────────
+  1. Navigate to "Pipe Analysis" page
+  2. Enter: D=100mm, L=200m, Q=10 L/s
+  3. Click "Calculate"
+  4. View full results:
+     - Reynolds number, friction factor
+     - Head loss breakdown (friction + minor + elevation)
+     - Turbulence intensity, TKE, wall shear stress
+     - Water hammer parameters
+     - Velocity profile at wall / centerline / R/2
+
+================================================================================
+ 9. ADVANCED TOPICS
+================================================================================
+
+9.1  PUMP MODELING
+───────────────────
+
+A pump in a pipe segment is modeled as negative resistance:
+  hf_pump = R_pump · Q² = -(H_pump / Q²) · Q²
+
+For pump curve, head is interpolated from H-Q data.
+Pump power:
+  P_hydraulic = ρ·g·Q·H          [W]
+  P_shaft = P_hydraulic / η      [W]
+
+To add a pump:
+  1. Edit pipe → enable "has_pump"
+  2. Set pump_rated_head_m (e.g., 30m)
+  3. Set pump_efficiency (0–1)
+
+9.2  VALVE MODELING
+────────────────────
+
+Closed valve: K = 1e9 (infinite resistance)
+Gate valve (partially open): K from valve_setting (0–1)
+  - Fully open:   K = 0.1
+  - Half open:    K = 5.6
+  - Quarter open: K = 24.0
+
+9.3  WATER NETWORK SIZING
+──────────────────────────
+
+Design criteria:
+  - Velocity: 0.5–3.0 m/s (water distribution)
+  - Head loss gradient: < 5–10 m/km
+  - Minimum residual pressure: 10–15 m at all nodes
+  - Pipe Hazen-Williams C: 100–150 for new pipes
+
+9.4  COMPRESSIBLE GAS FLOW
+────────────────────────────
+
+For gas (natural gas, air), set fluid.compressible = True.
+The solver tracks Mach number per pipe.
+At Ma > 0.3, compressibility effects become significant.
+Fanno flow parameter (4fL*/D) determines sonic choking conditions.
+
+9.5  NETWORK TOPOLOGY CONSTRAINTS
+───────────────────────────────────
+
+  - At least one node must have a fixed head (reservoir)
+  - Total outflow demands must not exceed supply capacity
+  - Every node must be connected (no isolated segments)
+  - Minimum 2 nodes and 1 pipe required
+
+9.6  SOLVER SELECTION GUIDE
+────────────────────────────
+
+  Use GRADIENT method (default) when:
+    - Large networks (> 20 nodes)
+    - Networks with pumps or control valves
+    - Poor initial guesses expected
+    - Convergence speed is critical
+
+  Use HARDY-CROSS when:
+    - Educational / debugging purposes
+    - Simple looped networks
+    - Confirming gradient method results
+
+9.7  CONVERGENCE TROUBLESHOOTING
+──────────────────────────────────
+
+  NOT CONVERGING:
+  1. Reduce relaxation factor (try 0.5–0.7)
+  2. Check demands don't exceed supply capacity
+  3. Verify at least one fixed-head node exists
+  4. Check for isolated loops (no connection to reservoir)
+  5. Increase max_iterations (500 → 2000)
+  6. Improve initial flow guesses (initial_flow_m3s)
+
+  POOR RESULTS:
+  1. Check minor_loss_K values
+  2. Verify roughness values (in meters!)
+  3. Check elevation data (significant for tall buildings/hills)
+  4. Confirm demands are in m³/s (not L/s)
+
+================================================================================
+ 10. TESTING & VALIDATION
+================================================================================
+
+10.1  RUNNING TESTS
+────────────────────
+
+  cd backend
+  pytest tests/test_all.py -v
+
+  pytest tests/ --tb=short -q      # Quick summary
+  pytest tests/ -k "TestPhysics"   # Run specific class
+
+10.2  TEST COVERAGE
+────────────────────
+
+  TestReynoldsNumber       — velocity, zero cases, turbulent air
+  TestFlowRegime           — laminar/transitional/turbulent detection
+  TestFrictionFactors      — Hagen-Poiseuille, Colebrook, Swamee-Jain,
+                             Churchill accuracy (±3% vs Colebrook)
+  TestHeadLoss             — Darcy-Weisbach exact values, minor losses
+  TestMinorLossCoefficients— contraction, expansion
+  TestVelocityProfiles     — parabolic centreline, no-slip wall, log-law
+  TestBernoulli            — static head, velocity head contribution
+  TestWaterHammer          — wave speed, Joukowski surge, critical time
+  TestTurbulenceParameters — intensity trend, TKE, friction velocity
+  TestFullPipeHydraulics   — head loss vs flow, symmetry, regime detection
+  TestHardyCrossSolver     — series, mass balance, loop convergence, pump
+  TestGradientSolver       — agreement with Hardy-Cross within 1e-3
+  TestSchemaValidation     — invalid diameter, fittings K calc, defaults
+  TestColormap             — min/max mapping, clamping, fallback
+  TestBuiltInCases         — simple_loop, branched, complex_grid (all converge)
+
+10.3  BENCHMARK VALIDATION
+────────────────────────────
+
+Built-in test cases (run via /diagnostics/solver-test/all):
+
+  SIMPLE LOOP (triangle):  3 nodes, 3 pipes, 1 loop
+    Expected: converges < 30 iterations
+    Mass balance error < 1e-6 m³/s per node
+
+  BRANCHED (tree):         4 nodes, 3 pipes, 0 loops
+    Expected: converges in 1 iteration (no loops)
+
+  COMPLEX GRID (4×2):      8 nodes, 10 pipes, 3 loops
+    Expected: converges < 100 iterations
+
+All test cases compared against:
+  - Hydraulic Institute standards
+  - EPANET reference solutions
+  - Hand calculations for simple cases
+
+================================================================================
+ 11. DEPLOYMENT
+================================================================================
+
+11.1  DOCKER (RECOMMENDED)
+────────────────────────────
+
+  backend/Dockerfile:
+  ───────────────────
+  FROM python:3.11-slim
+  WORKDIR /app
+  COPY requirements.txt .
+  RUN pip install --no-cache-dir -r requirements.txt
+  COPY app/ ./app/
+  CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  frontend/Dockerfile:
+  ────────────────────
+  FROM node:18-alpine AS build
+  WORKDIR /app
+  COPY package*.json .
+  RUN npm ci
+  COPY . .
+  RUN npm run build
+  FROM nginx:alpine
+  COPY --from=build /app/dist /usr/share/nginx/html
+  COPY nginx.conf /etc/nginx/nginx.conf
+
+11.2  POSTGRESQL (PRODUCTION)
+──────────────────────────────
+
+  Change DATABASE_URL in .env:
+    DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/flowsim
+
+  Install: pip install asyncpg
+
+11.3  ENVIRONMENT HARDENING
+────────────────────────────
+
+  SECRET_KEY=generate-256-bit-random-key
+  DEBUG=false
+  BACKEND_CORS_ORIGINS=https://your-domain.com
+
+================================================================================
+ 12. REFERENCES
+================================================================================
+
+FLUID MECHANICS
+  [1] Moody, L.F. (1944). Friction factors for pipe flow.
+      ASME Transactions, 66, 671–684.
+
+  [2] Colebrook, C.F. (1939). Turbulent flow in pipes with particular
+      reference to the transition region. J. Inst. Civil Eng., 11, 133–156.
+
+  [3] Churchill, S.W. (1977). Friction-factor equation spans all fluid-flow
+      regimes. Chemical Engineering, 84(24), 91–92.
+
+  [4] Swamee, P.K. & Jain, A.K. (1976). Explicit equations for pipe-flow
+      problems. J. Hydraulics Div., 102(5), 657–664.
+
+  [5] White, F.M. (2011). Fluid Mechanics, 7th ed. McGraw-Hill.
+
+  [6] Munson, B.R., Young, D.F. & Okiishi, T.H. (2013). Fundamentals of
+      Fluid Mechanics, 7th ed. Wiley.
+
+  [7] Idelchik, I.E. (2007). Handbook of Hydraulic Resistance, 4th ed.
+      Begell House.
+
+PIPE NETWORK SOLVERS
+  [8] Cross, H. (1936). Analysis of flow in networks of conduits or conductors.
+      University of Illinois Bulletin 286.
+
+  [9] Todini, E. & Pilati, S. (1988). A gradient algorithm for the analysis
+      of pipe networks. Computer Applications in Water Supply, 1, 1–20.
+
+  [10] Rossman, L.A. (2000). EPANET 2 User Manual.
+       U.S. Environmental Protection Agency.
+
+TURBULENCE
+  [11] Pope, S.B. (2000). Turbulent Flows. Cambridge University Press.
+
+  [12] Wilcox, D.C. (2006). Turbulence Modeling for CFD, 3rd ed.
+       DCW Industries.
+
+  [13] Nikuradse, J. (1933). Laws of flow in rough pipes.
+       NACA Technical Memorandum 1292 (translated 1950).
+
+WATER HAMMER
+  [14] Wylie, E.B. & Streeter, V.L. (1993). Fluid Transients in Systems.
+       Prentice-Hall.
+
+  [15] Joukowski, N. (1898). Über den hydraulischen Stoss in Wasserleitungsröhren.
+       Mem. Imperial Academy of Sciences, St. Petersburg.
+
+REST API DESIGN
+  [16] Alam, A. (2023). Build a Backend REST API with Python & Django.
+       (Reference PDF)
+
+  [17] Selvaraj, S. (2023). Mastering REST APIs.
+       (Reference PDF)
+
+  [18] Patni, S. (2023). Pro RESTful APIs with Micronaut, 2nd ed.
+       (Reference PDF)
+
+================================================================================
+ END OF DOCUMENTATION
+================================================================================

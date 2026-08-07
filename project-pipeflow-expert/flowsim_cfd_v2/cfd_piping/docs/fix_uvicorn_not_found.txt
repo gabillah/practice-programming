@@ -1,0 +1,233 @@
+================================================================================
+ FlowSim CFD v2.0 — Fix: ModuleNotFoundError: No module named 'uvicorn'
+================================================================================
+
+THE ERROR:
+  ModuleNotFoundError: No module named 'uvicorn'
+
+WHAT THIS MEANS:
+  Python cannot find uvicorn even though it appears to be installed.
+  This almost always means one of three things:
+    1. The virtual environment (venv) is NOT activated
+    2. uvicorn was installed into a DIFFERENT venv or Python
+    3. The venv is broken / corrupted
+
+NOTICE IN YOUR PROMPT:
+  Your prompt shows: (venv) PS D:\...
+  The (venv) prefix suggests the venv IS activated.
+  But the error says uvicorn is missing from it.
+  This means the venv was probably created but uvicorn was never
+  successfully installed into it, OR it was installed into a different venv.
+
+
+================================================================================
+ STEP-BY-STEP FIX
+================================================================================
+
+Run all these commands one at a time in PowerShell.
+Make sure you are in the backend folder first.
+
+
+--- STEP 1: Navigate to the backend folder ---
+
+    cd D:\15 Gabillah\upload-github\rangkuman-programming\project-pipeflow-expert\flowsim_cfd_v2\cfd_piping\backend
+
+
+--- STEP 2: Check which Python is being used RIGHT NOW ---
+
+    python -c "import sys; print(sys.executable)"
+
+    This prints the full path to the Python being used.
+    It should be something like:
+      D:\...\backend\venv\Scripts\python.exe    <- CORRECT (inside venv)
+
+    If it shows:
+      C:\Python314\python.exe                   <- WRONG (system Python)
+      C:\Users\user\AppData\Local\...\python.exe <- WRONG (another Python)
+
+    If the path does NOT contain \venv\, the venv is not properly active.
+
+
+--- STEP 3: Check what is actually installed in this venv ---
+
+    pip list
+
+    Look for uvicorn in the output.
+    If uvicorn is NOT in the list, it was never installed into this venv.
+    If uvicorn IS in the list, there is a path conflict (go to Step 6).
+
+
+--- STEP 4: Delete the broken venv completely ---
+
+    Remove-Item -Recurse -Force venv
+
+
+--- STEP 5: Create a fresh venv and install everything ---
+
+    python -m venv venv
+
+    .\venv\Scripts\Activate.ps1
+
+    python -c "import sys; print(sys.executable)"
+    (Should show: D:\...\backend\venv\Scripts\python.exe)
+
+    python.exe -m pip install --upgrade pip
+
+pip install "numpy>=2.3" --only-binary=:all:
+pip install "scipy>=1.16" --only-binary=:all:
+pip install "pydantic>=2.10" --only-binary=:all:
+pip install "pydantic-settings>=2.6" --only-binary=:all:
+pip install "uvicorn[standard]" --only-binary=:all:
+pip install fastapi sqlalchemy aiosqlite python-multipart httpx pytest pytest-asyncio
+
+
+--- STEP 6: Verify uvicorn is now installed ---
+
+pip show uvicorn
+
+    Expected output:
+      Name: uvicorn
+      Version: 0.32.x
+      Location: D:\...\backend\venv\Lib\site-packages
+      ...
+
+    The Location path MUST contain \venv\ to confirm it is in the right place.
+
+
+--- STEP 7: Verify uvicorn runs correctly ---
+
+python -m uvicorn --version
+
+    Expected output:  Running uvicorn 0.32.x with CPython 3.x.x on Windows
+
+    If this works, uvicorn is installed correctly.
+
+
+--- STEP 8: Start the server ---
+
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+    NOTE: Use "python -m uvicorn" instead of just "uvicorn"
+    This forces Python to use the uvicorn from the current venv,
+    avoiding any path confusion with system-level executables.
+
+
+================================================================================
+ WHY "python -m uvicorn" IS SAFER THAN JUST "uvicorn"
+================================================================================
+
+When you type:
+  uvicorn app.main:app ...
+
+Windows looks for uvicorn.exe in your PATH environment variable.
+If there is a broken or old uvicorn.exe somewhere on PATH, it may
+get picked up instead of the one in your venv.
+
+When you type:
+  python -m uvicorn app.main:app ...
+
+Python runs uvicorn as a MODULE from the CURRENTLY ACTIVE Python.
+This guarantees it uses the uvicorn installed in your active venv.
+No PATH confusion possible.
+
+USE THIS COMMAND FROM NOW ON:
+  python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+
+================================================================================
+ ALTERNATIVE: INSTALL USING python -m pip (not just pip)
+================================================================================
+
+Another cause of this error: "pip" on your PATH points to the system Python's
+pip, not the venv's pip. So pip install puts packages into the WRONG Python.
+
+To guarantee packages go into the venv, always use:
+
+    python -m pip install uvicorn[standard]
+
+Instead of:
+
+    pip install uvicorn[standard]
+
+These should be equivalent when the venv is active, but python -m pip
+is 100% guaranteed to use the correct pip.
+
+Full safe install sequence:
+
+    python -m pip install --upgrade pip
+    python -m pip install "numpy>=2.3" --only-binary=:all:
+    python -m pip install "scipy>=1.16" --only-binary=:all:
+    python -m pip install "pydantic>=2.10" --only-binary=:all:
+    python -m pip install "pydantic-settings>=2.6" --only-binary=:all:
+    python -m pip install "uvicorn[standard]"
+    python -m pip install fastapi sqlalchemy aiosqlite python-multipart httpx pytest pytest-asyncio
+
+
+================================================================================
+ COMPLETE COPY-PASTE SOLUTION
+================================================================================
+
+Run in PowerShell, one line at a time:
+
+    cd D:\15 Gabillah\upload-github\rangkuman-programming\project-pipeflow-expert\flowsim_cfd_v2\cfd_piping\backend
+
+    Remove-Item -Recurse -Force venv
+
+    python -m venv venv
+
+    .\venv\Scripts\Activate.ps1
+
+    python -c "import sys; print('Python:', sys.executable)"
+
+    python -m pip install --upgrade pip
+
+    python -m pip install "numpy>=2.3" --only-binary=:all:
+
+    python -m pip install "scipy>=1.16" --only-binary=:all:
+
+    python -m pip install "pydantic>=2.10" --only-binary=:all:
+
+    python -m pip install "pydantic-settings>=2.6" --only-binary=:all:
+
+    python -m pip install "uvicorn[standard]"
+
+    python -m pip install fastapi sqlalchemy aiosqlite python-multipart httpx pytest pytest-asyncio
+
+    python -m uvicorn --version
+
+    python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+
+================================================================================
+ CHECKING IF THE FIX WORKED
+================================================================================
+
+After running the last command you should see:
+
+  INFO:     Will watch for changes in these directories: ['D:\...\backend']
+  INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+  INFO:     Started reloader process [XXXXX] using WatchFiles
+
+Then open in browser:
+  http://localhost:8000/api/v1/docs
+
+You should see the FlowSim CFD API documentation page (Swagger UI).
+
+
+================================================================================
+ SUMMARY: SAFE COMMANDS TO USE FROM NOW ON
+================================================================================
+
+INSTEAD OF:              USE THIS:
+------------------------ ----------------------------------------
+pip install ...          python -m pip install ...
+uvicorn app.main:app ... python -m uvicorn app.main:app ...
+pytest tests\            python -m pytest tests\
+
+Using "python -m" prefix always guarantees you use the tools
+from the currently active virtual environment, with no PATH confusion.
+
+
+================================================================================
+ END
+================================================================================

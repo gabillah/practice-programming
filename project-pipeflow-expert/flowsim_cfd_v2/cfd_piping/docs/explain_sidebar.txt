@@ -71,7 +71,7 @@ EXPLANATION:
 
 CODE:
   const NAV_ITEMS = [
-    { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/dashboard',    icon: LayoutDashboard,	label: 'Dashboard' },
     { to: '/projects',     icon: FolderOpen,       label: 'Projects' },
     { to: '/simulations',  icon: Play,             label: 'Simulations' },
     { to: '/analysis',     icon: BarChart3,        label: 'Pipe Analysis' },
